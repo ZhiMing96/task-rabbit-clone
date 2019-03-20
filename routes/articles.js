@@ -8,7 +8,7 @@ const passport = require('passport');
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
-    database: 'articlelist',
+    database: 'cs2102project',
     password: 'password',
     port: 5432,
 });
@@ -19,7 +19,7 @@ pool.connect();
 //Load Edit Form
 router.get('/edit/:id', ensureAuthenticated, function (req, res) {
 
-    const sql = 'SELECT * FROM articles WHERE article_id = $1'
+    const sql = 'SELECT * FROM createdTasks WHERE article_id = $1'
     const params = [req.params.id];
     pool.query(sql, params, (error, result) => {
         var retrievedArticle = result.rows[0];
@@ -41,6 +41,7 @@ router.get('/edit/:id', ensureAuthenticated, function (req, res) {
     });
 
 });
+
 
 //Update article POST Route
 

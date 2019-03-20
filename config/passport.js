@@ -10,7 +10,7 @@ const { Pool } = require('pg');
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
-    database: 'articlelist',
+    database: 'cs2102project',
     password: 'password',
     port: 5432,
 });
@@ -49,7 +49,7 @@ module.exports = function(passport){
 
 function findUser(username, callback) {
 
-    const sql = 'SELECT * FROM users WHERE username = $1'
+    const sql = 'SELECT * FROM taskRequesters WHERE username = $1'
     const params = [username];
     pool.query(sql, params, (error, result) => {
         if (error) {
@@ -65,8 +65,8 @@ function findUser(username, callback) {
                 name: result.rows[0].name,
                 passwordHash: result.rows[0].password,
                 username: result.rows[0].username,
-                email: result.rows[0].email,
-                user_id: result.rows[0].user_id
+                userId: result.rows[0].cusId,
+                enabled: result.rows[0].enabled
 
             })
         } else {
@@ -86,7 +86,7 @@ passport.deserializeUser(function (username, cb) {
     findUser(username, cb);
 })
 
-/*
+
 function initPassport() {
     passport.use(new LocalStrategy(
         (username, password, done) => {
@@ -119,6 +119,6 @@ function initPassport() {
     passport.findUser = findUser;
 }
 
-*/
+
 
 

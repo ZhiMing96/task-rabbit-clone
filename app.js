@@ -7,31 +7,13 @@ const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
-//const config = require('./config/database');
 
-/*
-var parse = require('pg-connection-string').parse;
-
-
-const connectionString = parse('postgres://postgres:password@localhost:5432/articlelist')
-
-const pool = new Pool({
-  connectionString: connectionString,
-})
-pool.connect();
-
-pool.query('SELECT NOW()', (err, res) => {
-  console.log(err, res)
-  pool.end()
-})
-
-*/
 
 
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
-    database: 'articlelist',
+    database: 'cs2102project',
     password: 'password',
     port: 5432,
 });
@@ -58,7 +40,7 @@ app.use(session({
 
 //Load view engine 
 app.set('views', path.join(__dirname, 'views') );
-app.set('view engine', 'pug');
+app.set('view engine', 'ejs');
 
 
 
@@ -105,23 +87,26 @@ app.get('*', function(req,res,next){
 
 app.get('/', (req, res) => {
 
-    pool.query('SELECT * FROM articles', (error, result) => {
-        if (error) {
-            console.log('err: ', error);
-        }
-        res.render('index', {
-            title: 'Articles',
-            articles: result.rows
-
-        });
-    });
+    res.render('index');
 });
 
 //Route files. Anything with the first param will go to second param
 let articles = require('./routes/articles');
 let users = require('./routes/users');
+let taskRequesters = require('./routes/taskRequesters');
+let taskers = require('./routes/taskers');
+let requests = require('./routes/requests');
+let listings  = require('./routes/listings');
+let categories  = require('./routes/categories');
 app.use('/articles', articles);
 app.use('/users', users);
+
+app.use('/taskRequesters', taskRequesters);
+app.use('/taskers', taskers);
+app.use('/requests', requests);
+app.use('/listings', listings);
+app.use('/categories', categories);
+
 
 
 

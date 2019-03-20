@@ -7,26 +7,30 @@ const passport = require('passport');
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
-    database: 'articlelist',
+    database: 'cs2102project',
     password: 'password',
     port: 5432,
 });
 pool.connect();
+
+
 
 //Register Form 
 router.get('/register', function (req, res) {
     res.render('register');
 });
 
+
 //Register Process 
 router.post('/register', (req, res) => {
-
+    
+    req.checkBody('id', 'Id is required').notEmpty();
     req.checkBody('name', 'Name is required').notEmpty();
-    req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('username', 'Username is required').notEmpty();
     req.checkBody('password', 'Password is required').notEmpty();
     req.checkBody('password2', 'Passwords do not match.').equals(req.body.password);
-
+    
+   
 
     let errors = req.validationErrors();
     if (errors) {
@@ -46,8 +50,8 @@ router.post('/register', (req, res) => {
 
 
 
-                const sql = 'INSERT INTO users (name, email, username, password) VALUES ($1, $2, $3, $4)'
-                const params = [req.body.name, req.body.email, req.body.username, hash];
+                const sql = 'INSERT INTO taskRequesters (cusId, password, name, username, enabled) VALUES ($1, $2, $3, $4, $5)'
+                const params = [req.body.id, hash, req.body.name, req.body.username, true];
                 pool.query(sql, params, (error, result) => {
                     if (error) {
                         console.log('err: ', error);
@@ -63,6 +67,7 @@ router.post('/register', (req, res) => {
     }
 
 });
+
 
 //Login form
 router.get('/login', function (req, res) {
@@ -85,3 +90,4 @@ router.get('/logout', function(req,res){
     res.redirect('/users/login');
 });
 module.exports = router;
+
