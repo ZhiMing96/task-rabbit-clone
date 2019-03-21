@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Login Form</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+  </head>
 
-<head>
-
-
-</head>
-
-<body>
-
-    <h1>Log In </h1>
+  <body>
+    <h1>Log In</h1>
     <form method="POST" action="/users/login">
-        <div id="form-group">
-            <label>Username:</label>
-            <input class="form-control" name="username" type="text" />
-        </div>
-        <div id="form-group">
-            <label>Password: </label>
-            <input class="form-control" name="password" type="text" />
-        </div>
-        <input class="btn btn-primary" type="submit" value="Log In" />
+      <div id="form-group">
+        <label>Username:</label>
+        <input class="form-control" name="username" type="text" />
+      </div>
+      <div id="form-group">
+        <label>Password: </label>
+        <input class="form-control" name="password" type="text" />
+      </div>
+      <input class="btn btn-primary" type="submit" value="Log In" />
     </form>
-</body>
-
+  </body>
 </html>
