@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include("include/head", {title: "Tasker Profile"}); %>
+  </head>
+
+<body>
+    <%- include("include/navbar"); %>
+    <div class="container">
+
+    </div>
+    <div class='container-fluid'>
+        <div class="row justify-content-center">
+            Cat Name: <%=catName%><br>
+            Rating: <%=rating%><br>
+            Description: <%=description%>
+
+        </div> 
+        <% for(var x=0;x<reviews.length;x++){%>
+          <!--create buttons!!! <div class='btn <%=(reviews[x].rating > 3) ? "btn-primary" : "btn-danger"%>'>-->
+              <%="Category Name: " + reviews[x].catName%>
+              <%="Rating: " + reviews[x].rating%>
+              <%="Description: " + reviews[x].description%>
+            </div>
+        <%}%>
+    </div>
+  </body>
+</html>
