@@ -49,7 +49,7 @@ module.exports = function(passport){
 
 function findUser(username, callback) {
 
-    const sql = 'SELECT * FROM taskRequesters WHERE username = $1'
+    const sql = 'SELECT * FROM customers WHERE username = $1'
     const params = [username];
     pool.query(sql, params, (error, result) => {
         if (error) {
@@ -65,7 +65,7 @@ function findUser(username, callback) {
                 name: result.rows[0].name,
                 passwordHash: result.rows[0].password,
                 username: result.rows[0].username,
-                userId: result.rows[0].cusId,
+                cusId: result.rows[0].cusId,
                 enabled: result.rows[0].enabled
 
             })
