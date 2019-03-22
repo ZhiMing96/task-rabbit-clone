@@ -25,12 +25,6 @@ router.get("/", (req, res) => {
   */
 });
 
-router.post("/createTasker", (req, res) => {
-  res.send(
-    "CREATE TASKER PROFILE HERE: Fill in form and insert into database, redirect to /createSkillset"
-  );
-});
-
 router.get("/viewListings", (req, res) => {
   res.send("Retrieve all Listings that has not expired  ");
   /* const sqlViewListings =
