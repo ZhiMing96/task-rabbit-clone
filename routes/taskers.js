@@ -212,7 +212,7 @@ router.get('/viewMyPendingTasks', function (req, res) {
 });
 
 //View all My pending Tasks
-router.get('/viewMyBids', function (req, res) {
+router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
   const sql = 'SELECT C.taskName, B.bidPrice, L.biddingDeadline FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
   const params = [parseInt(req.user.cusId)]
   
@@ -231,6 +231,19 @@ router.get('/viewMyBids', function (req, res) {
 
 
 });
+
+//Access Control
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+      return next();
+
+  } else {
+      req.flash('danger', 'Please Log In');
+      
+      res.redirect('/users/login');
+  }
+
+}
 
 
 module.exports = router;
