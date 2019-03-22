@@ -1,48 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>My Personal Skills</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <link
-      rel="stylesheet"
-      href="/bower_components/bootstrap/dist/css/bootstrap.css"
-    />
-    <!-- JavaScript for Interactivity -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-    
-  </head>
-  <body>
-    <h1>ADD A NEW SKILL!</h1>
 
-      <form method="POST", action="/taskers/addSkillset">
-            <div class="form-group row">
-              <label for="description" class="col-sm-2 col-form-label">Description</label>
-              <div class="col-sm-10">
-                <textarea class="form-control" name="description" rows="5" placeholder="Enter Description"></textarea>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="rate" class="col-sm-2 col-form-label">Rate(/hour) $:</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" name="rate" placeholder="Enter Rate(/h)">
-              </div>
-            </div>
-            <div class="form-group row">
-                <label for="category" class="col-sm-2 col-form-label">Choose a Category</label>
-                <div class="col-sm-10">
-                    <select name="catName" class="form-control">
-                        <option selected disabled>Select 1 Category...</option>
-                        <% for(var i=0; i<data.length; i++) { %>
-                            <option><%= data[i].catName%></option>
-                        <% } %>
-                        <option disabled>...</option>
-                    </select>
-                </div>  
-              </div>
-            <input class="btn btn-primary" type="submit" value="Submit" />
-            
-        </form>
-  </body>
+<head>
+  <title>My Personal Skills</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+  <!-- JavaScript for Interactivity -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+    crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light"><a class="navbar-brand" href="/">NameOfProject</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span
+        class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item active"><a class="nav-link" href="/categories/add">Add Category <span
+              class="sr-only">(current)</span></a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item"> <a class="nav-link" href="/users/register">Register</a></li>
+        <li class="nav-item"> <a class="nav-link" href="/users/login">Log In</a></li>
+        <li class="nav-item"> <a class="nav-link" href="/users/logout">Log Out</a></li>
+      </ul>
+    </div>
+  </nav>
+  <h1>ADD A NEW SKILL!</h1>
+  <form method="POST" , action="/taskers/addSkillset">
+    <div class="form-group row">
+      <label for="description" class="col-sm-2 col-form-label">Description</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" name="description" rows="5" placeholder="Enter Description"></textarea>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="rate" class="col-sm-2 col-form-label">Rate(/hour) $:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name="rate" placeholder="Enter Rate(/h)">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="category" class="col-sm-2 col-form-label">Choose a Category</label>
+      <div class="col-sm-10">
+        <select name="catName" class="form-control">
+          <option selected disabled>Select 1 Category...</option>
+          <% for(var i=0; i<data.length; i++) { %>
+          <option><%= data[i].catName%></option>
+          <% } %>
+          <option disabled>...</option>
+        </select>
+      </div>
+    </div>
+    <input class="btn btn-primary" type="submit" value="Submit" />
+
+  </form>
+</body>
+
 </html>
