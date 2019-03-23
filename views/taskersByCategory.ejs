@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include("include/head", {title: "Taskers By Cateogry"}); %>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <%- include("include/navbar"); %>
+    <div class='container'>
+        <div class="row text-center">
+            <div class="col-12 taskerHeading">
+                <h1 class="">Pick a Tasker for <%=catName%></h1>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-3"> <!--sorting and filtering on the left-->
+                            <div class="form-group">
+                                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
+                                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepicker1').datetimepicker();
+                                });
+                            </script>
+            </div>
+            <div class="col-9">
+                <%for(var x=0;x<taskers.length;x++){%> 
+                    <div class="card taskerCard border-primary">
+                        <h3 class="card-header">
+                            <div class="row no-gutters">
+                                <div class="col-md-10">
+                                    <%=taskers[x].name%>&nbsp;&nbsp;
+                                    <span class="align-items-center" style="font-size:0.7em">
+                                    <% for(var y=0;y<5;y++){%>
+                                        <i class="fa<%=(y<taskers[x].taskerrating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
+                                    <%}%> 
+                                    </span>
+                                    <%if (taskers[x].taskerrating>=4 && taskers[x].num>=0) { %> <!--numbers should be 4.8 and 50-->
+                                        <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
+                                    <% }%>  
+                                    <%if (taskers[x].taskerrating>=4 && x>=taskers.length/4) { %>
+                                        <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></spanx`>
+                                    <% }%> 
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    $<%=taskers[x].rateperhour%><span style="font-size:0.5em">/hr</span>
+                                    
+                                </div>   
+                            </div>
+                        </h3>
+                        <div class="card-body">
+                            <div class="col-10">
+                                <i class="far fa-check-circle" style="color:green"></i>   <%=((taskers[x].num == null) ? 0 : taskers[x].num) + " " + catName + " Tasks " %><br><br>
+                                "<%=taskers[x].description%>"<br>
+                            </div>
+                            <div class="col-2 align-right">
+                                <span class="btn btn-warning btn-sm text-white"><b>Select</b></spanx`>
+                            </div>
+                        </div>
+                    </div>
+                    
+                <%}%>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+          })
+    </script>
+  </body>
+</html>
