@@ -247,6 +247,25 @@ router.get("/taskerProfileAndReviews/:taskerId", async (req, res) => {
 
 });
 
+//Get taskers by category
+router.get("/taskersByCategory/:catId", async (req, res) => {
+  
+  const params = [req.params.catId]; 
+  const sql = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
+  " SELECT T.name, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
+  "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=$1 order by ratePerHour desc;"
+  var result = await pool.query(sql, params);
+  console.log(result);
+
+  const sql2 = "SELECT catname from skillcategories where catid=$1;"
+  var result2 = await pool.query(sql2, params);
+  res.render("taskersByCategory", {
+    taskers: result.rows,
+    catName: result2.rows[0].catname
+  });
+
+});
+
 //Access Control
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
