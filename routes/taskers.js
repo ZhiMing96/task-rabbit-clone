@@ -18,7 +18,19 @@ pool.connect();
 
 router.get("/", (req, res) => {
   //Retrieve all tasks and send along with render
-  res.render('taskerProfile');
+  var cusId = parseInt(req.user.cusId)
+  const param1 = [cusId];
+  //console.log(cusId);
+  const sql1 = "SELECT * FROM customers WHERE cusid = $1"
+  pool.query(sql1,param1, (err, result1) => {
+    if(err){
+      console.log("ERROR RETRIEVING Customer");
+    } else {
+      res.render('taskerProfile',{cusInfo: result1.rows});
+    }
+
+  });
+  
 });
 
 router.get("/taskerSettings", (req, res) => {
@@ -69,8 +81,6 @@ router.get("/viewRequests", (req, res) => {
   res.send(
     "Find all requests that is pending acceptance from a PARTICULAR tasker "
   );
-  /*const sqlViewRequests = "";
-   */
 });
 
 router.get("/addSkill", (req, res) => {
@@ -94,7 +104,7 @@ router.post("/addSkill", (req, res) => {
   req.checkBody("rate", "rate is required").notEmpty();
   req.checkBody("catName", "Category Name is required").notEmpty();
   var cusId = parseInt(req.user.cusId);
-  console.log("customerID = " +cusId);
+  // console.log("customerID = " +cusId);
 
   //let error = req.validationErrors();
 
@@ -107,7 +117,7 @@ router.post("/addSkill", (req, res) => {
       var skillId = data.rows[0].ssid;
 
       const paramCatName = [req.body.catName];
-      console.log("category name:" + paramCatName);
+      // console.log("category name:" + paramCatName);
       var sqlCat = "SELECT * FROM skillcategories WHERE catname = $1";
   
       pool.query(sqlCat,paramCatName, (err,result) =>{
@@ -239,8 +249,6 @@ router.get('/viewMyCompletedTasks', function (req, res) {
       });
 
   });
-
-
 });
 
 //View all My pending Tasks
@@ -260,13 +268,11 @@ router.get('/viewMyPendingTasks', function (req, res) {
       });
 
   });
-
-
 });
 
-//View all My pending Tasks
+//View all My bids placed
 router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
-  const sql = 'SELECT C.taskName, B.bidPrice, L.biddingDeadline FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
+  const sql = 'SELECT B.taskId, C.taskName, B.bidPrice, L.biddingDeadline FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
   const params = [parseInt(req.user.cusId)]
   
   pool.query(sql, params, (error, result) => {
