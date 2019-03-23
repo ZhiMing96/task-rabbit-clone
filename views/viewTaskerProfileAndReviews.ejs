@@ -8,12 +8,12 @@
     <%- include("include/navbar"); %>
     <div class='container'>
       <%="Tasker Name: " + reviews[0].name%><br>
-      <%="Tasker Rating: " + reviews[0].taskerrating%><br>
+      <%="Tasker Rating: " + reviews[0].taskerrating%><br><br>
 
       <% for(var x=0;x<reviews.length;x++){%> <!--reviews-->
         <!--create buttons!!! <div class='btn <%=(reviews[x].rating > 3) ? "btn-primary" : "btn-danger"%>'></div>-->
         <%="Category Name: " + reviews[x].catname%><br>
-        <%="Description: " + reviews[x].description%>
+        <%="Description: " + reviews[x].description%><br><br>
       <%}%>
     </div>
   </body>
