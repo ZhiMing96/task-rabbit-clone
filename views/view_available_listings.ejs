@@ -35,6 +35,11 @@
 					<td><%= availableListing[i].manpower%></td>
 					<td><%= availableListing[i].taskdatetime%></td>
 					<td><%= availableListing[i].datecreated%></td>
+					<td>
+						<form action="/listings/createNewBid/<%= availableListing[i].taskid%>", method="GET">
+							<button type="submit" class="btn btn-outline-secondary" formaction="/listings/createNewBid/<%= availableListing[i].taskid %>">Bid For This!</button>
+						</form>
+					</td>
 					
 				</tr>
 				<% } %>
