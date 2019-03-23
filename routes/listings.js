@@ -14,4 +14,22 @@ const pool = new Pool({
 });
 pool.connect();
 
+//View All Available Listings
+router.get('/viewAllAvailable', function (req, res) {
+    const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks WHERE taskId IN (SELECT taskId FROM listings WHERE biddingDeadline > (SELECT NOW())) AND taskdatetime > (SELECT NOW()) AND taskid not in (SELECT taskid FROM assigned)'
+    pool.query(sql, (error, result) => {
+        if (error) {
+            console.log('err: ', error);
+        }
+
+        res.render('view_available_listings', {
+            availableListing: result.rows,
+        });
+
+    });
+
+
+});
+
+
 module.exports = router;

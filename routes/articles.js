@@ -118,7 +118,7 @@ router.delete('/:id', function (req, res) {
 
 
 //Get single article 
-router.get('/:id', function (req, res) {
+router.get('/:id', ensureAuthenticated, function (req, res) {
     const sql = 'SELECT * FROM articles WHERE article_id = $1'
     const params = [req.params.id];
     pool.query(sql, params, (error, result) => {

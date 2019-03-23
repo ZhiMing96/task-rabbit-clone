@@ -25,12 +25,6 @@ router.get("/", (req, res) => {
   */
 });
 
-router.post("/createTasker", (req, res) => {
-  res.send(
-    "CREATE TASKER PROFILE HERE: Fill in form and insert into database, redirect to /createSkillset"
-  );
-});
-
 router.get("/viewListings", (req, res) => {
   res.send("Retrieve all Listings that has not expired  ");
   /* const sqlViewListings =
@@ -174,6 +168,83 @@ router.delete("/deleteSkillset", (req, res) => {
     WHERE ssid = taskerId“
   */
 });
+
+//View All My completed Tasks
+router.get('/viewMyCompletedTasks', function (req, res) {
+  const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)' 
+  const params = [parseInt(req.user.cusId)]
+  
+  pool.query(sql, params, (error, result) => {
+  
+      if (error) {
+          console.log('err: ', error);
+      }
+
+      res.render('view_my_tasks', {
+          task: result.rows,
+          taskType: 'COMPLETED'
+      });
+
+  });
+
+
+});
+
+//View all My pending Tasks
+router.get('/viewMyPendingTasks', function (req, res) {
+  const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = false)' 
+  const params = [parseInt(req.user.cusId)]
+  
+  pool.query(sql, params, (error, result) => {
+  
+      if (error) {
+          console.log('err: ', error);
+      }
+
+      res.render('view_my_tasks', {
+          task: result.rows,
+          taskType: 'PENDING'
+      });
+
+  });
+
+
+});
+
+//View all My pending Tasks
+router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
+  const sql = 'SELECT C.taskName, B.bidPrice, L.biddingDeadline FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
+  const params = [parseInt(req.user.cusId)]
+  
+  pool.query(sql, params, (error, result) => {
+  
+      if (error) {
+          console.log('err: ', error);
+      }
+
+      res.render('view_my_bids', {
+          bid: result.rows,
+          
+      });
+
+  });
+
+
+});
+
+//Access Control
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+      return next();
+
+  } else {
+      req.flash('danger', 'Please Log In');
+      
+      res.redirect('/users/login');
+  }
+
+}
+
 
 module.exports = router;
 
