@@ -211,7 +211,7 @@ router.get('/viewMyPendingTasks', function (req, res) {
 
 });
 
-//View all My pending Tasks
+//View all My bids
 router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
   const sql = 'SELECT C.taskName, B.bidPrice, L.biddingDeadline FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
   const params = [parseInt(req.user.cusId)]
@@ -226,9 +226,24 @@ router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
           bid: result.rows,
           
       });
+  });
+});
+
+//When viewing tasker reviews before choosing tasker for task
+router.get("/taskerProfileAndReviews/:taskerId", async (req, res) => {
+  
+  const params = [req.params.taskerId]; 
+  const sql = "SELECT CU.name, (SELECT avg(rating) FROM Reviews WHERE cusId=$1) AS taskerRating, "+
+  "C.catName as catName, RV.rating, RV.description FROM Reviews RV join Requires R on RV.taskId=R.taskId"+
+  " join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId WHERE RV.cusId=$1"
+
+  var result = await pool.query(sql, params);
+  console.log(result);
+
+  res.render("viewTaskerProfileAndReviews", {
+    reviews: result.rows
 
   });
-
 
 });
 

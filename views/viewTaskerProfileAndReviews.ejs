@@ -6,23 +6,15 @@
 
 <body>
     <%- include("include/navbar"); %>
-    <div class="container">
-
-    </div>
-    <div class='container-fluid'>
-        <div class="row justify-content-center">
-            Cat Name: <%=catName%><br>
-            Rating: <%=rating%><br>
-            Description: <%=description%>
-
-        </div> 
-        <% for(var x=0;x<reviews.length;x++){%>
-          <!--create buttons!!! <div class='btn <%=(reviews[x].rating > 3) ? "btn-primary" : "btn-danger"%>'>-->
-              <%="Category Name: " + reviews[x].catName%>
-              <%="Rating: " + reviews[x].rating%>
-              <%="Description: " + reviews[x].description%>
-            </div>
-        <%}%>
+    <div class='container'>
+      <%="Tasker Name: " + reviews[0].name%><br>
+      <%="Tasker Rating: " + reviews[0].taskerrating%><br>
+      <% for(var x=0;x<reviews.length;x++){%> <!--reviews-->
+        <!--create buttons!!! <div class='btn <%=(reviews[x].rating > 3) ? "btn-primary" : "btn-danger"%>'></div>-->
+        <%="Category Name: " + reviews[x].catname%><br>
+        <%="Rating: " + reviews[x].rating%><br>
+        <%="Description: " + reviews[x].description%>
+      <%}%>
     </div>
   </body>
 </html>
