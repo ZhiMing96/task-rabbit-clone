@@ -15,7 +15,7 @@ const pool = new Pool({
 pool.connect();
 
 //View All Available Listings
-router.get('/viewAllAvailable', function (req, res) {
+router.get('/viewAllAvailable',ensureAuthenticated,function (req, res) {
     const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C WHERE taskId IN (SELECT taskId FROM listings WHERE biddingDeadline > (SELECT NOW())) AND cusId <> $1 AND taskdatetime > (SELECT NOW()) AND taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND taskid = C.taskId)' ;
     const params =  [parseInt(req.user.cusId)];
     pool.query(sql, params ,(error, result) => {
@@ -28,7 +28,7 @@ router.get('/viewAllAvailable', function (req, res) {
     });
 });
 
-router.get('/createNewBid/:taskId',(req,res) => {
+router.get('/createNewBid/:taskId',ensureAuthenticated,(req,res) => {
     var param= [req.params.taskId];
     var sql = "SELECT * FROM createdtasks WHERE taskid = $1"; 
     pool.query(sql,param, (err,result)=>{
@@ -41,7 +41,7 @@ router.get('/createNewBid/:taskId',(req,res) => {
     });  
 });
 
-router.post('/createNewBid/:taskId',(req,res)=>{
+router.post('/createNewBid/:taskId',ensureAuthenticated,(req,res)=>{
     req.checkBody("bidAmt", "Amount is required").notEmpty();
     let error = req.validationErrors();
     if (error) { console.log(err + " NO BID AMT")}
@@ -61,7 +61,7 @@ router.post('/createNewBid/:taskId',(req,res)=>{
     });
 })
 
-router.get('/updateBid/:taskid',(req,res)=>{
+router.get('/updateBid/:taskid',ensureAuthenticated,(req,res)=>{
     const taskId = req.params.taskid ;
     const cusId = req.user.cusId; 
     //console.log(cusId);
@@ -80,7 +80,7 @@ router.get('/updateBid/:taskid',(req,res)=>{
     
 });
 
-router.post('/updateBid/:taskid',(req,res)=>{
+router.post('/updateBid/:taskid',ensureAuthenticated,(req,res)=>{
     const taskId = req.params.taskid; 
     const cusId = req.user.cusId;
     const newPrice = req.body.bidAmt;
@@ -97,7 +97,7 @@ router.post('/updateBid/:taskid',(req,res)=>{
     });
 });
 
-router.get('/deleteBid/:taskid',(req,res)=>{
+router.get('/deleteBid/:taskid',ensureAuthenticated,(req,res)=>{
     const taskId = req.params.taskid; 
     const cusId = req.user.cusId;
     const sql = "DELETE FROM bids WHERE taskid = $1 AND cusid = $2";
@@ -110,5 +110,17 @@ router.get('/deleteBid/:taskid',(req,res)=>{
         }
     });
 });
+//Access Control
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+  
+    } else {
+        req.flash('danger', 'Please Log In');
+        
+        res.redirect('/users/login');
+    }
+  
+  }
 
 module.exports = router;

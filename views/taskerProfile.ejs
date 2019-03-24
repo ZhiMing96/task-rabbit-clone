@@ -35,23 +35,23 @@
       <h1>SIDE BAR FUNCTIONS</h1></br>
 
       <form action="/taskers/viewMyPendingTasks", method="GET">
-        <button type="submit" class="btn btn-outline-secondary">VIEW TASKS - TASKER</button>
+        <button type="submit" class="btn btn-outline-info">VIEW TASKS - TASKER</button>
       </form></br>
 
       <form action="/taskers/viewMyBids", method="GET">
-        <button type="submit" class="btn btn-outline-secondary">VIEW BIDS - TASKER</button>
+        <button type="submit" class="btn btn-outline-info">VIEW BIDS - TASKER</button>
       </form></br>
 
-      <form action="/taskers/taskerReviews", method="GET">
-        <button type="submit" class="btn btn-outline-secondary">VIEW REVIEWS - TASKER</button>
+      <form action="/taskers/taskerProfileAndReviews/<%= cusInfo[0].cusid %>", method="GET">
+        <button type="submit" class="btn btn-outline-info">VIEW REVIEWS - TASKER</button>
       </form></br>
 
       <form action="/taskers/viewRequests", method="GET">
-        <button type="submit" class="btn btn-outline-secondary">VIEW REQUEST - TASKERR</button>
+        <button type="submit" class="btn btn-outline-info">VIEW REQUEST - TASKERR</button>
       </form></br>
 
       <form action="/taskers/taskerSettings", method="GET">
-        <button type="submit" class="btn btn-outline-secondary">VIEW ACCOUNT SETTINGS - TASKER</button>
+        <button type="submit" class="btn btn-outline-info">VIEW ACCOUNT SETTINGS - TASKER</button>
       </form></br> 
     </div>
     

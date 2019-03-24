@@ -16,7 +16,7 @@ const pool = new Pool({
 });
 pool.connect();
 
-router.get("/", (req, res) => {
+router.get("/",ensureAuthenticated, (req, res) => {
   //Retrieve all tasks and send along with render
   var cusId = parseInt(req.user.cusId)
   const param1 = [cusId];
@@ -33,7 +33,7 @@ router.get("/", (req, res) => {
   
 });
 
-router.get("/taskerSettings", (req, res) => {
+router.get("/taskerSettings",ensureAuthenticated, (req, res) => {
   //var cusNum = parseInt(req.user.cusId);
   var cusDetails = [];
   var skills = [];
@@ -67,7 +67,7 @@ router.get("/taskerSettings", (req, res) => {
 
 });
 
-router.get("/viewRequests", (req, res) => {
+router.get("/viewRequests",ensureAuthenticated, (req, res) => {
   const user = req.user.cusId;
   
 
@@ -87,7 +87,7 @@ router.get("/viewRequests", (req, res) => {
   });
 });
 
-router.get("/acceptRequest/:taskid", (req, res) => {
+router.get("/acceptRequest/:taskid",ensureAuthenticated, (req, res) => {
   const user = req.user.cusId;
   const taskId = req.params.taskid;
   const sql = "UPDATE requests SET accepted = true WHERE taskid = $1 AND cusid = $2";
@@ -110,7 +110,7 @@ router.get("/acceptRequest/:taskid", (req, res) => {
   });
   
 });
-router.get("/rejectRequest/:taskid", (req, res) => {
+router.get("/rejectRequest/:taskid",ensureAuthenticated, (req, res) => {
   var taskId = req.params.taskid;
   var user = req.user.cusId;
 
@@ -130,7 +130,7 @@ router.get("/rejectRequest/:taskid", (req, res) => {
 
 });
 
-router.get("/addSkill", (req, res) => {
+router.get("/addSkill",ensureAuthenticated, (req, res) => {
 
   const sql ="SELECT * FROM skillcategories";
   pool.query(sql, (err,data) =>{
@@ -142,7 +142,7 @@ router.get("/addSkill", (req, res) => {
   });
 });
 
-router.post("/addSkill", (req, res) => {
+router.post("/addSkill",ensureAuthenticated, (req, res) => {
 
   req.checkBody("description", "description is required").notEmpty();
   req.checkBody("rate", "rate is required").notEmpty();
@@ -181,7 +181,7 @@ router.post("/addSkill", (req, res) => {
     
   });
 
-router.get("/updateSkill/:ssid", (req, res) => {
+router.get("/updateSkill/:ssid", ensureAuthenticated,(req, res) => {
   var ssId = req.params.ssid;
   
 
@@ -213,7 +213,7 @@ router.get("/updateSkill/:ssid", (req, res) => {
   
 });
 
-router.post("/updateSkill/:ssid", (req, res) => {
+router.post("/updateSkill/:ssid",ensureAuthenticated, (req, res) => {
   req.checkBody("newDescription", "Description is required").notEmpty();
   req.checkBody("newRate", "Rate is required").notEmpty();
   req.checkBody("catName", "Category is required").notEmpty();
@@ -259,7 +259,7 @@ router.post("/updateSkill/:ssid", (req, res) => {
   
 });
 
-router.get("/deleteSkill/:ssid", (req, res) => {
+router.get("/deleteSkill/:ssid", ensureAuthenticated,(req, res) => {
   //var cusId = parseInt(req.user.cusId);
   var ssId = parseInt(req.params.ssid);
  // console.log(ssId);
@@ -279,7 +279,7 @@ router.get("/deleteSkill/:ssid", (req, res) => {
 });
 
 //View All My completed Tasks
-router.get('/viewMyCompletedTasks', function (req, res) {
+router.get('/viewMyCompletedTasks',ensureAuthenticated, function (req, res) {
   const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)' 
   const params = [parseInt(req.user.cusId)]
   
@@ -298,7 +298,7 @@ router.get('/viewMyCompletedTasks', function (req, res) {
 });
 
 //View all My pending Tasks
-router.get('/viewMyPendingTasks', function (req, res) {
+router.get('/viewMyPendingTasks',ensureAuthenticated, function (req, res) {
   const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = false)' 
   const params = [parseInt(req.user.cusId)]
   
@@ -335,7 +335,9 @@ router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
 });
 
 //When viewing tasker reviews before choosing tasker for task
-router.get("/taskerProfileAndReviews/:taskerId", async (req, res) => {
+router.get("/taskerProfileAndReviews/:taskerId",ensureAuthenticated, async (req, res) => {
+
+
   
   const params = [req.params.taskerId]; 
   const sql = "SELECT CU.name, (SELECT avg(rating) FROM Reviews WHERE cusId=$1) AS taskerRating, "+
@@ -353,7 +355,7 @@ router.get("/taskerProfileAndReviews/:taskerId", async (req, res) => {
 });
 
 //Get taskers by category
-router.get("/taskersByCategory/:catId", async (req, res) => {
+router.get("/taskersByCategory/:catId",ensureAuthenticated, async (req, res) => {
   
   const params = [req.params.catId]; 
   const sql = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
@@ -383,8 +385,5 @@ function ensureAuthenticated(req, res, next) {
   }
 
 }
-
-
 module.exports = router;
 
-/* */
