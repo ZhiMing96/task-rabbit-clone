@@ -14,4 +14,16 @@ const pool = new Pool({
 });
 pool.connect();
 
+//Access Control
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+  
+    } else {
+        req.flash('danger', 'Please Log In');
+        
+        res.redirect('/users/login');
+    }
+  
+  }
 module.exports = router;
