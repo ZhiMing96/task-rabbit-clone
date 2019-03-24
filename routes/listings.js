@@ -16,7 +16,7 @@ pool.connect();
 
 //View All Available Listings
 router.get('/viewAllAvailable',ensureAuthenticated,function (req, res) {
-    const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C WHERE taskId IN (SELECT taskId FROM listings WHERE biddingDeadline > (SELECT NOW())) AND cusId <> $1 AND taskdatetime > (SELECT NOW()) AND taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND taskid = C.taskId)' ;
+    const sql = 'SELECT taskid, taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C WHERE taskId IN (SELECT taskId FROM listings WHERE biddingDeadline > (SELECT NOW())) AND cusId <> $1 AND taskdatetime > (SELECT NOW()) AND taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND taskid = C.taskId)' ;
     const params =  [parseInt(req.user.cusId)];
     pool.query(sql, params ,(error, result) => {
         if (error) {
@@ -30,12 +30,12 @@ router.get('/viewAllAvailable',ensureAuthenticated,function (req, res) {
 
 router.get('/createNewBid/:taskId',ensureAuthenticated,(req,res) => {
     var param= [req.params.taskId];
-    var sql = "SELECT * FROM createdtasks WHERE taskid = $1"; 
+    var sql = "SELECT * FROM createdtasks c INNER JOIN listings l ON c.taskid = l.taskid WHERE l.taskid = $1"; 
     pool.query(sql,param, (err,result)=>{
         if(err){
             console.log("UNABLE TO RETRIEVE Listing" + err);
         } else {
-        console.log(result.rows);
+        //console.log(result.rows);
         res.render('createNewBid',{listing: result.rows});
         }
     });  
@@ -56,7 +56,7 @@ router.post('/createNewBid/:taskId',ensureAuthenticated,(req,res)=>{
         if(err){
             console.log("UNABLE TO INSERT NEW BID RECORD " + err);
         } else {
-            res.redirect('/taskers/view_my_bids');
+            res.redirect('/taskers/viewMyBids');
         }
     });
 })

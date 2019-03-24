@@ -20,10 +20,11 @@
             <p class="card-text"><%= listing[0].description %></p>
             <p class="card-text"><%= listing[0].duration %> Hours</p>
             <p class="card-text">Task Date & Time: <%= listing[0].taskdatetime %></p>
+            <p class="card-text">Starting Bid: <%= listing[0].startingbid %></p>
 
             <form action="/listings/createNewBid/<%=listing[0].taskid %>" method="POST">
                 <label for="bidAmt">Enter Amount</label>
-                <input type="text" name="bidAmt" id="bidAmt"> 
+                <input type="text" name="bidAmt" id="bidAmt" required> 
 
                 <button type="submit" class="btn btn-outline-primary">Add This New Bidding!</button>
             </form>
