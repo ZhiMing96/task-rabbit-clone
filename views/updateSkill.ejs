@@ -27,17 +27,16 @@
     <form action="/taskers/updateSkill/<%= skills[0].ssid %>", method="POST">
         <div class="form-group">
             <label for="description">Description</label>
-            <input type="text" class="form-control" id="description" value="<%= skills[0].description %>" name = newDescription>
+            <input type="text" class="form-control" id="description" value="<%= skills[0].description %>" name = newDescription required>
         </div>
         <div class="form-group">
             <label for="rate">Rate(/h)</label>
-            <input type="text" class="form-control" id="rate" value="<%= skills[0].rateperhour %>" name = newRate>
+            <input type="text" class="form-control" id="rate" value="<%= skills[0].rateperhour %>" name = newRate required>
         </div>
         <div class="form-group"">
             <label for="Category">Category</label>
-            <select name="catName" class="form-control" id="Category">
-                <option><%= category[0].catname %></option>
-                
+            <select name="catName" class="form-control" id="Category" required>
+                <option><%= category[0].catname %></option>    
                 <% for(var i=0; i<allCats.length; i++) { %>
                 <option><%= allCats[i].catname%></option>
                 <% } %>

@@ -20,40 +20,25 @@
 
 <body>
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light"><a class="navbar-brand" href="/">NameOfProject</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span
-        class="navbar-toggler-icon"></span></button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
-        <li class="nav-item active"><a class="nav-link" href="/categories/add">Add Category <span
-              class="sr-only">(current)</span></a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li class="nav-item"> <a class="nav-link" href="/users/register">Register</a></li>
-        <li class="nav-item"> <a class="nav-link" href="/users/login">Log In</a></li>
-        <li class="nav-item"> <a class="nav-link" href="/users/logout">Log Out</a></li>
-      </ul>
-    </div>
-  </nav>
+  <%- include("include/navbar"); %>
   <h1>ADD A NEW SKILL!</h1>
   <form method="POST" , action="/taskers/addSkill">
     <div class="form-group row">
       <label for="description" class="col-sm-2 col-form-label">Description</label>
       <div class="col-sm-10">
-        <textarea class="form-control" name="description" rows="5" placeholder="Enter Description"></textarea>
+        <textarea class="form-control" name="description" rows="5" placeholder="Enter Description" required></textarea>
       </div>
     </div>
     <div class="form-group row">
       <label for="rate" class="col-sm-2 col-form-label">Rate(/hour) $:</label>
       <div class="col-sm-10">
-        <input type="text" class="form-control" name="rate" placeholder="Enter Rate(/h)">
+        <input type="text" class="form-control" name="rate" placeholder="Enter Rate(/h)" required>
       </div>
     </div>
     <div class="form-group row">
       <label for="category" class="col-sm-2 col-form-label">Choose a Category</label>
       <div class="col-sm-10">
-        <select name="catName" class="form-control">
+        <select name="catName" class="form-control" required>
           <option selected disabled>Select 1 Category...</option>
           <% for(var i=0; i<data.length; i++) { %>
           <option><%= data[i].catname%></option>

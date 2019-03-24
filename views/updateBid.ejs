@@ -22,7 +22,7 @@
 
             <form action="/listings/updateBid/<%=bidInfo[0].taskid %>" method="POST"> 
                 <label for="bidAmt">Update Amount</label>
-                <input type="text" name="bidAmt" id="bidAmt" value="<%= bidInfo[0].bidprice %>">SGD</input></br> 
+                <input type="text" name="bidAmt" id="bidAmt" value="<%= bidInfo[0].bidprice %>" required>SGD</input></br> 
 
                 <button type="submit" class="btn btn-outline-primary">Confirm Update!</button>
             </form>
