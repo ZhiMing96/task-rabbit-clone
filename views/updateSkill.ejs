@@ -16,13 +16,8 @@
           crossorigin="anonymous"></script>
 </head>
 <body>
+    <%- include("include/navbar"); %>
     <h1>UPDATE SKILLS FOR <%= skills[0].ssid %></h1>
-
-    <!-- <h3>DESCRIPTION: <%= skills[0].description %> </h3>
-
-    <form>
-        <input type="text" value="<%= skills[0].description %>">
-    </form> -->
 
     <form action="/taskers/updateSkill/<%= skills[0].ssid %>", method="POST">
         <div class="form-group">
@@ -40,7 +35,7 @@
                 <% for(var i=0; i<allCats.length; i++) { %>
                 <option><%= allCats[i].catname%></option>
                 <% } %>
-                <option disabled>...</option>
+                <option value="" disabled>...</option>
             </select>
               </div>
         <button type="submit" class="btn btn-primary">UPDATE</button>

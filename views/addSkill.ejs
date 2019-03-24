@@ -39,11 +39,11 @@
       <label for="category" class="col-sm-2 col-form-label">Choose a Category</label>
       <div class="col-sm-10">
         <select name="catName" class="form-control" required>
-          <option selected disabled>Select 1 Category...</option>
+          <option value="" selected disabled>Select 1 Category...</option>
           <% for(var i=0; i<data.length; i++) { %>
-          <option><%= data[i].catname%></option>
+          <option value="<%= data[i].catname%>"><%= data[i].catname%></option>
           <% } %>
-          <option disabled>...</option>
+          <option disabled value="">...</option>
         </select>
       </div>
     </div>
