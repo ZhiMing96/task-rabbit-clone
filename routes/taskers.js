@@ -336,7 +336,7 @@ router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
 });
 
 //When viewing tasker reviews before choosing tasker for task
-router.get("/taskerProfileAndReviews/:taskerId",ensureAuthenticated, async (req, res) => {
+router.get("/tasker/:taskerId",ensureAuthenticated, async (req, res) => {
 
 
   
@@ -360,7 +360,7 @@ router.get("/taskersByCategory/:catId",ensureAuthenticated, async (req, res) => 
   
   const params = [req.params.catId]; 
   const sql = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
-  " SELECT T.name, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
+  " SELECT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
   "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=$1 order by ratePerHour desc;"
   var result = await pool.query(sql, params);
   console.log(result);
