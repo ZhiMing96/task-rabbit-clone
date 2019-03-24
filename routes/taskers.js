@@ -152,6 +152,7 @@ router.post("/addSkill",ensureAuthenticated, (req, res) => {
   let error = req.validationErrors();
   if(error){
     console.log("PARAMETERS ERROR!");
+    res.redirect('/taskers/addSkill');
   }
 
   const paramSkill = [cusId, req.body.description, req.body.rate];
