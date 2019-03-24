@@ -2,9 +2,10 @@
 <html>
   <head>
 		<!-- Page Title -->
-    <title>View My Bids</title>
+		<%- include("include/head", {title: "View My Bids"}); %>
+    
     <link rel='stylesheet' href='/stylesheets/style.css' />
-		
+	
 		<!-- CSS for Styling -->
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 		
@@ -14,12 +15,15 @@
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
   </head>
   <body>
+	<%- include("include/navbar"); %>
 	<table class="table">
 		<thead>
 			<tr>
 				<th scope="col">Task Name</th>
 				<th scope="col">My Bid Amount</th>
 				<th scope="col">Bidding Deadline</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
 			</tr>
 		</thead>
 		<tbody>

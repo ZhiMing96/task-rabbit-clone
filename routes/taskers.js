@@ -67,20 +67,67 @@ router.get("/taskerSettings", (req, res) => {
 
 });
 
-router.get("/viewListings", (req, res) => {
-  res.send("Retrieve all Listings that has not expired  ");
-  /* const sqlViewListings =
-    "SELECT C.description, C.manpower, C.taskDateTime, C.dateCreated, T.username 
-    FROM CreatedTasks C, TaskRequesters T
-    WHERE taskDateTime > (SELECT NOW())
-    AND C.cusId = T.cusId
-    VALUES ($1, $2, $3, $4, $5)"; */
+router.get("/viewRequests", (req, res) => {
+  const user = req.user.cusId;
+  
+
+  const sql = "SELECT * FROM requests r INNER JOIN createdtasks t ON r.taskid = t.taskid WHERE accepted = false AND r.cusid = $1";
+  const param =[user];
+
+  pool.query(sql,param,(err,result)=>{
+    if(err) {
+      throw err;
+    } else if (result.rows.length != 0) {
+      res.render('pendingRequests', {requests: result.rows});
+    } else {
+      console.log("THERE ARE NO PENDING REQUESTS!");
+      res.redirect('/taskers')
+    }
+
+  });
 });
 
-router.get("/viewRequests", (req, res) => {
-  res.send(
-    "Find all requests that is pending acceptance from a PARTICULAR tasker "
-  );
+router.get("/acceptRequest/:taskid", (req, res) => {
+  const user = req.user.cusId;
+  const taskId = req.params.taskid;
+  const sql = "UPDATE requests SET accepted = true WHERE taskid = $1 AND cusid = $2";
+  const param=[taskId, user];
+
+  pool.query(sql,param, (err,result)=>{
+    if(err) {
+      console.log("ERROR UPDATING REQUEST TO ACCEPT" + err);
+    } else {
+      const sqlAssign = "INSERT INTO assigned(taskid,cusid,completed) VALUES ($1,$2,false)";
+      const paramAssign = [taskId,user];
+      pool.query(sqlAssign,paramAssign, (err,result)=>{
+        if(err) {
+          console.log("ERROR ASSIGNING TASK" + err);
+        } else {
+          res.redirect('/taskers/viewMyPendingTasks');
+        }
+      });
+    }   
+  });
+  
+});
+router.get("/rejectRequest/:taskid", (req, res) => {
+  var taskId = req.params.taskid;
+  var user = req.user.cusId;
+
+  const sql = "DELETE FROM requests WHERE cusid = $1 AND taskid =$2"
+  const param = [user,taskId];
+
+  pool.query(sql,param,(err,data)=>{
+    if(err) {
+      console.log("ERROR DELETING REQUEST " + err);
+    } else {
+      res.redirect('/taskers/viewRequests');
+    }
+  });
+
+
+
+
 });
 
 router.get("/addSkill", (req, res) => {
@@ -96,17 +143,16 @@ router.get("/addSkill", (req, res) => {
 });
 
 router.post("/addSkill", (req, res) => {
-  //   console.log(req.body.catName);
-  //   console.log(req.body.description);
-  //   console.log(req.body.rate);
 
   req.checkBody("description", "description is required").notEmpty();
   req.checkBody("rate", "rate is required").notEmpty();
   req.checkBody("catName", "Category Name is required").notEmpty();
   var cusId = parseInt(req.user.cusId);
-  // console.log("customerID = " +cusId);
 
-  //let error = req.validationErrors();
+  let error = req.validationErrors();
+  if(error){
+    console.log("PARAMETERS ERROR!");
+  }
 
   const paramSkill = [cusId, req.body.description, req.body.rate];
   const sqlAddSkill = "INSERT INTO AddedPersonalSkills(cusId,description,ratePerHour) VALUES($1,$2,$3) RETURNING ssid";
