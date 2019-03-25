@@ -23,13 +23,11 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div> 
-        <div class="text-center">
-            <form action="/taskers" method="GET">
-				<button type="submit" class="btn  btn-outline-secondary" formaction="/taskers">BACK</button>
-				<form action="/taskers" method="GET">
-					<button type="submit" class="btn  btn-outline-primary" formaction="/listings/viewAllAvailable">Place a Bid!</button>
-				</form>
-			</form>
+        <div class="text-center">	
+					<form action="listings/viewAllAvailable" method="GET">
+						<button type="submit" class="btn  btn-outline-primary" formaction="/listings/viewAllAvailable">Place a Bid!</button>
+						<a href="/taskers" class="btn btn-outline-secondary">Back</a>
+					</form>
         </div>
     <% } else {%>
 		<table class="table">
@@ -86,5 +84,8 @@
 			</tbody>
 		</table>
 	<% } %>
+	<div class="text-center">
+			<a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
+	</div>
   </body>
 </html>
