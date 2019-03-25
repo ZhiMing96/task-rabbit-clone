@@ -7,14 +7,40 @@
 <body>
     <%- include("include/navbar"); %>
     <div class='container'>
-      <%="Tasker Name: " + reviews[0].name%><br>
-      <%="Tasker Rating: " + reviews[0].taskerrating%><br><br>
+        <h1><%=profile[0].name%></h1>
+        <span class="align-items-center" style="font-size:0.7em">
+            <% for(var y=0;y<5;y++){%>
+                <i class="fa<%=(y<profile[0].taskerrating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
+            <%}%> 
+            <br>
+            <br>
+        </span>
+        <i class="far fa-check-circle" style="color:green"></i>   <%=((profile[0].num == null) ? 0 : profile[0].num) + " " + catName + " Tasks " %><br><br>
 
-      <% for(var x=0;x<reviews.length;x++){%> <!--reviews-->
-        <!--create buttons!!! <div class='btn <%=(reviews[x].rating > 3) ? "btn-primary" : "btn-danger"%>'></div>-->
-        <%="Category Name: " + reviews[x].catname%><br>
-        <%="Description: " + reviews[x].description%><br><br>
-      <%}%>
+        <%if (profile[0].taskerrating>=4 && profile[0].num>=0) { %> <!--numbers should be 4.8 and 50-->
+            <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
+        <% }%>  
+        <%if (val) { %>
+            <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></span>
+        <% }%> 
+    
+        $<%=profile[0].rateperhour%><span style="font-size:0.5em">/hr</span><br><br>
+         
+        
+        <% if (reviews[0].catname== null) { %>
+          Tasker has no reviews.
+        <% }else {%>
+          <% for(var x=0; x < reviews.length; x++){%> <!--reviews-->
+            <%="Category Name: " + reviews[x].catname%><br>
+            Rating:
+            <% for(var z=0; z<5 ; z++){%>
+                <i class="fa<%=(z<reviews[x].rating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
+            <%}%> 
+            <%="Description: " + reviews[x].description%><br>
+            <%="Reviewer: " + reviews[x].cusid%><br><br>
+          <%}%>
+        <%}%> 
+  
     </div>
   </body>
 </html>

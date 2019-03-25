@@ -50,7 +50,7 @@
                                     <%if (taskers[x].taskerrating>=4 && taskers[x].num>=0) { %> <!--numbers should be 4.8 and 50-->
                                         <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
                                     <% }%>  
-                                    <%if (taskers[x].taskerrating>=4 && x>=taskers.length/4) { %>
+                                    <%if (taskers[x].taskerrating>=1 && x>=taskers.length/4) { %>
                                         <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></spanx`>
                                     <% }%> 
                                 </div>
@@ -66,7 +66,12 @@
                                 "<%=taskers[x].description%>"<br>
                             </div>
                             <div class="col-2 align-right">
-                                <a href="../tasker/<%=taskers[x].cusid%>"><span class="btn btn-primary btn-sm text-white"><b>Select & View Tasker Reviews</b></span></a>                            </div>
+                                <%if (taskers[x].taskerrating>=1 && x>=taskers.length/4) { %>
+                                    <a href="../tasker/<%=catid%>/<%=taskers[x].ssid%>/greatValue/<%=taskers[x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
+                                <%} else  {%>
+                                    <a href="../tasker/<%=catid%>/<%=taskers[x].ssid%>/value/<%=taskers[x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
+                                <%}%>                              
+                            </div>
                         </div>
                     </div>
                     
