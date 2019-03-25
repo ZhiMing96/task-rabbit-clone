@@ -11,44 +11,60 @@
 
 </head>
 <body>
-     <%- include("include/navbar"); %>
-    <h1>All Requests - TASKER</h1>
-          
+    <%- include("include/navbar"); %>
+     
 
-    <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Task Name</th>
-                    <th scope="col">Task Description</th>
-                    <th scope="col">Task Duration</th>
-                    <th scope="col">Task Date&Time</th>
-                    <th scope="col">Deadline to Accept</th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for(var i=0; i<requests.length; i++) { %>
-                <tr>
-                    <td><%= requests[i].taskname%></td>
-                    <td><%= requests[i].description%></td>
-                    <td><%= requests[i].duration%> Hours</td>
-                    <td><%= requests[i].taskdatetime%> Hours</td>
-                    <td><%= requests[i].deadlinetoaccept%></td>
-                    <td>
-                        <form action="/taskers/acceptRequest/<%= requests[i].taskid%>", method="GET">
-                            <button type="submit" class="btn btn-outline-success" formaction="/taskers/acceptRequest/<%= requests[i].taskid %>">ACCEPT!</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form action="/taskers/rejectRequest/<%= requests[i].taskid%>", method="GET">
-                            <button type="submit" class="btn btn-outline-danger" formaction="/taskers/rejectRequest/<%= requests[i].taskid %>">REJECT</button>
-                        </form>
-                    </td>
-                </tr>
-                <% } %>
-            </tbody>
-        </table>    
+    <% if(requests.length == 0 ){%>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>No Records Found!</Ri:a></strong> There are currently no requests for you.
+            <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div> 
+        <div class="text-center">
+            <form action="/taskers" method="GET">
+                <button type="submit" class="btn  btn-outline-secondary" formaction="/taskers">BACK</button>
+            </form>
+        </div>
+    <% } else {%>
 
+        <h1>All Requests - TASKER</h1>
+            
+
+        <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Task Name</th>
+                        <th scope="col">Task Description</th>
+                        <th scope="col">Task Duration</th>
+                        <th scope="col">Task Date&Time</th>
+                        <th scope="col">Deadline to Accept</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(var i=0; i<requests.length; i++) { %>
+                    <tr>
+                        <td><%= requests[i].taskname%></td>
+                        <td><%= requests[i].description%></td>
+                        <td><%= requests[i].duration%> Hours</td>
+                        <td><%= requests[i].taskdatetime%> Hours</td>
+                        <td><%= requests[i].deadlinetoaccept%></td>
+                        <td>
+                            <form action="/taskers/acceptRequest/<%= requests[i].taskid%>", method="GET">
+                                <button type="submit" class="btn btn-outline-success" formaction="/taskers/acceptRequest/<%= requests[i].taskid %>">ACCEPT!</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="/taskers/rejectRequest/<%= requests[i].taskid%>", method="GET">
+                                <button type="submit" class="btn btn-outline-danger" formaction="/taskers/rejectRequest/<%= requests[i].taskid %>">REJECT</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>    
+        <% } %>
 </body>
 </html>
