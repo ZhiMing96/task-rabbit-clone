@@ -26,7 +26,7 @@
         </div>
         <div class="form-group">
             <label for="rate">Rate(/h)</label>
-            <input type="text" class="form-control" id="rate" value="<%= skills[0].rateperhour %>" name = newRate required>
+            <input type="number" class="form-control" id="rate" value="<%= skills[0].rateperhour %>" name = newRate required>
         </div>
         <div class="form-group"">
             <label for="Category">Category</label>
@@ -37,8 +37,9 @@
                 <% } %>
                 <option value="" disabled>...</option>
             </select>
-              </div>
+        </div>
         <button type="submit" class="btn btn-primary">UPDATE</button>
+        <a href="/taskers" class="btn btn-outline-secondary">Back</a>
     </form>
     
   
