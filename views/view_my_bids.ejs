@@ -16,59 +16,75 @@
   </head>
   <body>
 	<%- include("include/navbar"); %>
-	<table class="table">
-		<thead>
-			<tr>
-				<th scope="col">Task Name</th>
-				<th scope="col">My Bid Amount</th>
-				<th scope="col">Bidding Deadline</th>
-				<th scope="col"></th>
-				<th scope="col"></th>
-			</tr>
-		</thead>
-		<tbody>
-			<% for(var i=0; i<bid.length; i++) { %>
-			<tr>
-				<td><%= bid[i].taskname%></td>
-				<td><%= bid[i].bidprice%></td>
-				<td><%= bid[i].biddingdeadline%></td>
-				<td>
-					<form action="/listings/updateBid/<%= bid[i].taskid%>", method="GET">
-						<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">UPDATE</button>
-					</form>
-				</td>
-				<td>
-					<!-- Button trigger modal -->
-					<button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#exampleModal">
-						Delete
-					</button>
-	
-					<!-- Modal -->
-					<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-						<div class="modal-dialog" role="document">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="exampleModalLabel">Delete Confirmation</h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-								</div>
-								<div class="modal-body">
-									Confirm Deletion of <%= bid[i].taskname%> ?
-								</div>
-								<div class="modal-footer">
-										<form action="/listings/deleteBid/<%= bid[i].taskid%>", method="GET">
-											<button type="submit" class="btn btn-danger" formaction="/listings/deleteBid/<%= bid[i].taskid %>">CONFIRM</button>
-										</form>
+	<% if(bid.length == 0 ){%>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>No Records Found!</Ri:a></strong> There are no bids records.
+            <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div> 
+        <div class="text-center">
+            <form action="/taskers" method="GET">
+				<button type="submit" class="btn  btn-outline-secondary" formaction="/taskers">BACK</button>
+				<form action="/taskers" method="GET">
+					<button type="submit" class="btn  btn-outline-primary" formaction="/listings/viewAllAvailable">Place a Bid!</button>
+				</form>
+			</form>
+        </div>
+    <% } else {%>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Task Name</th>
+					<th scope="col">My Bid Amount</th>
+					<th scope="col">Bidding Deadline</th>
+					<th scope="col"></th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for(var i=0; i<bid.length; i++) { %>
+				<tr>
+					<td><%= bid[i].taskname%></td>
+					<td><%= bid[i].bidprice%></td>
+					<td><%= bid[i].biddingdeadline%></td>
+					<td>
+						<form action="/listings/updateBid/<%= bid[i].taskid%>", method="GET">
+							<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">UPDATE</button>
+						</form>
+					</td>
+					<td>
+						<!-- Button trigger modal -->
+						<button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#exampleModal">
+							Delete
+						</button>
+		
+						<!-- Modal -->
+						<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="exampleModalLabel">Delete Confirmation</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+										Confirm Deletion of <%= bid[i].taskname%> ?
+									</div>
+									<div class="modal-footer">
+											<form action="/listings/deleteBid/<%= bid[i].taskid%>", method="GET">
+												<button type="submit" class="btn btn-danger" formaction="/listings/deleteBid/<%= bid[i].taskid %>">CONFIRM</button>
+											</form>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				</td>		
-			</tr>
-			<% } %>
-		</tbody>
-	</table>
-
+					</td>		
+				</tr>
+				<% } %>
+			</tbody>
+		</table>
+	<% } %>
   </body>
 </html>

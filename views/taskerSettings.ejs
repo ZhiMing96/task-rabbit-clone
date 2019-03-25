@@ -25,8 +25,9 @@
     </div></br></br>
 
     <h2>Skills</h2>
-    <div class="list-group">
-            <% for(var i=0; i<allSkills.length; i++) { %>
+    <% for(var i=0; i<allSkills.length; i++) { %>
+        <div class="list-group">
+           
             <form action="/taskers/deleteSkill/<%= allSkills[i].ssid %>" method="GET" class="list-group-item list-group-item-action flex-column align-items-start"> 
                 <div class="d-flex w-100 justify-content-between">
                     <h2 name="catName" class="mb-1"><%= allSkills[i].catname%></h2>
@@ -38,15 +39,22 @@
                         <button type="submit" class="btn btn-outline-info btn-small" formaction="/taskers/updateSkill/<%= allSkills[i].ssid %>">Update</button>
                     </form>
                     <button type="submit" class="btn btn-outline-danger" formaction="/taskers/deleteSkill/<%= allSkills[i].ssid %>">DELETE</button>
-            </form> 
-            <% } %>
+            </form>   
+        </div> 
+    <% } %>
+    </br></br>
+
+    <div class="text-center">
+        <form action="/taskers/addSkill" method="get">
+            <button type="submit" class="btn btn-outline-secondary btn-small">Add a New Skill</button> 
+            <form action="/taskers/" method="get">
+                <button type="submit" class="btn btn-outline-secondary btn-small" formaction="/taskers">Back</button> 
+            </form>
+        </form>
+    </div>
+    <!-- </br></br> -->
+    <!-- <div class="text-center">
         
-    </div> </br></br>
-
-
-    <form action="/taskers/addSkill" method="get">
-        <button type="submit" class="btn btn-outline-info btn-small">Add a New Skill</button> 
-    </form></br></br>
-    
+    </div> -->
 </body>
 </html>

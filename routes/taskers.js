@@ -77,15 +77,18 @@ router.get("/viewRequests",ensureAuthenticated, (req, res) => {
   pool.query(sql,param,(err,result)=>{
     if(err) {
       throw err;
-    } else if (result.rows.length != 0) {
-      res.render('pendingRequests', {requests: result.rows});
     } else {
-      console.log("THERE ARE NO PENDING REQUESTS!");
-      res.redirect('/taskers')
+      console.log(result.rows);
+      res.render('pendingRequests', {requests: result.rows});
     }
-
+    //res.redirect('/taskers');
   });
 });
+
+// else if (result.rows.length != 0) {
+//   res.render('pendingRequests', {requests: result.rows});
+// }
+// console.log("THERE ARE NO PENDING REQUESTS!");
 
 router.get("/acceptRequest/:taskid",ensureAuthenticated, (req, res) => {
   const user = req.user.cusId;
