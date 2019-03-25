@@ -20,11 +20,11 @@ router.get("/add", function(req, res) {
 router.post("/add", (req, res) => {
   req.checkBody("catId", "Id is required").notEmpty();
   req.checkBody("catName", "Category Name is required").notEmpty();
-  let error = req.validationErrors();
-  if (error) {
-    res.render("add_category");
+  let errors = req.validationErrors();
+  if (errors) {
+    res.render('add_category');
+    console.log(errors);
 
-    console.log("err: ", error);
   } else {
     const sql = "INSERT INTO skillCategories (catId, catName) VALUES ($1, $2)";
     const params = [req.body.catId, req.body.catName];

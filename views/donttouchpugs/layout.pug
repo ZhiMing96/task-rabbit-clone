@@ -39,6 +39,9 @@ html
 
         .container
             != messages('message', locals)
+            if errors 
+                each error, i in errors
+                    div(class="alert alert-danger") #{error.msg}
             block content 
             br 
             hr 

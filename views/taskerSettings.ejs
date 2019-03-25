@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Profile</title>
+    <%- include("include/head", {title: "Account Settings"}); %>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <%- include("include/navbar"); %>
+    <h1>Account Settings - TASKER</h1>
+    <script>
+            $('#myModal').on('shown.bs.modal', function () {
+                $('#myInput').trigger('focus')
+            })
+    </script>
+
+    <div>
+        <h5>Name: <%= cusInfo[0].name %></h5>
+        <h5>Username: <%= cusInfo[0].username %></h5>
+    </div></br></br>
+
+    <h2>Skills</h2>
+    <% for(var i=0; i<allSkills.length; i++) { %>
+        <div class="list-group">
+           
+            <form action="/taskers/deleteSkill/<%= allSkills[i].ssid %>" method="GET" class="list-group-item list-group-item-action flex-column align-items-start"> 
+                <div class="d-flex w-100 justify-content-between">
+                    <h2 name="catName" class="mb-1"><%= allSkills[i].catname%></h2>
+                </div>
+                <p class="mb-1"><%= allSkills[i].description%></p>
+
+                <div class="text-right">
+                    <form action="/taskers/updateSkill/<%= allSkills[i].ssid %>" method="GET">
+                        <button type="submit" class="btn btn-outline-info btn-small" formaction="/taskers/updateSkill/<%= allSkills[i].ssid %>">Update</button>
+                    </form>
+                    <button type="submit" class="btn btn-outline-danger" formaction="/taskers/deleteSkill/<%= allSkills[i].ssid %>">DELETE</button>
+            </form>   
+        </div> 
+    <% } %>
+    </br></br>
+
+    <div class="text-center">
+        <form action="/taskers/addSkill" method="get">
+            <button type="submit" class="btn btn-outline-secondary btn-small">Add a New Skill</button> 
+            <form action="/taskers/" method="get">
+                <button type="submit" class="btn btn-outline-secondary btn-small" formaction="/taskers">Back</button> 
+            </form>
+        </form>
+    </div>
+    <!-- </br></br> -->
+    <!-- <div class="text-center">
+        
+    </div> -->
+</body>
+</html>
