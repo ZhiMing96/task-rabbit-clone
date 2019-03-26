@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>TASKER PROFILE</title>
+    <title>TASK REQUESTER PROFILE</title>
     <%- include("include/head", {title: "PROFILE"}); %>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
@@ -18,7 +18,7 @@
   <body>
     <%- include("include/navbar"); %>
     <div>
-        <h1>TASKER PROFILE</h1>
+        <h1>TASK REQUESTER PROFILE</h1>
     </div>
 
     <div class="card">
@@ -33,25 +33,25 @@
 
     <div>
       <h1>SIDE BAR FUNCTIONS</h1></br>
-      <form action="/taskers/viewMyPendingTasks", method="GET">
-        <button type="submit" class="btn btn-outline-info">VIEW TASKS - TASKER</button>
+      <form action="/taskRequesters/viewAllTasks", method="GET">
+        <button type="submit" class="btn btn-outline-info">VIEW ALL TASKS - TASKREQUESTER</button>
       </form></br>
 
-      <form action="/taskers/viewMyBids", method="GET">
-        <button type="submit" class="btn btn-outline-info">VIEW BIDS - TASKER</button>
+      <form action="/taskRequesters/viewCompletedTasks", method="GET">
+        <button type="submit" class="btn btn-outline-info">VIEW Completed TASKS - TASKREQUESTER</button>
       </form></br>
 
-      <form action="/taskers/taskerProfileAndReviews/<%= cusInfo[0].cusid %>", method="GET">
-        <button type="submit" class="btn btn-outline-info">VIEW REVIEWS - TASKER</button>
+      <form action="/taskRequesters/viewPendingTasks", method="GET">
+        <button type="submit" class="btn btn-outline-info">VIEW PENDING TASKS - TASKREQUESTER</button>
       </form></br>
 
-      <form action="/taskers/viewRequests", method="GET">
-        <button type="submit" class="btn btn-outline-info">VIEW REQUEST - TASKERR</button>
+      <form action="/taskRequesters/selectTaskBid", method="GET">
+        <button type="submit" class="btn btn-outline-info">VIEW BIDS FOR A TASK - TASKREQUESTER</button>
       </form></br>
 
-      <form action="/taskers/taskerSettings", method="GET">
-        <button type="submit" class="btn btn-outline-info">VIEW ACCOUNT SETTINGS - TASKER</button>
-      </form></br> 
+      <form action="/taskRequesters/addListings", method="GET">
+        <button type="submit" class="btn btn-outline-info">ADD A TASK TO LISTINGS- TASKREQUESTER</button>
+      </form></br>
     </div>
     </div>
     
