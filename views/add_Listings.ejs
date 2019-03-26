@@ -24,10 +24,6 @@
   <h1>Add a new task to the listing!</h1>
   <form method="POST" , action="/taskRequesters/addListings">
     <div id="form-group">
-      <label>Task ID:</label>
-      <input class="form-control" name="taskId" type="text" />
-    </div>
-    <div id="form-group">
       <label>Task Name:</label>
       <textarea class="form-control" name="taskName"></textarea>
     </div>
@@ -37,27 +33,23 @@
     </div>
     <div id="form-group">
         <label>Duration:</label>
-        <textarea class="form-control" name="duration"></textarea>
+        <input type="number" name="duration">
     </div>
     <div id="form-group">
         <label>Manpower:</label>
-        <textarea class="form-control" name="manpower"></textarea>
+        <input type="number" name="manpower">
     </div>
     <div id="form-group">
         <label>TaskDateTime:</label>
-        <textarea class="form-control" name="taskDateTime"></textarea>
-    </div>
-    <div id="form-group">
-        <label>Date:</label>
-        <textarea class="form-control" name="date"></textarea>
+        <input type="datetime-local" name="taskDateTime">
     </div>
     <div id="form-group">
         <label>Deadline:</label>
-        <textarea class="form-control" name="deadline"></textarea>
+        <input type="datetime-local" name="deadline">
     </div>
     <div id="form-group">
         <label>Starting Bid:</label>
-        <textarea class="form-control" name="startingBid"></textarea>
+        <input type="number" name="startingBid">
     </div>
 
     <input class="btn btn-primary" type="submit" value="Submit" />

@@ -38,12 +38,11 @@ router.get("/addListings", function(req, res) {
 });
   
 router.post("/addListings", (req, res) => {
-    req.checkBody("taskId", "Id is required").notEmpty();
-    req.checkBody("taskName", "Category Name is required").notEmpty();
+    req.checkBody("taskName", "Task Name is required").notEmpty();
     req.checkBody("description", "Description is required").notEmpty();
     req.checkBody("duration", "Duration is required").notEmpty();
+    req.checkBody("manpower", "manpower is required").notEmpty();
     req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
-    req.checkBody("dateCreated", "Date created is required").notEmpty();
     req.checkBody("deadline", "Deadline is required").notEmpty();
     req.checkBody("startingBid", "Starting bid is required").notEmpty();
     let errors = req.validationErrors();
@@ -52,23 +51,43 @@ router.post("/addListings", (req, res) => {
         console.log(errors);
 
     } else {
-        const sql1 = "INSERT INTO CreatedTasks (catId, catName) VALUES ($1, $2, $3, $4, $5, $6, $7)";
-        const params1 = [req.body.taskId, req.body.taskName, req.body.taskName, req.body.description, req.body.duration, req.body.taskDateTime, req.body.dateCreated, req.user.cusId];
+        
+        const userID = parseInt(req.user.cusId)
+        var TDT = new Date(req.body.taskDateTime).toISOString().slice(0, 19).replace('T', ' ')
+        var DL = new Date(req.body.deadline).toISOString().slice(0, 19).replace('T', ' ')     
+        // console.log(numtask)       
+        console.log(TDT)
+        console.log(DL) 
+        var dateCreated = new Date().toISOString().split('T')[0]
+        console.log(dateCreated)
+        const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
         pool.query(sql1, params1, (error, result) => {
             if (error) {
                 console.log("err: ", error);
             }
         });
+        
+        const sql2 = "select taskid as id from createdtasks where taskname = $1"
+        const params2 = [req.body.taskName]
 
-        const sql2 = "INSERT INTO Listings (biddingDeadlin, startingBid, taskId) VALUES ($1, $2, $3)";
-        const params2 = [req.body.deadline, req.body.startingBid, req.body.taskId];
         pool.query(sql2, params2, (error, result) => {
             if (error) {
                 console.log("err: ", error);
             }
-            //req.flash('success', 'Article Added');
-            console.log("result?", result);
-            res.redirect("/");
+            
+            const resTaskId = result.rows[0].id
+            const sql3 = "INSERT INTO Listings (biddingDeadline, startingBid, taskId) VALUES ($1, $2, $3)"
+            const params3 = [req.body.deadline, req.body.startingBid, resTaskId]
+            pool.query(sql3, params3, (error, result) => {
+                if (error) {
+                    console.log("err: ", error);
+                }
+                //req.flash('success', 'Article Added');
+                console.log("result?", result);
+                res.redirect("/");
+            });
+
         });
     }
 
