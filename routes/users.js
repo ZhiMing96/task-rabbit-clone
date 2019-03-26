@@ -27,6 +27,8 @@ router.post('/register', (req, res) => {
     req.checkBody('name', 'Name is required').notEmpty();
     req.checkBody('username', 'Username is required').notEmpty();
     req.checkBody('password', 'Password is required').notEmpty();
+    req.checkBody('gender', 'Gender is required').notEmpty();
+    req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('password2', 'Passwords do not match.').equals(req.body.password);
 
 
@@ -48,8 +50,8 @@ router.post('/register', (req, res) => {
                 }
 
 
-                const sql = 'INSERT INTO customers (password, name, username, enabled) VALUES ($1, $2, $3, $4)'
-                const params = [hash, req.body.name, req.body.username, true];
+                const sql = 'INSERT INTO customers (password, name, username, enabled, gender, email) VALUES ($1, $2, $3, $4, $5, $6)'
+                const params = [hash, req.body.name, req.body.username, true, req.body.gender, req.body.email];
                 pool.query(sql, params, (error, result) => {
                     if (error) {
                         console.log('err: ', error);
