@@ -27,20 +27,34 @@
         <form method="POST" action="/users/register">
             <div id="form-group">
                 <label>Name:</label>
-                <input class="form-control" name="name" type="text" />
+                <input class="form-control" name="name" type="text" required />
             </div>
             <div id="form-group">
                 <label>Username: </label>
-                <input class="form-control" name="username" type="text" />
+                <input class="form-control" name="username" type="text" required/>
+            </div>
+            <div id="form-group">
+              <label>Gender: </label>
+              <select name="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div id="form-group">
+                <label>Email: </label>
+                <input class="form-control" name="email" type="email" required/>
             </div>
             <div id="form-group">
                 <label>Password: </label>
-                <input class="form-control" name="password" type="password" />
+                <input class="form-control" name="password" type="password" required/>
             </div>
             <div id="form-group">
                 <label>Confirm Password: </label>
-                <input class="form-control" name="password2" type="password" />
+                <input class="form-control" name="password2" type="password" required/>
             </div>
+            
+
+
             <input class="btn btn-primary" type="submit" value="Register" />
         </form>
     </h1>

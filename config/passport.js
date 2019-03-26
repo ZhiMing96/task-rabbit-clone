@@ -66,7 +66,10 @@ function findUser(username, callback) {
                 passwordHash: result.rows[0].password,
                 username: result.rows[0].username,
                 cusId: result.rows[0].cusid,
-                enabled: result.rows[0].enabled
+                enabled: result.rows[0].enabled,
+                gender: result.rows[0].gender,
+                email: result.rows[0].email,
+           
 
             })
         } else {

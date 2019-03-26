@@ -339,23 +339,51 @@ router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
 });
 
 //When viewing tasker reviews before choosing tasker for task
-router.get("/taskerProfileAndReviews/:taskerId",ensureAuthenticated, async (req, res) => {
+router.get("/tasker/:catId/:ssId/:value/:taskerId",ensureAuthenticated, async (req, res) => {
 
+  var catId= req.params.catId;
+  var ssId= req.params.ssId;
+  var taskerId= req.params.taskerId;
+  var val;
+   if (req.params.value === "greatValue") {
+     val = true;
+   }else {
+     val = false;
+   }
 
+  var sqlprofile = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid) "+
+  "SELECT T.name, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
+  "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=" +catId + " and S.ssid=" +ssId + " and T.cusid=" +taskerId + ";"
   
-  const params = [req.params.taskerId]; 
-  const sql = "SELECT CU.name, (SELECT avg(rating) FROM Reviews WHERE cusId=$1) AS taskerRating, "+
-  "C.catName as catName, RV.rating, RV.description FROM Reviews RV join Requires R on RV.taskId=R.taskId"+
-  " join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId WHERE RV.cusId=$1"
-
-  var result = await pool.query(sql, params);
-  console.log(result);
-
-  res.render("viewTaskerProfileAndReviews", {
-    reviews: result.rows
-
+  pool.query(sqlprofile, (err,profileresults)=> {
+    if (err) {
+      console.log("error in sqlprofile query" + err);
+    } else {
+      var sqlreviews ="SELECT C.catName as catName, C.catId, RV.rating, RV.description, RV.cusid FROM Reviews RV join Requires R on RV.taskId=R.taskId "+
+      "join SkillCategories C on R.catId=C.catId right join Customers CU on RV.cusId=CU.cusId WHERE CU.cusid=" +taskerId + ";"
+      pool.query(sqlreviews, (err, reviewsresults)=> {
+        if (err){
+          console.log("error in sqlreviews query" + err);
+        } else {
+          var cat = "SELECT catname from skillcategories where catid=" + catId + ";"
+          pool.query(cat, (err, category) => {
+            if (err) {
+              console.log("error in cat query" + err);
+            } else {
+                res.render("viewTaskerProfileAndReviews", {
+                profile: profileresults.rows,
+                reviews: reviewsresults.rows,
+                catName: category.rows[0].catname,
+                val
+                });
+              }
+              
+            }
+          )
+        }
+      })
+    }
   });
-
 });
 
 //Get taskers by category
@@ -363,7 +391,7 @@ router.get("/taskersByCategory/:catId",ensureAuthenticated, async (req, res) => 
   
   const params = [req.params.catId]; 
   const sql = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
-  " SELECT T.name, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
+  " SELECT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description, S.ssid "+
   "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=$1 order by ratePerHour desc;"
   var result = await pool.query(sql, params);
   console.log(result);
@@ -372,7 +400,8 @@ router.get("/taskersByCategory/:catId",ensureAuthenticated, async (req, res) => 
   var result2 = await pool.query(sql2, params);
   res.render("taskersByCategory", {
     taskers: result.rows,
-    catName: result2.rows[0].catname
+    catName: result2.rows[0].catname,
+    catid: params
   });
 
 });
