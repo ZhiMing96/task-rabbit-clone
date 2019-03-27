@@ -30,7 +30,13 @@ router.get("/",ensureAuthenticated, (req, res) => {
     
 });
   
+// link to the add task page 
+router.get("/addTasks", function(req, res) {
+    res.render("add_Tasks");
+});
+
 // Start: CRUD Listings
+
 
 //Add route
 router.get("/addListings", function(req, res) {
