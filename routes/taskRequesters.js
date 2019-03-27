@@ -34,7 +34,6 @@ router.get("/",ensureAuthenticated, (req, res) => {
 router.get("/addTasks", function(req, res) {
     res.render("add_Tasks");
 });
-
 // Start: CRUD Listings
 
 
@@ -99,6 +98,71 @@ router.post("/addListings", (req, res) => {
 
 });
 
+//Add route
+router.get("/addRequests", function(req, res) {
+    const sql ="SELECT * FROM skillcategories";
+    pool.query(sql, (err,data) =>{
+      if(err) {
+        console.log("error in sql query");
+      } else {
+        res.render("add_Requests", {data: data.rows});
+      }
+    });
+});
+
+router.post("/addRequests", (req, res) => {
+    req.checkBody("taskName", "Task Name is required").notEmpty();
+    req.checkBody("description", "Description is required").notEmpty();
+    req.checkBody("duration", "Duration is required").notEmpty();
+    req.checkBody("manpower", "manpower is required").notEmpty();
+    req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.render('add_category');
+        console.log(errors);
+
+    } else {
+        
+        const userID = parseInt(req.user.cusId)
+        var TDT = new Date(req.body.taskDateTime).toISOString().slice(0, 19).replace('T', ' ')
+        var DL = new Date(req.body.deadline).toISOString().slice(0, 19).replace('T', ' ')     
+        // console.log(numtask)       
+        console.log(TDT)
+        console.log(DL) 
+        var dateCreated = new Date().toISOString().split('T')[0]
+        console.log(dateCreated)
+        const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
+        pool.query(sql1, params1, (error, result) => {
+            if (error) {
+                console.log("err: ", error);
+            }
+        });
+        
+        const sql2 = "select taskid as id from createdtasks where taskname = $1"
+        const params2 = [req.body.taskName]
+
+        pool.query(sql2, params2, (error, result) => {
+            if (error) {
+                console.log("err: ", error);
+            }
+            
+            const resTaskId = result.rows[0].id
+            const sql3 = "INSERT INTO Listings (biddingDeadline, startingBid, taskId) VALUES ($1, $2, $3)"
+            const params3 = [req.body.deadline, req.body.startingBid, resTaskId]
+            pool.query(sql3, params3, (error, result) => {
+                if (error) {
+                    console.log("err: ", error);
+                }
+                //req.flash('success', 'Article Added');
+                console.log("result?", result);
+                res.redirect("/");
+            });
+
+        });
+    }
+
+});
 router.get("/viewListings", (req, res) => {
     res.send("Retrieve all Listings that has not expired  ");
     /* const sqlViewListings =
