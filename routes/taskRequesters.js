@@ -58,13 +58,9 @@ router.post("/addListings", (req, res) => {
     } else {
         
         const userID = parseInt(req.user.cusId)
-        var TDT = new Date(req.body.taskDateTime).toISOString().slice(0, 19).replace('T', ' ')
-        var DL = new Date(req.body.deadline).toISOString().slice(0, 19).replace('T', ' ')     
-        // console.log(numtask)       
-        console.log(TDT)
-        console.log(DL) 
+        var TDT = req.body.taskDateTime
+        var DL = req.body.deadline     
         var dateCreated = new Date().toISOString().split('T')[0]
-        console.log(dateCreated)
         const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
         const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
         pool.query(sql1, params1, (error, result) => {
@@ -116,6 +112,7 @@ router.post("/addRequests", (req, res) => {
     req.checkBody("duration", "Duration is required").notEmpty();
     req.checkBody("manpower", "manpower is required").notEmpty();
     req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
+    req.checkBody("catName", "Category Name is required").notEmpty();
     let errors = req.validationErrors();
     if (errors) {
         res.render('add_category');
@@ -124,13 +121,8 @@ router.post("/addRequests", (req, res) => {
     } else {
         
         const userID = parseInt(req.user.cusId)
-        var TDT = new Date(req.body.taskDateTime).toISOString().slice(0, 19).replace('T', ' ')
-        var DL = new Date(req.body.deadline).toISOString().slice(0, 19).replace('T', ' ')     
-        // console.log(numtask)       
-        console.log(TDT)
-        console.log(DL) 
-        var dateCreated = new Date().toISOString().split('T')[0]
-        console.log(dateCreated)
+        const TDT = req.body.taskDateTime
+        const dateCreated = new Date().toISOString().split('T')[0]
         const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
         const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
         pool.query(sql1, params1, (error, result) => {
@@ -139,6 +131,7 @@ router.post("/addRequests", (req, res) => {
             }
         });
         
+        //get task id from the created task
         const sql2 = "select taskid as id from createdtasks where taskname = $1"
         const params2 = [req.body.taskName]
 
@@ -146,19 +139,23 @@ router.post("/addRequests", (req, res) => {
             if (error) {
                 console.log("err: ", error);
             }
-            
-            const resTaskId = result.rows[0].id
-            const sql3 = "INSERT INTO Listings (biddingDeadline, startingBid, taskId) VALUES ($1, $2, $3)"
-            const params3 = [req.body.deadline, req.body.startingBid, resTaskId]
-            pool.query(sql3, params3, (error, result) => {
-                if (error) {
-                    console.log("err: ", error);
-                }
-                //req.flash('success', 'Article Added');
-                console.log("result?", result);
-                res.redirect("/");
-            });
-
+            else {
+                const resTaskId = result.rows[0].id
+                const paramCatName = [req.body.catName];
+                var sqlCat = "SELECT * FROM skillcategories WHERE catname = $1";
+  
+                pool.query(sqlCat,paramCatName, (err,data) =>{
+                    if(err){
+                      console.log("ERROR RETRIEVING CATEGORY ID" + err);
+                    } else {
+                      var paramRequires = [data.rows[0].catid, resTaskId];
+                      var sqlRequires = "INSERT INTO requires(catid,taskid) VALUES ($1,$2)";
+                      pool.query(sqlRequires,paramRequires);
+                      //redirect to pick a tasker
+                      res.redirect("/taskRequesters");
+                    }
+                    });
+            }
         });
     }
 
