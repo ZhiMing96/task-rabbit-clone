@@ -338,6 +338,26 @@ router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
   });
 });
 
+//View my reviews
+router.get('/viewMyReviews', ensureAuthenticated, function (req, res) {
+  const sql = "SELECT C.catName as catName, RV.rating, RV.description, CU1.name FROM Reviews RV join Requires R on RV.taskId=R.taskId "+
+  "join SkillCategories C on R.catId=C.catId right join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=$1;"
+  const params = [parseInt(req.user.cusId)]
+  
+  pool.query(sql, params, (error, result) => {
+  
+      if (error) {
+          console.log('err: ', error);
+      }
+      
+        console.log(result);
+      res.render('view_my_reviews', {
+          reviews: result.rows,
+          
+      });
+  });
+});
+
 //When viewing tasker reviews before choosing tasker for task
 router.get("/tasker/:catId/:ssId/:value/:taskerId",ensureAuthenticated, async (req, res) => {
 
@@ -374,6 +394,7 @@ router.get("/tasker/:catId/:ssId/:value/:taskerId",ensureAuthenticated, async (r
                 profile: profileresults.rows,
                 reviews: reviewsresults.rows,
                 catName: category.rows[0].catname,
+                catId,
                 val
                 });
               }

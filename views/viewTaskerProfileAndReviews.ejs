@@ -8,7 +8,7 @@
     <%- include("include/navbar"); %>
     <div class='container'>
         <h1><%=profile[0].name%></h1>
-        <span class="align-items-center" style="font-size:0.7em">
+        <span class="align-items-center" style="font-size:1em">
             <% for(var y=0;y<5;y++){%>
                 <i class="fa<%=(y<profile[0].taskerrating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
             <%}%> 
@@ -40,6 +40,9 @@
             <%="Reviewer: " + reviews[x].cusid%><br><br>
           <%}%>
         <%}%> 
+        <div class="text-center">	
+            <a href="/taskers/taskersByCategory/<%=catId%>" class="btn btn-outline-secondary">Back</a>		
+        </div>
   
     </div>
   </body>
