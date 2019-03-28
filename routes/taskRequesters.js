@@ -161,7 +161,21 @@ router.post("/addRequests", (req, res) => {
 });
 
 router.get("/viewListings", (req, res) => {
-    res.render("view_tr_Listings");
+    console.log("here")
+    const sql = "SELECT C.taskid as taskid, taskname, description, duration, manpower, taskdatetime, datecreated, A.cusid as cusid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1"
+    const params = [parseInt(req.user.cusId)]
+    console.log(req.user.cusId)
+    
+    pool.query(sql, params, (error, result) => {
+    
+        if (error) {
+            console.log('err: ', error);
+        }
+  
+        res.render('view_tr_listings', {
+            task: result.rows,
+        });
+    });
 });
     
 
@@ -345,31 +359,23 @@ router.get('/selectTaskBid', ensureAuthenticated, function (req, res) {
 });
 
 //View all biddings for the list
-router.get('/viewBids', ensureAuthenticated, function (req, res) {
+router.get('/viewBids/:taskid', ensureAuthenticated, function (req, res) {
+    var taskid = parseInt(req.params.taskid);
+    
+    const sql = "SELECT B.bidprice as taskid, B.bidprice as bidPrice, C.name as cusName, C.cusid as cusid FROM (listings L join bids B on L.taskid = B.taskid) join customers C on B.cusid = C.cusid where L.taskid = " + taskid 
+    
+    pool.query(sql, (error, result) => {
 
-    req.checkBody("taskName", "Id is required").notEmpty();
-    let errors = req.validationErrors();
-    if (errors) {
-        res.render('add_category');
-        console.log(errors);
+        if (error) {
+            console.log('err: ', error);
+            console.log(taskid)
+        }
 
-    } else {
-        const sql = 'SELECT B.bidprice, C.name FROM (listings L join bids B on L.taskid = B.taskid) join customers C on B.cusid = C.cusid where L.taskid = $1' 
-        const params = [req.body.taskName];
-        //need to set this to strings 
-        pool.query(sql, params, (error, result) => {
-
-            if (error) {
-                console.log('err: ', error);
-            }
-
-            res.render('view_tr_bid_tasks', {
-                bid: result.rows,
-                bidType: req.body.taskName
-            });
-
+        res.render('view_tr_bids', {
+            bid: result.rows,
         });
-    }
+
+    });
 });
 
     //Access Control
