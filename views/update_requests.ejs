@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Add Task</title>
+  <title>Task Details</title>
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
   <!-- JavaScript for Interactivity -->
@@ -21,14 +21,26 @@
 <body>
 
   <%- include("include/navbar"); %>
-  <h1>Add a task!</h1>
-  <form action="/taskRequesters/viewListings", method="GET">
-    <button  type="submit" class="btn btn-outline-info">VIEW ALL LISTINGS</button>
-  </form></br>
-
-  <form action="/taskRequesters/viewRequests", method="GET">
-    <button type="submit" class="btn btn-outline-info">VIEW ALL REQUESTS</button>
-  </form></br>
+  <h1>Update Request Details</h1>
+  <form method="POST" , action="/taskRequesters/updateRequests/<%= task[0].taskid %>">
+    <div id="form-group">
+        <label>Description:</label>
+        <textarea class="form-control" name="newDescription"></textarea>
+    </div>
+    <div id="form-group">
+        <label>Duration:</label>
+        <input type="number" name="newDuration">
+    </div>
+    <div id="form-group">
+        <label>Manpower:</label>
+        <input type="number" name="newManpower">
+    </div>
+    <div id="form-group">
+        <label>TaskDateTime:</label>
+        <input type="datetime-local" name="newTaskDateTime">
+    </div>
+    <input class="btn btn-primary" type="submit" value="Submit" />
+  </form>
 </body>
 
 </html>

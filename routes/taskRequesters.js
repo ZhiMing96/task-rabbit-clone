@@ -159,21 +159,14 @@ router.post("/addRequests", (req, res) => {
     }
 
 });
+
 router.get("/viewListings", (req, res) => {
-    res.send("Retrieve all Listings that has not expired  ");
-    /* const sqlViewListings =
-        "SELECT C.description, C.manpower, C.taskDateTime, C.dateCreated, T.username 
-        FROM CreatedTasks C, TaskRequesters T
-        WHERE taskDateTime > (SELECT NOW())
-        AND C.cusId = T.cusId
-        VALUES ($1, $2, $3, $4, $5)"; */
+    res.render("view_tr_Listings");
 });
     
 
 router.put("/updateListings", (req, res) => {
-    res.send(
-        "Execute Update Skillset Query, create a form parameter with existing data as placeholder?"
-    );
+    
     /*
     var taskerId = 
     var description = 
@@ -206,39 +199,11 @@ const sqlDeleteSkill =
 
 //Start: CRUD Requests
 
-router.get("/viewRequests", (req, res) => {
-res.send(
-    "Find all requests that is pending acceptance from a PARTICULAR tasker "
-);
-/*const sqlViewRequests = "";
-    */
-});
-
-//Retrieve ALL Skillset with the cusId, if no record, redirect to create a new skillset
-router.get("/skillsets", (req, res) => {
-//res.render("");
-/* 
-
-const sqlRetrieveSkills = 
-"SELECT ssid FROM AddedPersonalSkills 
-    WHERE cusId = $1"; 
-
-    const params = [req.body.cusId];
-
-    pool.query(sql, params, (error, result) => {
-    if (error) {
-        console.log("err: ", error);
-    }
-
-    */
-});
-  
-//End: CRUD Requests 
-
-//View all Tasks
-router.get('/viewAllTasks', function (req, res) {
-    const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)' 
+router.get("/viewRequests", ensureAuthenticated, (req, res) => {
+    console.log("here")
+    const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.cusid, completed FROM (createdtasks C inner join Requests R on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1"
     const params = [parseInt(req.user.cusId)]
+    console.log(req.user.cusId)
     
     pool.query(sql, params, (error, result) => {
     
@@ -246,12 +211,93 @@ router.get('/viewAllTasks', function (req, res) {
             console.log('err: ', error);
         }
   
-        res.render('view_tr_all_tasks', {
+        res.render('view_tr_requests', {
             task: result.rows,
-            taskType: 'COMPLETED'
         });
-  
     });
+
+});
+
+router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
+    var taskid = req.params.taskid;
+  
+    var sqlTaskName = "SELECT taskname, taskid FROM createdTasks WHERE taskid = " + taskid;
+  
+    pool.query(sqlTaskName, (err,result)=> {
+      if(err){
+        console.log('ERROR RETRIEVING TASKNAME' + err);
+      } else {
+            console.log(taskid)
+            res.render('update_requests', {
+            task: result.rows
+            });
+        }
+    });  
+  });
+  
+  router.post("/updateRequests/:taskid",ensureAuthenticated, (req, res) => {
+    req.checkBody("newDescription", "description is required").notEmpty();
+    req.checkBody("newDuration", "duration is required").notEmpty();
+    req.checkBody("newManpower", "manpower is required").notEmpty();
+    req.checkBody("newTaskDateTime", "taskDateTime is required").notEmpty();
+    var taskid = req.params.taskid;
+  
+    let error = req.validationErrors();
+      const params = [req.body.newDescription,req.body.newDuration,req.body.newManpower,req.body.newTaskDateTime, taskid];
+      var sql = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4 WHERE taskid = $5";
+  
+      pool.query(sql, params,(err, result) =>{
+        if(err){
+          console.log(err + " ERROR UPDATING TASKS");
+        } else {
+          //delete assigned 
+          sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
+          pool.query(sqlDeleteAssigned, (err,data)=>{
+            if(err){
+              console.log(err + "ERROR DELETE ASSIGNED");
+            } 
+          });
+          
+          //update Requests -> change Accept to false 
+          var sqlupdateRequests = "UPDATE requests SET accepted = false WHERE taskid = " + taskid
+          pool.query(sqlupdateRequests, (err,data)=>{
+            if(err){
+              console.log(err + "ERROR UPDATING REQUESTS");
+            } 
+          });
+          //send request to tasker again 
+
+          res.redirect('/taskRequesters/viewRequests');
+
+        }
+      });
+    
+  });
+  
+  router.get("/deleteRequests/:taskid", ensureAuthenticated,(req, res) => {
+    var taskid = parseInt(req.params.taskid);
+
+    sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
+    sqlDeleteRequests = "DELETE FROM requests WHERE taskid = " + taskid
+    sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
+    sqlDeleteRequires  = "DELETE FROM requires WHERE taskid = " + taskid
+  
+    pool.query(sqlDeleteCreatedTask,(err,result)=> {
+      if(err){
+        console.log("Unable to delete requests record" + err);
+      } else { 
+
+        res.redirect('/taskRequesters/viewRequests');
+      }
+    });
+    
+  });
+  
+  
+//End: CRUD Requests 
+
+router.get("/viewAllTasks", function(req, res) {
+    res.render("view_tr_all_tasks");
 });
 
 //View all my completed Tasks
