@@ -98,6 +98,7 @@ let taskers = require('./routes/taskers');
 let requests = require('./routes/requests');
 let listings  = require('./routes/listings');
 let categories  = require('./routes/categories');
+let calendar  = require('./routes/calendar');
 app.use('/articles', articles);
 app.use('/users', users);
 
@@ -106,6 +107,8 @@ app.use('/taskers', taskers);
 app.use('/requests', requests);
 app.use('/listings', listings);
 app.use('/categories', categories);
+app.use('/calendar', calendar);
+
 
 
 

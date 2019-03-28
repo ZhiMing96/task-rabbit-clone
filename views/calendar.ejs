@@ -1,0 +1,165 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function startTime() {
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            var ampm = h >= 12 ? ' PM' : ' AM';
+            h = h % 12;
+            h = h ? h : 12;
+            // add a zero in front of numbers<10
+            m = checkTime(m);
+            s = checkTime(s);
+            if ((ampm == " AM" && h < 10) || (ampm == " PM" && h > 10)) {
+                document.getElementById("printTime").innerHTML = "12:00 PM";
+            } else {
+                document.getElementById("printTime").innerHTML = h + ":" + m + ampm;
+            }
+
+            // document.getElementById('timeinput').
+            //     t = setTimeout('startTime()', 500);
+        }
+        function checkTime(i) {
+            if (i < 10) {
+                i = "0" + i;
+            }
+            return i;
+        }
+
+    </script>
+
+
+</head>
+
+<body>
+
+    <h1>
+        <form method="POST" action="/calendar">
+            <div id="form-group">
+                <label>Category ID:</label>
+                <input class="form-control" name="catId" type="text" />
+            </div>
+            <div id="form-group">
+                <label>Category Name:</label>
+                <textarea class="form-control" name="catName"></textarea>
+            </div>
+            <div id="form-group">
+                    <label>TaskDateTime:</label>
+                    <input type="datetime-local" name="taskDateTime">
+            </div>
+            <div id="form-group">
+            <input type="text" id="time" class="timepicker" name="time"
+                style="display:inline-block; width: 8%; height: 6%; font-size:30%; text-align: center; border-radius:2px;">
+            <br />
+            </div>
+            <div id="form-group">
+            <input type="text" id="dates" class="datepicker" name="date"
+                style="display:inline-block; width: 8%; height: 6%; font-size:30%; text-align: center; border-radius:2px;">
+            </div>
+            <br />
+            <input class="btn btn-primary" type="submit" value="Submit" />
+            
+        </form>
+    </h1>
+
+
+
+
+    <script type="text/javascript">
+        var timepicked;
+        var datepicked;
+        var today = new Date();
+        var duedate = new Date();
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.datepicker');
+            var dateinstances = M.Datepicker.init(elems, {
+                defaultDate: 'now',
+                autoClose: true,
+                minDate: today,
+                format: 'yyyy-mm-dd',
+
+                onClose: function () {
+                    datepicked = dateinstances[0].date;
+                }
+
+            });
+
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('time').value = time;
+            var elems = document.querySelectorAll('.timepicker');
+            var instances = M.Timepicker.init(elems, {
+                defaultTime: 'now',
+                autoClose: true,
+                twelvehour: false,
+                format: 'HH:ii',
+                onCloseEnd: function () {
+                    timepicked = instances[0].time + instances[0].amOrPm;
+                    console.log("hiii " + timepicked);
+
+                    document.getElementById("time").blur();
+
+                }
+            });
+            var a = M.Timepicker.getInstance(elems);
+            console.log("time", instances[0]);
+        });
+
+        /*
+        function loadTime() {
+            if (timepicked != undefined) {
+                document.getElementById("printTime").innerHTML = timepicked;
+            } else {
+                startTime();
+            }
+
+        }
+
+        function loadDate() {
+            if (datepicked != undefined) {
+                document.getElementById("printDate").innerHTML = formatDate(datepicked);
+            } else {
+                var today = new Date();
+                today.setDate(today.getDate());
+                console.log(today);
+                document.getElementById("printDate").innerHTML = formatDate(today);
+            }
+        }
+
+        function formatDate(date) {
+            var monthNames = [
+                "January", "February", "March",
+                "April", "May", "June", "July",
+                "August", "September", "October",
+                "November", "December"
+            ];
+
+            var dayNames = [
+                "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+            ];
+
+            var weekday = date.getDay();
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+
+            return dayNames[weekday] + ", " + day + ' ' + monthNames[monthIndex];
+        }
+        */
+
+
+
+    </script>
+</body>
+
+</html>
