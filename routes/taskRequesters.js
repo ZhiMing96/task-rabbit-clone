@@ -199,7 +199,8 @@ const sqlDeleteSkill =
 
 //Start: CRUD Requests
 
-router.get("/viewRequests", (req, res) => {
+router.get("/viewRequests", ensureAuthenticated, (req, res) => {
+    console.log("here")
     const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.cusid, completed FROM (createdtasks C inner join Requests R on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1"
     const params = [parseInt(req.user.cusId)]
     console.log(req.user.cusId)
@@ -213,87 +214,63 @@ router.get("/viewRequests", (req, res) => {
         res.render('view_tr_requests', {
             task: result.rows,
         });
-        
-        console.log(result.rows[0])
     });
 
 });
 
-router.get("/updateRequests/:ssid", ensureAuthenticated,(req, res) => {
-    var ssId = req.params.ssid;
-    
+router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
+    var taskid = req.params.taskid;
   
-    var sqlSkill = "SELECT * FROM addedpersonalskills WHERE ssid = " + ssId;
+    var sqlTaskName = "SELECT taskname, taskid FROM createdTasks WHERE taskid = " + taskid;
   
-    pool.query(sqlSkill, (err,data)=> {
+    pool.query(sqlTaskName, (err,result)=> {
       if(err){
-        console.log('ERROR RETRIEVING SKILL' + err);
+        console.log('ERROR RETRIEVING TASKNAME' + err);
       } else {
-        var sqlCat = "SELECT * FROM skillcategories s INNER JOIN belongs b ON s.catid = b.catid WHERE b.ssid = " + ssId;
-        pool.query(sqlCat, (err,results)=> {
-          if(err){
-            console.log('ERROR RETRIEVING CATEGORY' + err);
-          } else {
-            var catId = results.rows[0].catid
-            var sqlAllCats = "SELECT * FROM skillcategories WHERE catid <> " + catId;
-              pool.query(sqlAllCats, (err,allCats)=> {
-              if(err){
-                console.log('ERROR RETRIEVING ALL CATEGORIES' + err);
-              } else {
-                res.render('updateSkill',{skills: data.rows, category: results.rows, allCats: allCats.rows});
-              }
+            console.log(taskid)
+            res.render('update_requests', {
+            task: result.rows
             });
-            
-          }
-        });
-      }
-    });
-    
+        }
+    });  
   });
   
-  router.post("/updateRequests/:ssid",ensureAuthenticated, (req, res) => {
-    req.checkBody("newDescription", "Description is required").notEmpty();
-    req.checkBody("newRate", "Rate is required").notEmpty();
-    req.checkBody("catName", "Category is required").notEmpty();
-    var ssId = req.params.ssid;
-    console.log("SSID OF UPDATED SKILL IS:" + ssId);
-    console.log("New Rate: "+req.body.newRate);
-    console.log("New Description: " +req.body.newDescription);
-    console.log("New Cat: " +req.body.catName);
+  router.post("/updateRequests/:taskid",ensureAuthenticated, (req, res) => {
+    req.checkBody("newDescription", "description is required").notEmpty();
+    req.checkBody("newDuration", "duration is required").notEmpty();
+    req.checkBody("newManpower", "manpower is required").notEmpty();
+    req.checkBody("newTaskDateTime", "taskDateTime is required").notEmpty();
+    var taskid = req.params.taskid;
   
     let error = req.validationErrors();
-    if (error) {
-      res.render("/taskerSettings");
-      console.log('Error with inputs')
-    } else {
-      const params = [req.body.newDescription,req.body.newRate,ssId];
-      var sql = "UPDATE addedpersonalskills SET description = $1, rateperhour = $2 WHERE ssid = $3";
+      const params = [req.body.newDescription,req.body.newDuration,req.body.newManpower,req.body.newTaskDateTime, taskid];
+      var sql = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4 WHERE taskid = $5";
   
       pool.query(sql, params,(err, result) =>{
         if(err){
-          console.log(err + " ERROR UPDATING SKILL");
+          console.log(err + " ERROR UPDATING TASKS");
         } else {
-          var params2 = [req.body.catName];
-          var sqlCatId = "SELECT * FROM skillcategories WHERE catname = $1";
-          pool.query(sqlCatId,params2, (err,data)=>{
+          //delete assigned 
+          sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
+          pool.query(sqlDeleteAssigned, (err,data)=>{
             if(err){
-              console.log(err + "ERROR GETTING CATID");
-            } else {
-              var params3 = [data.rows[0].catid,ssId];
-              var sqlUpdate = "UPDATE belongs SET catid = $1 WHERE ssid = $2";
-  
-              pool.query(sqlUpdate,params3,(err,data1)=> {
-                if(err){
-                  console.log(err + "ERROR GETTING CATID");
-                } else {
-                  res.redirect('/taskers/taskerSettings');
-                }
-              });
-            }
+              console.log(err + "ERROR DELETE ASSIGNED");
+            } 
           });
+          
+          //update Requests -> change Accept to false 
+          var sqlupdateRequests = "UPDATE requests SET accepted = false WHERE taskid = " + taskid
+          pool.query(sqlupdateRequests, (err,data)=>{
+            if(err){
+              console.log(err + "ERROR UPDATING REQUESTS");
+            } 
+          });
+          //send request to tasker again 
+
+          res.redirect('/taskRequesters/viewRequests');
+
         }
       });
-    }
     
   });
   
@@ -309,7 +286,7 @@ router.get("/updateRequests/:ssid", ensureAuthenticated,(req, res) => {
       if(err){
         console.log("Unable to delete requests record" + err);
       } else { 
-          
+
         res.redirect('/taskRequesters/viewRequests');
       }
     });
