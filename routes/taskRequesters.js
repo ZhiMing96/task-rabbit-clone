@@ -159,21 +159,14 @@ router.post("/addRequests", (req, res) => {
     }
 
 });
+
 router.get("/viewListings", (req, res) => {
-    res.send("Retrieve all Listings that has not expired  ");
-    /* const sqlViewListings =
-        "SELECT C.description, C.manpower, C.taskDateTime, C.dateCreated, T.username 
-        FROM CreatedTasks C, TaskRequesters T
-        WHERE taskDateTime > (SELECT NOW())
-        AND C.cusId = T.cusId
-        VALUES ($1, $2, $3, $4, $5)"; */
+    res.render("view_tr_Listings");
 });
     
 
 router.put("/updateListings", (req, res) => {
-    res.send(
-        "Execute Update Skillset Query, create a form parameter with existing data as placeholder?"
-    );
+    
     /*
     var taskerId = 
     var description = 
@@ -207,38 +200,9 @@ const sqlDeleteSkill =
 //Start: CRUD Requests
 
 router.get("/viewRequests", (req, res) => {
-res.send(
-    "Find all requests that is pending acceptance from a PARTICULAR tasker "
-);
-/*const sqlViewRequests = "";
-    */
-});
-
-//Retrieve ALL Skillset with the cusId, if no record, redirect to create a new skillset
-router.get("/skillsets", (req, res) => {
-//res.render("");
-/* 
-
-const sqlRetrieveSkills = 
-"SELECT ssid FROM AddedPersonalSkills 
-    WHERE cusId = $1"; 
-
-    const params = [req.body.cusId];
-
-    pool.query(sql, params, (error, result) => {
-    if (error) {
-        console.log("err: ", error);
-    }
-
-    */
-});
-  
-//End: CRUD Requests 
-
-//View all Tasks
-router.get('/viewAllTasks', function (req, res) {
-    const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)' 
+    const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.cusid, completed FROM (createdtasks C inner join Requests R on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1"
     const params = [parseInt(req.user.cusId)]
+    console.log(req.user.cusId)
     
     pool.query(sql, params, (error, result) => {
     
@@ -246,12 +210,117 @@ router.get('/viewAllTasks', function (req, res) {
             console.log('err: ', error);
         }
   
-        res.render('view_tr_all_tasks', {
+        res.render('view_tr_requests', {
             task: result.rows,
-            taskType: 'COMPLETED'
         });
-  
+        
+        console.log(result.rows[0])
     });
+
+});
+
+router.get("/updateRequests/:ssid", ensureAuthenticated,(req, res) => {
+    var ssId = req.params.ssid;
+    
+  
+    var sqlSkill = "SELECT * FROM addedpersonalskills WHERE ssid = " + ssId;
+  
+    pool.query(sqlSkill, (err,data)=> {
+      if(err){
+        console.log('ERROR RETRIEVING SKILL' + err);
+      } else {
+        var sqlCat = "SELECT * FROM skillcategories s INNER JOIN belongs b ON s.catid = b.catid WHERE b.ssid = " + ssId;
+        pool.query(sqlCat, (err,results)=> {
+          if(err){
+            console.log('ERROR RETRIEVING CATEGORY' + err);
+          } else {
+            var catId = results.rows[0].catid
+            var sqlAllCats = "SELECT * FROM skillcategories WHERE catid <> " + catId;
+              pool.query(sqlAllCats, (err,allCats)=> {
+              if(err){
+                console.log('ERROR RETRIEVING ALL CATEGORIES' + err);
+              } else {
+                res.render('updateSkill',{skills: data.rows, category: results.rows, allCats: allCats.rows});
+              }
+            });
+            
+          }
+        });
+      }
+    });
+    
+  });
+  
+  router.post("/updateRequests/:ssid",ensureAuthenticated, (req, res) => {
+    req.checkBody("newDescription", "Description is required").notEmpty();
+    req.checkBody("newRate", "Rate is required").notEmpty();
+    req.checkBody("catName", "Category is required").notEmpty();
+    var ssId = req.params.ssid;
+    console.log("SSID OF UPDATED SKILL IS:" + ssId);
+    console.log("New Rate: "+req.body.newRate);
+    console.log("New Description: " +req.body.newDescription);
+    console.log("New Cat: " +req.body.catName);
+  
+    let error = req.validationErrors();
+    if (error) {
+      res.render("/taskerSettings");
+      console.log('Error with inputs')
+    } else {
+      const params = [req.body.newDescription,req.body.newRate,ssId];
+      var sql = "UPDATE addedpersonalskills SET description = $1, rateperhour = $2 WHERE ssid = $3";
+  
+      pool.query(sql, params,(err, result) =>{
+        if(err){
+          console.log(err + " ERROR UPDATING SKILL");
+        } else {
+          var params2 = [req.body.catName];
+          var sqlCatId = "SELECT * FROM skillcategories WHERE catname = $1";
+          pool.query(sqlCatId,params2, (err,data)=>{
+            if(err){
+              console.log(err + "ERROR GETTING CATID");
+            } else {
+              var params3 = [data.rows[0].catid,ssId];
+              var sqlUpdate = "UPDATE belongs SET catid = $1 WHERE ssid = $2";
+  
+              pool.query(sqlUpdate,params3,(err,data1)=> {
+                if(err){
+                  console.log(err + "ERROR GETTING CATID");
+                } else {
+                  res.redirect('/taskers/taskerSettings');
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+    
+  });
+  
+  router.get("/deleteRequests/:taskid", ensureAuthenticated,(req, res) => {
+    var taskid = parseInt(req.params.taskid);
+
+    sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
+    sqlDeleteRequests = "DELETE FROM requests WHERE taskid = " + taskid
+    sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
+    sqlDeleteRequires  = "DELETE FROM requires WHERE taskid = " + taskid
+  
+    pool.query(sqlDeleteCreatedTask,(err,result)=> {
+      if(err){
+        console.log("Unable to delete requests record" + err);
+      } else { 
+          
+        res.redirect('/taskRequesters/viewRequests');
+      }
+    });
+    
+  });
+  
+  
+//End: CRUD Requests 
+
+router.get("/viewAllTasks", function(req, res) {
+    res.render("view_tr_all_tasks");
 });
 
 //View all my completed Tasks
