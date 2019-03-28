@@ -69,15 +69,14 @@ router.post("/addListings", (req, res) => {
             }
         });
         
-        const sql2 = "select taskid as id from createdtasks where taskname = $1"
-        const params2 = [req.body.taskName]
+        const sql2 = "select count(taskid) from createdtasks"
 
-        pool.query(sql2, params2, (error, result) => {
+        pool.query(sql2, (error, result) => {
             if (error) {
                 console.log("err: ", error);
             }
-            
-            const resTaskId = result.rows[0].id
+            console.log(req.body.taskName)
+            const resTaskId = result.rows[0].count
             const sql3 = "INSERT INTO Listings (biddingDeadline, startingBid, taskId) VALUES ($1, $2, $3)"
             const params3 = [req.body.deadline, req.body.startingBid, resTaskId]
             pool.query(sql3, params3, (error, result) => {
@@ -132,15 +131,15 @@ router.post("/addRequests", (req, res) => {
         });
         
         //get task id from the created task
-        const sql2 = "select taskid as id from createdtasks where taskname = $1"
-        const params2 = [req.body.taskName]
+        const sql2 = "select count(taskid) from createdtasks"
 
-        pool.query(sql2, params2, (error, result) => {
+        pool.query(sql2, (error, data) => {
             if (error) {
                 console.log("err: ", error);
             }
             else {
-                const resTaskId = result.rows[0].id
+                console.log(req.body.taskName)
+                const resTaskId = data.rows[0].count
                 const paramCatName = [req.body.catName];
                 var sqlCat = "SELECT * FROM skillcategories WHERE catname = $1";
   
