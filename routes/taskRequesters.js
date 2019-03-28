@@ -30,7 +30,12 @@ router.get("/",ensureAuthenticated, (req, res) => {
     
 });
   
+// link to the add task page 
+router.get("/addTasks", function(req, res) {
+    res.render("add_Tasks");
+});
 // Start: CRUD Listings
+
 
 //Add route
 router.get("/addListings", function(req, res) {
@@ -53,13 +58,9 @@ router.post("/addListings", (req, res) => {
     } else {
         
         const userID = parseInt(req.user.cusId)
-        var TDT = new Date(req.body.taskDateTime).toISOString().slice(0, 19).replace('T', ' ')
-        var DL = new Date(req.body.deadline).toISOString().slice(0, 19).replace('T', ' ')     
-        // console.log(numtask)       
-        console.log(TDT)
-        console.log(DL) 
+        var TDT = req.body.taskDateTime
+        var DL = req.body.deadline     
         var dateCreated = new Date().toISOString().split('T')[0]
-        console.log(dateCreated)
         const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
         const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
         pool.query(sql1, params1, (error, result) => {
@@ -93,6 +94,72 @@ router.post("/addListings", (req, res) => {
 
 });
 
+//Add route
+router.get("/addRequests", function(req, res) {
+    const sql ="SELECT * FROM skillcategories";
+    pool.query(sql, (err,data) =>{
+      if(err) {
+        console.log("error in sql query");
+      } else {
+        res.render("add_Requests", {data: data.rows});
+      }
+    });
+});
+
+router.post("/addRequests", (req, res) => {
+    req.checkBody("taskName", "Task Name is required").notEmpty();
+    req.checkBody("description", "Description is required").notEmpty();
+    req.checkBody("duration", "Duration is required").notEmpty();
+    req.checkBody("manpower", "manpower is required").notEmpty();
+    req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
+    req.checkBody("catName", "Category Name is required").notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.render('add_category');
+        console.log(errors);
+
+    } else {
+        
+        const userID = parseInt(req.user.cusId)
+        const TDT = req.body.taskDateTime
+        const dateCreated = new Date().toISOString().split('T')[0]
+        const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
+        pool.query(sql1, params1, (error, result) => {
+            if (error) {
+                console.log("err: ", error);
+            }
+        });
+        
+        //get task id from the created task
+        const sql2 = "select taskid as id from createdtasks where taskname = $1"
+        const params2 = [req.body.taskName]
+
+        pool.query(sql2, params2, (error, result) => {
+            if (error) {
+                console.log("err: ", error);
+            }
+            else {
+                const resTaskId = result.rows[0].id
+                const paramCatName = [req.body.catName];
+                var sqlCat = "SELECT * FROM skillcategories WHERE catname = $1";
+  
+                pool.query(sqlCat,paramCatName, (err,data) =>{
+                    if(err){
+                      console.log("ERROR RETRIEVING CATEGORY ID" + err);
+                    } else {
+                      var paramRequires = [data.rows[0].catid, resTaskId];
+                      var sqlRequires = "INSERT INTO requires(catid,taskid) VALUES ($1,$2)";
+                      pool.query(sqlRequires,paramRequires);
+                      //redirect to pick a tasker
+                      res.redirect("/taskRequesters");
+                    }
+                    });
+            }
+        });
+    }
+
+});
 router.get("/viewListings", (req, res) => {
     res.send("Retrieve all Listings that has not expired  ");
     /* const sqlViewListings =
