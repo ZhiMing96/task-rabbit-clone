@@ -197,16 +197,33 @@ router.put("/updateListings", (req, res) => {
     "; */
 });
     
-router.delete("/deleteListings", (req, res) => {
-res.send("Execute Delete SQL Statementm then redirect to /viewSkillsets");
+router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
+    var taskid = parseInt(req.params.taskid);
 
-/*
-var taskerId = 
+    sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
+    sqlDeleteBids = "DELETE FROM Bids WHERE taskid = " + taskid
+    /*
+    sqlDeleteRequests = "DELETE FROM requests WHERE taskid = " + taskid
+    sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
+    sqlDeleteRequires  = "DELETE FROM requires WHERE taskid = " + taskid
+    */
 
-const sqlDeleteSkill = 
-”DELETE FROM AddedPersonalSkills
-    WHERE ssid = taskerId“
-*/
+   pool.query(sqlDeleteBids,(err,result)=> {
+    if(err){
+      console.log("Unable to delete Bids " + err);
+    } else { 
+    }
+  });
+
+    pool.query(sqlDeleteCreatedTask,(err,result)=> {
+      if(err){
+        console.log("Unable to delete created task" + err);
+      } else { 
+
+        res.redirect('/taskRequesters/viewListings');
+      }
+    });
+    
 });
 
 //End: CRUD Listings 
@@ -292,10 +309,11 @@ router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
     var taskid = parseInt(req.params.taskid);
 
     sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
+    /*
     sqlDeleteRequests = "DELETE FROM requests WHERE taskid = " + taskid
     sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
     sqlDeleteRequires  = "DELETE FROM requires WHERE taskid = " + taskid
-  
+    */
     pool.query(sqlDeleteCreatedTask,(err,result)=> {
       if(err){
         console.log("Unable to delete requests record" + err);
