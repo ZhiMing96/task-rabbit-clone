@@ -179,34 +179,58 @@ router.get("/viewListings", (req, res) => {
 });
     
 
-router.put("/updateListings", (req, res) => {
-    
-    /*
-    var taskerId = 
-    var description = 
-    var rate = 
-    var Category = 
-    
-    const sqlAddSkill = 
-    "UPDATE AddedPersonalSkills 
-        SET description = description, SET rate = rate"
-    
-        const sqlSetCat = 
-        "UPDATE Belongs
-        SET catId = (SELECT catId FROM Categories WHERE name = "Category")"
-    "; */
+router.get("/updateListings/:taskid", (req, res) => {
+    var taskid = req.params.taskid;
+  
+    var sqlTaskName = "SELECT taskname, taskid FROM createdTasks WHERE taskid = " + taskid;
+  
+    pool.query(sqlTaskName, (err,result)=> {
+      if(err){
+        console.log('ERROR RETRIEVING TASKNAME' + err);
+      } else {
+            console.log(taskid)
+            res.render('update_listings', {
+            task: result.rows
+            });
+        }
+    });  
 });
+
+router.post("/updateListings/:taskid",ensureAuthenticated, (req, res) => {
+    req.checkBody("newDescription", "description is required").notEmpty();
+    req.checkBody("newDuration", "duration is required").notEmpty();
+    req.checkBody("newManpower", "manpower is required").notEmpty();
+    req.checkBody("newTaskDateTime", "taskDateTime is required").notEmpty();
+    req.checkBody("newDeadline", "deadline is required").notEmpty();
+    var taskid = req.params.taskid;
+  
+    const params1 = [req.body.newDescription, req.body.newDuration, req.body.newManpower, req.body.newTaskDateTime, taskid];
+    var sqlUpCreatedTask = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4 WHERE taskid = $5";
+  
+    pool.query(sqlUpCreatedTask, params1,(err, result) =>{
+        if(err){
+          console.log(err + " ERROR UPDATING CREATED TASKS");
+        } 
+      });
+
+    const params2 = [req.body.newDeadline, taskid];
+    var sqlUpListings = "UPDATE Listings SET biddingDeadline = $1 WHERE taskid = $2";
+    pool.query(sqlUpListings, params2,(err, result) =>{
+        if(err){
+            console.log(err + " ERROR UPDATING LISTINGS");
+        }
+        else { 
+            res.redirect('/taskRequesters/viewListings');
+        }
+    });
+    
+  });
     
 router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
     var taskid = parseInt(req.params.taskid);
 
     sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
     sqlDeleteBids = "DELETE FROM Bids WHERE taskid = " + taskid
-    /*
-    sqlDeleteRequests = "DELETE FROM requests WHERE taskid = " + taskid
-    sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
-    sqlDeleteRequires  = "DELETE FROM requires WHERE taskid = " + taskid
-    */
 
    pool.query(sqlDeleteBids,(err,result)=> {
     if(err){
