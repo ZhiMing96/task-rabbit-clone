@@ -1,3 +1,7 @@
+body .container {
+    margin-top:35px;
+}
+
 .taskerCard {
     margin: 50px 0px
 }

@@ -94,15 +94,70 @@ router.post("/addListings", (req, res) => {
 });
 
 //Add route
-router.get("/addRequests", function(req, res) {
-    const sql ="SELECT * FROM skillcategories";
-    pool.query(sql, (err,data) =>{
-      if(err) {
-        console.log("error in sql query");
-      } else {
-        res.render("add_Requests", {data: data.rows});
-      }
+router.get("/addRequests", async function(req, res) {
+    const categoryQuery ="SELECT * FROM skillcategories";
+    var categoryResult = await pool.query(categoryQuery);
+
+    var taskersByCategory = [];
+
+    for(x=0;x<categoryResult.rows.length;x++){
+        var sqlQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
+        " SELECT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description, S.ssid "+
+        "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=$1 order by ratePerHour desc;"
+        var sqlParams = [categoryResult.rows[x].catid]; 
+        var result = await pool.query(sqlQuery, sqlParams);
+        taskersByCategory.push(result.rows);
+    }
+    
+    console.log(taskersByCategory);
+
+    res.render("select_category", {
+        categories: categoryResult.rows,
+        taskersByCategory: taskersByCategory
     });
+});
+
+//Get taskers by category
+// router.get("/taskersByCategory/:catId",ensureAuthenticated, async (req, res) => {
+  
+//   const params = [req.params.catId]; 
+//   const sql = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
+//   " SELECT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description, S.ssid "+
+//   "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=$1 order by ratePerHour desc;"
+//   var result = await pool.query(sql, params);
+  
+
+//   const sql2 = "SELECT catname from skillcategories where catid=$1;"
+//   var result2 = await pool.query(sql2, params);
+//   res.render("taskersByCategory", {
+//     taskers: result.rows,
+//     catName: result2.rows[0].catname,
+//     catid: params
+    
+//   });
+
+// });
+
+router.get("/newTask/:catId/:taskerId", (req, res) => {
+    
+    var catId= req.params.catId;
+    var taskerId= req.params.taskerId;
+    const sqlcat ="SELECT catname, catId FROM skillcategories where catId=" + catId +";"
+    
+    pool.query(sqlcat, (err,result) =>{
+      if(err) {
+        console.log("error in sqlcat query");
+      } else {
+        const sqltasker ="SELECT name, cusId FROM customers where cusId=" + taskerId +";"
+        pool.query(sqltasker, (err,result1) =>{
+            if(err) {
+              console.log("error in sqltasker query");
+            } else {
+                res.render("add_Requests", {cat: result.rows, tasker: result1.rows});
+            }
+        })
+      }
+    })
 });
 
 router.post("/addRequests", (req, res) => {
@@ -111,7 +166,7 @@ router.post("/addRequests", (req, res) => {
     req.checkBody("duration", "Duration is required").notEmpty();
     req.checkBody("manpower", "manpower is required").notEmpty();
     req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
-    req.checkBody("catName", "Category Name is required").notEmpty();
+    //req.checkBody("catName", "Category Name is required").notEmpty();
     let errors = req.validationErrors();
     if (errors) {
         res.render('add_category');
@@ -140,24 +195,26 @@ router.post("/addRequests", (req, res) => {
             else {
                 console.log(req.body.taskName)
                 const resTaskId = data.rows[0].count
-                const paramCatName = [req.body.catName];
-                var sqlCat = "SELECT * FROM skillcategories WHERE catname = $1";
-  
-                pool.query(sqlCat,paramCatName, (err,data) =>{
+                var paramRequires = [req.body.catid, resTaskId];
+                var sqlRequires = "INSERT INTO requires(catid,taskid) VALUES ($1,$2)";
+                pool.query(sqlRequires,paramRequires, (err,data) =>{
                     if(err){
-                      console.log("ERROR RETRIEVING CATEGORY ID" + err);
+                        console.log("ERROR INSERTING INTO REQUIRES TABLE" + err);
                     } else {
-                      var paramRequires = [data.rows[0].catid, resTaskId];
-                      var sqlRequires = "INSERT INTO requires(catid,taskid) VALUES ($1,$2)";
-                      pool.query(sqlRequires,paramRequires);
-                      //redirect to pick a tasker
-                      res.redirect("/taskRequesters");
+                        var paramAssigned = [resTaskId, req.params.taskerId];
+                        var sqlAssigned = "INSERT INTO Assigned (taskId, cusId, completed) VALUES ($1, $2, FALSE);"
+                        pool.query(sqlAssigned,paramAssigned, (err,data1) =>{
+                            if(err){
+                                console.log("ERROR INSERTING INTO Assigned TABLE" + err);
+                            } else {
+                                res.render(newTaskCreated, {taskid: resTaskId});
+                            }
+                        }); 
                     }
-                    });
+                });   
             }
         });
     }
-
 });
 
 router.get("/viewListings", (req, res) => {
