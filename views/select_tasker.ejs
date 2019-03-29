@@ -112,14 +112,14 @@
                     </h3>
                     <div class="card-body">
                         <div class="col-10">
-                            <i class="far fa-check-circle" style="color:green"></i>   <%=((taskersByCategory[z][x].num == null) ? 0 : taskersByCategory[z][x].num) + " " + categories[z].catName + " Tasks " %><br><br>
+                            <i class="far fa-check-circle" style="color:green"></i>   <%=((taskersByCategory[z][x].num == null) ? 0 : taskersByCategory[z][x].num) + " " + categories[z].catname + " Tasks " %><br><br>
                             "<%=taskersByCategory[z][x].description%>"<br>
                         </div>
                         <div class="col-2 align-right">
                             <%if (taskersByCategory[z][x].taskerrating>=1 && x>=taskersByCategory[z].length/4) { %>
-                                <a href="../tasker/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/greatValue/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
+                                <a href="../taskRequester/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/greatValue/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
                             <%} else  {%>
-                                <a href="../tasker/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/value/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
+                                <a href="../taskRequesters/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/value/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
                             <%}%>                              
                         </div>
                     </div>
@@ -130,5 +130,10 @@
         </div>
       <%}%>
     </div>
-    </body>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+          })
+    </script>
+  </body>
 </html>

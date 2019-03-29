@@ -27,7 +27,7 @@
         $<%=profile[0].rateperhour%><span style="font-size:0.5em">/hr</span><br><br>
          
         
-        <% if (reviews[0].catname== null) { %>
+        <% if (reviews== null) { %>
           Tasker has no reviews.
         <% }else {%>
           <% for(var x=0; x < reviews.length; x++){%> <!--reviews-->
@@ -37,13 +37,19 @@
                 <i class="fa<%=(z<reviews[x].rating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
             <%}%> 
             <%="Description: " + reviews[x].description%><br>
-            <%="Reviewer: " + reviews[x].cusid%><br><br>
+            <%="Reviewer: " + reviews[x].name%><br><br>
+            <%="task id: " + reviews[x].taskid%><br><br>
           <%}%>
         <%}%> 
         <div class="text-center">	
-            <a href="/taskers/taskersByCategory/<%=catId%>" class="btn btn-outline-secondary">Back</a>		
+          <a href="/taskRequesters/addRequests" class="btn btn-outline-secondary">Back</a>		
+          <a href="/taskRequesters/newTask/<%=catId%>/<%=profile[0].cusid%>" class="btn btn-outline-secondary">Select Tasker</a>		
         </div>
-  
     </div>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+          })
+    </script>
   </body>
 </html>
