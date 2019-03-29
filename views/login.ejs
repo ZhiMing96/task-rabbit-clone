@@ -6,17 +6,33 @@
 
   <body>
       <%- include("include/navbar"); %>
-    <h1>Log In</h1>
-    <form method="POST" action="/users/login">
-      <div id="form-group">
-        <label>Username:</label>
-        <input class="form-control" name="username" type="text" />
+    <div class="container">
+      <div class="row justify-content-md-center">
+        <div class="col-md-4">
+          <br/>
+          <br/>
+          <div class="card">
+            <div class="card-header">
+              <h3>Log In</h3>
+            </div>
+            <div class="card-body">
+              <form method="POST" action="/users/login">
+                <div id="form-group">
+                  <label>Username:</label>
+                  <input class="form-control" name="username" type="text" />
+                </div>
+                <div id="form-group">
+                  <label>Password: </label>
+                  <input class="form-control" name="password" type="password" />
+                </div>
+                <br/>
+                <br/>
+                <input class="btn btn-lg btn-primary" type="submit" value="Log In" />
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="form-group">
-        <label>Password: </label>
-        <input class="form-control" name="password" type="text" />
-      </div>
-      <input class="btn btn-primary" type="submit" value="Log In" />
-    </form>
+    </div>
   </body>
 </html>
