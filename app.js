@@ -90,6 +90,7 @@ app.get('/', (req, res) => {
 });
 
 //Route files. Anything with the first param will go to second param
+let home = require('./routes/home');
 let articles = require('./routes/articles');
 let users = require('./routes/users');
 let taskRequesters = require('./routes/taskRequesters');
@@ -98,6 +99,7 @@ let requests = require('./routes/requests');
 let listings  = require('./routes/listings');
 let categories  = require('./routes/categories');
 let calendar  = require('./routes/calendar');
+app.use('/home', home);
 app.use('/articles', articles);
 app.use('/users', users);
 

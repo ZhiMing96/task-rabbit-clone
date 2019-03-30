@@ -30,7 +30,6 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthenti
     res.render("profile/accept_bid",{tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows});
   })
   .catch((error) => {
-    console.log(error);
     req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
     res.redirect("/taskRequesters/my_bids/");
   });
@@ -47,9 +46,38 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept",ensureA
     res.render("profile/accepted_bid",{result: result3.rows[0]});
   })
   .catch((error) => {
-    console.log(error);
     req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
     res.redirect("/taskRequesters/my_bids/");
+  });
+});
+
+router.get("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, res) => {
+  pool.query("SELECT * FROM reviews as t1 WHERE t1.taskid=$1 AND t1.cusid=$2;", [req.params.taskid, req.params.tasker_id])
+  .then((result)=>{
+    if(result.rows.length > 0){
+      req.flash("warning",'<i class="fas fa-times"></i> Review has already been submitted for this task and this tasker.');
+      res.redirect('/');
+    }
+  })
+  pool.query("SELECT * FROM createdtasks as t1 INNER JOIN assigned as t2 ON t1.taskid=t2.taskid INNER JOIN customers as t3 ON t2.cusid=t3.cusid WHERE t1.taskid=$1 AND t2.cusid=$2;", [req.params.taskid, req.params.tasker_id])
+  .then((result)=>{
+    res.render("profile/write_review",{result: result.rows[0]})
+  })
+  .catch((error) => {
+    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    res.redirect("back");
+  });
+});
+
+router.post("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, res) => {
+  pool.query("INSERT INTO reviews(rating, description, taskid, cusid) VALUES($1,$2,$3,$4);",[req.body.rating,req.body.review,req.params.taskid,req.params.tasker_id])
+  .then((result)=>{
+    req.flash("success", '<i class="fas fa-check"></i> Review submitted! Thanks for your review!')
+    res.redirect("/");
+  })
+  .catch((error) => {
+    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    res.redirect("back");
   });
 });
 

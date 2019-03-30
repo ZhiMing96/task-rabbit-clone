@@ -21,7 +21,7 @@
               <div class="media">
                 <img data-src="holder.js/100x100" class="mr-3" alt="..."/>
                 <div class="media-body">
-                  <h3 class="mt-0"><%=tasker_info.name%>&nbsp;&nbsp;&nbsp;<%- include(rootPath + "include/stars", {rating: Math.floor(tasker_info.avg)}); %></h3>
+                  <h3 class="mt-0"><%=tasker_info.name%>&nbsp;&nbsp;&nbsp;<%- include(rootPath + "include/stars", {rating: Math.floor(tasker_info.rating)}); %></h3>
                   <i class="far fa-check-circle" style="color:green"></i> <%=tasker_info.count%> Tasks
                 </div>
               </div>

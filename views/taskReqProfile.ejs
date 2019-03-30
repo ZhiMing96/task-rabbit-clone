@@ -10,7 +10,7 @@
   </head>
   <body style="background-color: #282c34">
     <%- include("include/navbar"); %>
-    <div class="container-fluid" style="background-color: white">
+    <div class="container-fluid pt-5" style="background-color: white">
       <div class="row">
         <div class="container" style="min-height:70vh">
           <div class="row">
@@ -19,32 +19,17 @@
             </div>
           </div>
           <div class="row mt-5">
-            <div class="col-5 p-5 border">
-              <h3>Sidebar</h3>
+            <div class="col-3 p-5 border">
               <br/>
-              
-              <form action="/taskRequesters/addTasks", method="GET">
-                <button  type="submit" class="btn btn-outline-info">ADD A TASK - TASKREQUESTER</button>
-              </form></br>
-
-              <form action="/taskRequesters/viewAllTasks", method="GET">
-                <button type="submit" class="btn btn-outline-info">VIEW ALL TASKS - TASKREQUESTER</button>
-              </form></br>
-
-              <form action="/taskRequesters/viewCompletedTasks", method="GET">
-                <button type="submit" class="btn btn-outline-info">VIEW Completed TASKS - TASKREQUESTER</button>
-              </form></br>
-
-              <form action="/taskRequesters/viewPendingTasks", method="GET">
-                <button type="submit" class="btn btn-outline-info">VIEW PENDING TASKS - TASKREQUESTER</button>
-              </form></br>
-
-              <form action="/taskRequesters/selectTaskBid", method="GET">
-                <a href="my_bids/" class="btn btn-outline-info">VIEW BIDS FOR A TASK - TASKREQUESTER</a>
-              </form></br>
+              <blockquote class="blockquote"><a href="addTasks/" class="">Add a Task</a></blockquote>
+              <blockquote class="blockquote"><a href="viewAllTasks/" class="">All Tasks</a></blockquote>
+              <blockquote class="blockquote"><a href="viewCompletedTasks/" class="">Completed Tasks</a></blockquote>
+              <blockquote class="blockquote"><a href="viewPendingTasks/" class="">Pending Tasks</a></blockquote>
+              <blockquote class="blockquote"><a href="my_bids/" class="">View Bids</a><br/></blockquote>
+              </br>
 
             </div>
-            <div class="col-7">
+            <div class="col-9">
               <h3>Profile</h3>
               <div class="card">
                   <h5 class="card-header">Profile Info</h5>

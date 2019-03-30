@@ -1,0 +1,59 @@
+<% var rootPath = '../'; %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <%- include(rootPath + "include/head", {title: "Title"}); %>
+      <link rel="stylesheet" href="/css/rating-picker.css">
+
+
+  </head>
+<!-- {tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows}); -->
+  <body style="background-color: #282c34">
+    <%- include(rootPath + "include/navbar"); %>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container mt-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col text-center">
+              <h3>Review <%=result.name%> for Task: <%=result.taskname%></h3>
+            </div>
+          </div>
+          <form action="" method="POST">
+            <div class="form-group row">
+              <label for="rating" class="col-sm-2 col-form-label py-3">Rating:</label>
+              <div class="col-sm-10 py-3">
+                <span class="star-rating">
+                  <span class="star-rating__wrap">
+                    <input class="star-rating__input" id="star-rating-5" type="radio" name="rating" value="5">
+                    <label class="star-rating__ico far fa-star fa-lg" for="star-rating-5" title="5 out of 5 stars"></label>
+                    <input class="star-rating__input" id="star-rating-4" type="radio" name="rating" value="4">
+                    <label class="star-rating__ico far fa-star fa-lg" for="star-rating-4" title="4 out of 5 stars"></label>
+                    <input class="star-rating__input" id="star-rating-3" type="radio" name="rating" value="3">
+                    <label class="star-rating__ico far fa-star fa-lg" for="star-rating-3" title="3 out of 5 stars"></label>
+                    <input class="star-rating__input" id="star-rating-2" type="radio" name="rating" value="2">
+                    <label class="star-rating__ico far fa-star fa-lg" for="star-rating-2" title="2 out of 5 stars"></label>
+                    <input class="star-rating__input" id="star-rating-1" type="radio" name="rating" value="1">
+                    <label class="star-rating__ico far fa-star fa-lg" for="star-rating-1" title="1 out of 5 stars"></label>
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="rating" class="col-sm-2 col-form-label py-3">Review:</label>
+              <div class="col-sm-10 py-3">
+                <textarea class="form-control" name="review" placeholder="Write your review here" rows="5"></textarea>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col text-center">
+                <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <%- include(rootPath + "include/footer"); %>
+  </body>
+</html>

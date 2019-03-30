@@ -12,6 +12,9 @@ const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 //Register Form 
 router.get('/register', function (req, res) {
+    if (req.isAuthenticated()) {
+        res.redirect("/home");
+    }
     res.render('register');
 });
 
@@ -89,13 +92,16 @@ router.post('/register', (req, res) => {
 
 //Login form
 router.get('/login', function (req, res) {
+    if (req.isAuthenticated()) {
+        res.redirect("/home");
+    }
     res.render('login');
 });
 
 //Login process
 router.post('/login', function (req, res, next) {
     passport.authenticate('local', {
-        successRedirect: '/',
+        successRedirect: '/home/',
         failureRedirect: '/users/login',
         failureFlash: '<i class="fas fa-times"></i> Username/password combination wrong.'
     })(req, res, next);

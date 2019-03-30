@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>  
-    <%- include("include/head", {title: "Home"}); %>
+  <head>
+      <%- include("include/head", {title: "Title"}); %>
   </head>
-  <body>
-      <%- include("include/navbar"); %>
-      <div class="container">
-        <div class="row">
-          <h1>HOME PAGE</h1>
+
+  <body style="background-color: #282c34">
+    <%- include("include/navbar"); %>
+    <div class="container-fluid pt-5" style="background-color: white;background-image:url('/images/index_flatlay.jpg');background-repeat: no-repeat;background-position:center;background-size:cover;">
+      <div class="row">
+        <div class="container" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col text-center">
+              <img src="/images/logo.png" style="width:70vh" class="py-3" alt=""/>
+              <h1>Do your job better, today.</h1>
+              <a href="/users/register/" class="btn btn-lg btn-light my-5">Register an account</a>
+              <a href="/users/login/" class="btn btn-lg btn-primary my-5">Login</a>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+    <%- include("include/footer"); %>
   </body>
 </html>

@@ -3,6 +3,14 @@
 <html lang="en">
   <head>
       <%- include(rootPath + "include/head", {title: "Title"}); %>
+      <script>
+        function(task_id){
+          $("[id*="+task_id"+]").hide();
+        }
+        $(document).ready(){
+
+        }
+      </script>
   </head>
 
   <body style="background-color: #282c34">
@@ -61,8 +69,8 @@
                           <td colspan='4'>You have no bids at the moment. Check back in a bit!</td>
                         </tr>
                       <% } else { %>
-                        <% bids.forEach((item)=>{ %>
-                          <tr class="spacer">
+                        <% bids.forEach((item,i)=>{ %>
+                          <tr class="spacer" id="bid_<%=item.taskid%>_<%=i%>">
                             <td><%=item.taskname%></td>
                             <td>
                               <div class="media">
