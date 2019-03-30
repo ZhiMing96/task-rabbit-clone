@@ -1,0 +1,69 @@
+<% var rootPath = '../'; %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <%- include(rootPath + "include/head", {title: "Title"}); %>
+  </head>
+<!-- {tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows}); -->
+  <body style="background-color: #282c34">
+    <%- include(rootPath + "include/navbar"); %>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container mt-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col text-center">
+              <h1><%=result.name%>'s Bid for <%=result.taskname%> Accepted!</h1>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-3 text-right">
+              Task Name:
+            </div>
+            <div class="col-3 text-left">
+              <%=result.taskname%>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-3 text-right">
+              Description
+            </div>
+            <div class="col-3 text-left">
+              <%=result.description%>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-3 text-right">
+              Manpower
+            </div>
+            <div class="col-3 text-left">
+              <%=result.manpower%>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-3 text-right">
+              Start Time/Date:
+            </div>
+            <div class="col-3 text-left">
+              <%=result.taskdatetime%>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-3 text-right">
+              Bid
+            </div>
+            <div class="col-3 text-left">
+              $<%=result.bidprice%>/hour
+            </div>
+          </div>
+          <div class="row">
+            <div class="col text-center">
+              <a href="../../../../../../" class="btn btn-danger">Back</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%- include(rootPath + "include/footer"); %>
+  </body>
+</html>

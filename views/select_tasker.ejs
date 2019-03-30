@@ -30,90 +30,94 @@
   </script>
   
 </head>
-
-    <body>
-
+<body style="background-color: #282c34">
     <%- include("include/navbar"); %>
-    <div class="container">
+    <div class="container-fluid" style="background-color: white">
       <div class="row">
-        <div class="col-md-3">
-            <h3>Choose a Category</h3>
-        </div>
-        <div class="col-md-9">
-            <% for(var i=0; i<categories.length; i++) { %>
-                <button class="btn btn-outline-primary" id="<%=categories[i].catname%>_show"><%=categories[i].catname%></button>
-            <%}%>
-        </div>
-      </div>
-      <hr/>
-      <% for(z=0;z<categories.length;z++){ %>
-        <div style="display: none" id="<%=categories[z].catname%>">
-          <div class="row text-center">
-            <div class="col">
-              <h3>Choose a tasker for <%=categories[z].catname%></h3>
+        <div class="container pt-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col-md-3">
+                <h3>Choose a Category</h3>
+            </div>
+            <div class="col-md-9">
+                <% for(var i=0; i<categories.length; i++) { %>
+                    <button class="btn btn-outline-primary" id="<%=categories[i].catname%>_show"><%=categories[i].catname%></button>
+                <%}%>
             </div>
           </div>
-          <div class="row">
-            <div class="col-3"> <!--sorting and filtering on the left-->
-              <div class="form-group">
-                  <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                      <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
-                      <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+          <hr/>
+          <% for(z=0;z<categories.length;z++){ %>
+            <div style="display: none" id="<%=categories[z].catname%>">
+              <div class="row text-center">
+                <div class="col">
+                  <h3>Choose a tasker for <%=categories[z].catname%></h3>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-3"> <!--sorting and filtering on the left-->
+                  <div class="form-group">
+                      <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
+                          <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                          </div>
                       </div>
                   </div>
-              </div>
-              <script type="text/javascript">
-                  $(function () {
-                      $('#datetimepicker1').datetimepicker();
-                  });
-              </script>
-            </div>
-            <div class="col-9">
-              <%for(var x=0;x<taskersByCategory[z].length;x++){%> 
-                <div class="card my-5 border-primary shadow-lg bg-white rounded">
-                    <h3 class="card-header">
-                        <div class="row no-gutters">
-                            <div class="col-md-10">
-                                <%=taskersByCategory[z][x].name%>&nbsp;&nbsp;
-                                <span class="align-items-center" style="font-size:0.7em">
-                                <% for(var y=0;y<5;y++){%>
-                                    <i class="fa<%=(y<taskersByCategory[z][x].taskerrating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
-                                <%}%> 
-                                </span>
-                                <%if (taskersByCategory[z][x].taskerrating>=4 && taskersByCategory[z][x].num>=0) { %> <!--numbers should be 4.8 and 50-->
-                                    <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
-                                <% }%>  
-                                <%if (taskersByCategory[z][x].taskerrating>=1 && x>=taskersByCategory[z].length/4) { %>
-                                    <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></spanx`>
-                                <% }%> 
+                  <script type="text/javascript">
+                      $(function () {
+                          $('#datetimepicker1').datetimepicker();
+                      });
+                  </script>
+                </div>
+                <div class="col-9">
+                  <%for(var x=0;x<taskersByCategory[z].length;x++){%> 
+                    <div class="card my-5 border-primary shadow-lg bg-white rounded">
+                        <h3 class="card-header">
+                            <div class="row no-gutters">
+                                <div class="col-md-10">
+                                    <%=taskersByCategory[z][x].name%>&nbsp;&nbsp;
+                                    <span class="align-items-center" style="font-size:0.7em">
+                                    <% for(var y=0;y<5;y++){%>
+                                        <i class="fa<%=(y<taskersByCategory[z][x].taskerrating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
+                                    <%}%> 
+                                    </span>
+                                    <%if (taskersByCategory[z][x].taskerrating>=4 && taskersByCategory[z][x].num>=0) { %> <!--numbers should be 4.8 and 50-->
+                                        <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
+                                    <% }%>  
+                                    <%if (taskersByCategory[z][x].taskerrating>=1 && x>=taskersByCategory[z].length/4) { %>
+                                        <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></spanx`>
+                                    <% }%> 
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    $<%=taskersByCategory[z][x].rateperhour%><span style="font-size:0.5em">/hour</span>
+                                    
+                                </div>   
                             </div>
-                            <div class="col-md-2 text-right">
-                                $<%=taskersByCategory[z][x].rateperhour%><span style="font-size:0.5em">/hour</span>
-                                
-                            </div>   
-                        </div>
-                    </h3>
-                    <div class="card-body">
-                        <div class="col-10">
-                            <i class="far fa-check-circle" style="color:green"></i>   <%=((taskersByCategory[z][x].num == null) ? 0 : taskersByCategory[z][x].num) + " " + categories[z].catname + " Tasks " %><br><br>
-                            "<%=taskersByCategory[z][x].description%>"<br>
-                        </div>
-                        <div class="col-2 align-right">
-                            <%if (taskersByCategory[z][x].taskerrating>=1 && x>=taskersByCategory[z].length/4) { %>
-                                <a href="../taskRequester/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/greatValue/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
-                            <%} else  {%>
-                                <a href="../taskRequesters/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/value/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
-                            <%}%>                              
+                        </h3>
+                        <div class="card-body">
+                            <div class="col-10">
+                                <i class="far fa-check-circle" style="color:green"></i>   <%=((taskersByCategory[z][x].num == null) ? 0 : taskersByCategory[z][x].num) + " " + categories[z].catname + " Tasks " %><br><br>
+                                "<%=taskersByCategory[z][x].description%>"<br>
+                            </div>
+                            <div class="col-2 align-right">
+                                <%if (taskersByCategory[z][x].taskerrating>=1 && x>=taskersByCategory[z].length/4) { %>
+                                    <a href="../taskRequester/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/greatValue/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
+                                <%} else  {%>
+                                    <a href="../taskRequesters/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/value/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
+                                <%}%>                              
+                            </div>
                         </div>
                     </div>
+                  <%}%>
                 </div>
-              <%}%>
+              </div>
             </div>
-          </div>
+          <%}%>
         </div>
-      <%}%>
+      </div>
     </div>
+    <%- include("include/footer"); %>
     <script>
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()

@@ -1,0 +1,98 @@
+<% var rootPath = '../'; %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <%- include(rootPath + "include/head", {title: "Title"}); %>
+  </head>
+
+  <body style="background-color: #282c34">
+    <%- include(rootPath + "include/navbar"); %>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container mt-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col-2">
+              <a href="">My Tasks</a>
+              <br/>
+              <a href="">My Reviews</a>
+              <br/>
+              <a href="">My Bids</a>
+              <br/>
+              <a href="">My Requests</a>
+              <br/>
+              <a href="">Account Settings</a>
+            </div>
+            <div class="col-10">
+              <div class="row">
+                <div class="col">
+                  <div class="media">
+                    <img data-src="holder.js/100x100" class="mr-3" alt="..."/>
+                    <div class="media-body">
+                      <h1 class="mt-0"><%=user.name%></h1>
+                      <p><small>
+                        <%=user.username%>
+                        <br/>
+                        <%=user.email%></small>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col text-center">
+                  <h3>My Bids</h3>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <table class="table table-hover border">
+                    <thead>
+                      <tr class="table-primary">
+                        <th>Task Name</th>
+                        <th>Tasker</th>
+                        <th>Bid</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% if(typeof bids === "undefined" || bids.length == 0) {%>
+                        <tr>
+                          <td colspan='4'>You have no bids at the moment. Check back in a bit!</td>
+                        </tr>
+                      <% } else { %>
+                        <% bids.forEach((item)=>{ %>
+                          <tr class="spacer">
+                            <td><%=item.taskname%></td>
+                            <td>
+                              <div class="media">
+                                <img data-src="holder.js/35x35" class="mr-3" alt="..."/>
+                                <div class="media-body">
+                                  <div class="mt-0"><%=item.name%><%- include(rootPath + "include/stars", {rating: Math.floor(item.avg)}); %></div>
+                                  <i class="far fa-check-circle" style="color:green"></i> <%=item.completedtasks%> Tasks
+                                </div>
+                              </div>
+                            </td>
+                            <td>$<%=item.bidprice%><span style="font-size:0.5em">/hour</span></td>
+                            <td>
+                              <% if(item.winningbid == false || item.winningbid == null) {%>
+                                <a href="accept_bid/taskid/<%=item.taskid%>/tasker/<%=item.cusid%>/" class="btn btn-primary">Accept</a>
+                              <% } else { %>
+                                <button class="btn btn-success" disabled><i class="far fa-check-circle"></i>&nbsp;Accepted</a>
+                              <% } %>
+                            </td>
+                          </tr>
+                        <% }); %>
+                      <% } %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%- include(rootPath + "include/footer"); %>
+  </body>
+</html>
