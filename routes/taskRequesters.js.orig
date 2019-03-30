@@ -109,7 +109,7 @@ router.get("/addRequests", ensureAuthenticated, async function(req, res) {
     });
 });
 
-router.post("/addRequests", (req, res) => {
+router.post("/addRequests", ensureAuthenticated, (req, res) => {
     req.checkBody("taskName", "Task Name is required").notEmpty();
     req.checkBody("description", "Description is required").notEmpty();
     req.checkBody("duration", "Duration is required").notEmpty();
@@ -126,29 +126,43 @@ router.post("/addRequests", (req, res) => {
         const userID = parseInt(req.user.cusId)
         const TDT = req.body.taskDateTime
         const dateCreated = new Date().toISOString().split('T')[0]
-        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING taskid;"
+        const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
         const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
-        pool.query(sqlinserttask, params1)
-        .then((results) => {
-            var paramRequires = [req.body.catid, results.rows[0].taskid];
-            
-            var sqlRequires = "INSERT INTO Requires(catid,taskid) VALUES ($1,$2) RETURNING taskid";
-            return pool.query(sqlRequires, paramRequires);
-        })
-        .then((results) => {
-            var paramAssigned = [results.rows[0].taskid, req.body.taskerid];
-            var sqlAssigned = "INSERT INTO Assigned (taskid, cusid, completed) VALUES ($1, $2, FALSE) RETURNING taskid;"
-            return pool.query(sqlAssigned,paramAssigned); 
-        })
-        .then((results) => {
-            res.render('newTaskCreated', {taskid: results.rows[0].taskid});
-        })
-        .catch((error) => {
-            console.log("Error creating new task", error);
-            req.flash("warning", "An error was encountered. Please try again.")
-            res.redirect('/addRequests');
-        })
+        pool.query(sql1, params1, (error, result) => {
+            if (error) {
+                console.log("err: ", error);
+            }
+        });
+        
+        //get task id from the created task
+        const sql2 = "select count(taskid) from createdtasks"
 
+        pool.query(sql2, (error, data) => {
+            if (error) {
+                console.log("err: ", error);
+            }
+            else {
+                console.log(req.body.taskName)
+                const resTaskId = data.rows[0].count
+                var paramRequires = [req.body.catid, resTaskId];
+                var sqlRequires = "INSERT INTO requires(catid,taskid) VALUES ($1,$2)";
+                pool.query(sqlRequires,paramRequires, (err,data) =>{
+                    if(err){
+                        console.log("ERROR INSERTING INTO REQUIRES TABLE" + err);
+                    } else {
+                        var paramAssigned = [resTaskId, req.params.taskerId];
+                        var sqlAssigned = "INSERT INTO Assigned (taskId, cusId, completed) VALUES ($1, $2, FALSE);"
+                        pool.query(sqlAssigned,paramAssigned, (err,data1) =>{
+                            if(err){
+                                console.log("ERROR INSERTING INTO Assigned TABLE" + err);
+                            } else {
+                                res.render(newTaskCreated, {taskid: resTaskId});
+                            }
+                        }); 
+                    }
+                });   
+            }
+        });
     }
 });
 
@@ -219,6 +233,67 @@ router.get("/newTask/:catId/:taskerId", ensureAuthenticated, (req, res) => {
     })
 });
 
+<<<<<<< Updated upstream
+=======
+router.post("/addRequests", (req, res) => {
+    req.checkBody("taskName", "Task Name is required").notEmpty();
+    req.checkBody("description", "Description is required").notEmpty();
+    req.checkBody("duration", "Duration is required").notEmpty();
+    req.checkBody("manpower", "manpower is required").notEmpty();
+    req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
+    //req.checkBody("catName", "Category Name is required").notEmpty();
+    let errors = req.validationErrors();
+    if (errors) {
+        res.render('add_category');
+        console.log(errors);
+
+    } else {
+        
+        const userID = parseInt(req.user.cusId)
+        const TDT = req.body.taskDateTime
+        const dateCreated = new Date().toISOString().split('T')[0]
+        const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
+        pool.query(sql1, params1, (error, result) => {
+            if (error) {
+                console.log("err: ", error);
+            }
+        });
+        
+        //get task id from the created task
+        const sql2 = "select count(taskid) from createdtasks"
+
+        pool.query(sql2, (error, data) => {
+            if (error) {
+                console.log("err: ", error);
+            }
+            else {
+                console.log(req.body.taskName)
+                const resTaskId = data.rows[0].count
+                var paramRequires = [req.body.catid, resTaskId];
+                
+                var sqlRequires = "INSERT INTO Requires(catid,taskid) VALUES ($1,$2)";
+                pool.query(sqlRequires,paramRequires, (err,data) =>{
+                    if(err){
+                        console.log("ERROR INSERTING INTO REQUIRES TABLE" + err);
+                    } else {
+                        var paramAssigned = [resTaskId, req.body.taskerid];
+                        var sqlAssigned = "INSERT INTO Assigned (taskid, cusid, completed) VALUES ($1, $2, FALSE);"
+                        pool.query(sqlAssigned,paramAssigned, (err,data1) =>{
+                            if(err){
+                                console.log("ERROR INSERTING INTO Assigned TABLE" + err);
+                            } else {
+                                res.render('newTaskCreated', {taskid: resTaskId});
+                            }
+                        }); 
+                    }
+                });   
+            }
+        });
+    }
+});
+
+>>>>>>> Stashed changes
 router.get("/viewListings", (req, res) => {
     console.log("here")
     const sql = "SELECT C.taskid as taskid, taskname, description, duration, manpower, taskdatetime, datecreated, A.cusid as cusid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1"
