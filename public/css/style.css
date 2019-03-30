@@ -9,3 +9,14 @@ body .container {
 .taskerHeading {
     margin: 40px 0px
 }
+
+.error {
+    color: crimson;
+    margin-bottom: 1em;
+
+}
+
+.success {
+    color: lightseagreen;
+    margin-bottom:: 1em;
+}

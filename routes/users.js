@@ -3,6 +3,8 @@ const router = express.Router();
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+//const session = require('express-session');
+//const expressflash = require('express-flash');
 
 const pool = new Pool({
     user: 'postgres',
@@ -24,6 +26,7 @@ router.get('/register', function (req, res) {
 //Register Process 
 router.post('/register', (req, res) => {
 
+    
     req.checkBody('name', 'Name is required').notEmpty();
     req.checkBody('username', 'Username is required').notEmpty();
     req.checkBody('password', 'Password is required').notEmpty();
@@ -31,13 +34,21 @@ router.post('/register', (req, res) => {
     req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('password2', 'Passwords do not match.').equals(req.body.password);
 
+    if (req.body.password != req.body.password2){
+        req.flash('error', 'Passwords do not match');
+        res.redirect('/users/register');
+       
+        
+        
+    
 
+   // let errors = req.validationErrors();
 
-    let errors = req.validationErrors();
-    if (errors) {
-        res.render('register', {
-            errors: errors
-        });
+    //if (errors) {
+        //res.render('register', {
+            //errors: errors
+
+       // });
 
     } else {
 
