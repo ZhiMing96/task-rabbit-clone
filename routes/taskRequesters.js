@@ -218,7 +218,20 @@ router.post("/addRequests", (req, res) => {
             return pool.query(sqlAssigned,paramAssigned); 
         })
         .then((results) => {
-            res.render('newTaskCreated', {taskid: results.rows[0].taskid});
+            var taskid = [results.rows[0].taskid];
+            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join assigned A on T.taskid=A.taskid join customers C on A.cusid=C.cusid WHERE A.taskid=$1;"
+            return pool.query(sqlNewTask,taskid); 
+        })
+        .then((results) => {
+            console.log(results)
+            res.render('newTaskCreated', 
+            {   taskname: results.rows[0].taskname,
+                description: results.rows[0].description,
+                manpower: results.rows[0].manpower,
+                taskDateTime: results.rows[0].taskDateTime,
+                tasker: results.rows[0].name
+
+            });
         })
         .catch((error) => {
             console.log("Error creating new task", error);

@@ -1,13 +1,59 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <%- include("include/head", {title: "Tasker Profile"}); %>
+    <%- include("include/head", {title: "New Task Created"}); %>
   </head>
-
-    <body>
-        <%- include("include/navbar"); %>
-        <div class='container'>
-            <h1>NEW TASK CREATED</h1>
+    <body style="background-color: #282c34">
+      <%- include("include/navbar"); %>
+      <div class="container-fluid" style="background-color: white">
+        <div class="row">
+          <div class="container mt-5" style="min-height:70vh">
+            <%- messages('include/message', locals) %>
+            <div class="row">
+              <div class="col text-center">
+                <h1>New Task <%=taskname%> Created!</h1>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-3 text-right">
+                Description
+              </div>
+              <div class="col-3 text-left">
+                <%=description%>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-3 text-right">
+                Manpower
+              </div>
+              <div class="col-3 text-left">
+                <%=manpower%>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-3 text-right">
+                Start Time/Date:
+              </div>
+              <div class="col-3 text-left">
+                <%=taskDateTime%>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-3 text-right">
+                Tasker
+              </div>
+              <div class="col-3 text-left">
+                <%=tasker%>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col text-center">
+                <a href="/taskRequesters/" class="btn btn-danger">Go To My Tasks</a>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+      <%- include("include/footer"); %>
     </body>
 </html>
