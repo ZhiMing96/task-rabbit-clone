@@ -86,7 +86,6 @@ app.get('*', function(req,res,next){
 //Home route
 
 app.get('/', (req, res) => {
-
     res.render('index');
 });
 
@@ -109,7 +108,10 @@ app.use('/listings', listings);
 app.use('/categories', categories);
 app.use('/calendar', calendar);
 
-
+app.use(function(req, res, next){
+  res.status(404);
+  res.render('include/404');
+});
 
 
 

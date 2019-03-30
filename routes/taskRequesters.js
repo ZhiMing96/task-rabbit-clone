@@ -1,17 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { Pool } = require('pg');
-const passport = require('passport');
 
+const pool = require('../config/database');
+const ensureAuthenticated = require('../config/ensureAuthenticated');
 
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'cs2102project',
-    password: 'password',
-    port: 5432,
-});
-pool.connect();
 
 router.get("/",ensureAuthenticated, (req, res) => {
     //Retrieve all tasks and send along with render
@@ -31,18 +23,18 @@ router.get("/",ensureAuthenticated, (req, res) => {
 });
   
 // link to the add task page 
-router.get("/addTasks", function(req, res) {
+router.get("/addTasks", ensureAuthenticated, (req, res) => {
     res.render("add_Tasks");
 });
 // Start: CRUD Listings
 
 
 //Add route
-router.get("/addListings", function(req, res) {
+router.get("/addListings", ensureAuthenticated, (req, res) => {
     res.render("add_Listings");
 });
   
-router.post("/addListings", (req, res) => {
+router.post("/addListings", ensureAuthenticated, (req, res) => {
     req.checkBody("taskName", "Task Name is required").notEmpty();
     req.checkBody("description", "Description is required").notEmpty();
     req.checkBody("duration", "Duration is required").notEmpty();
@@ -94,7 +86,7 @@ router.post("/addListings", (req, res) => {
 });
 
 //Add route
-router.get("/addRequests", async function(req, res) {
+router.get("/addRequests", ensureAuthenticated, async function(req, res) {
     const categoryQuery ="SELECT * FROM skillcategories";
     var categoryResult = await pool.query(categoryQuery);
 
@@ -117,74 +109,7 @@ router.get("/addRequests", async function(req, res) {
     });
 });
 
-
-router.get("/addRequests/:category/:ssid/:value/:tasker_id", async function(req, res) {
-    
-
-  var catId= req.params.category;
-  var ssId= req.params.ssid;
-  var taskerId= req.params.tasker_id;
-  var val= req.params.value;
-
-  var sqlprofile = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid) "+
-  "SELECT T.name, T.cusid, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
-  "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=" +catId + " and S.ssid=" +ssId + " and T.cusid=" +taskerId + ";"
-  
-  pool.query(sqlprofile, (err,profileresults)=> {
-    if (err) {
-      console.log("error in sqlprofile query" + err);
-    } else {
-      const sqlreviews = "SELECT C.catName as catName, RV.rating, RV.description, RV.taskId, CU1.name FROM Reviews RV join Requires R on RV.taskId=R.taskId "+
-      "join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=" + taskerId+ ";"
-        pool.query(sqlreviews, (err, reviewsresults)=> {
-        if (err){
-          console.log("error in sqlreviews query" + err);
-        } else {
-          var cat = "SELECT catname from skillcategories where catid=" + catId + ";"
-          pool.query(cat, (err, category) => {
-            if (err) {
-              console.log("error in cat query" + err);
-            } else {
-                res.render("viewTaskerProfileAndReviews", {
-                profile: profileresults.rows,
-                reviews: reviewsresults.rows,
-                catName: category.rows[0].catname,
-                catId,
-                val               
-                });
-              }
-              
-            }
-          )
-        }
-      })
-    }
-  });
-});
-
-router.get("/newTask/:catId/:taskerId", (req, res) => {
-    
-    var catId= req.params.catId;
-    var taskerId= req.params.taskerId;
-    const sqlcat ="SELECT catname, catId FROM skillcategories where catId=" + catId +";"
-    
-    pool.query(sqlcat, (err,result) =>{
-      if(err) {
-        console.log("error in sqlcat query");
-      } else {
-        const sqltasker ="SELECT name, cusId FROM customers where cusId=" + taskerId +";"
-        pool.query(sqltasker, (err,result1) =>{
-            if(err) {
-              console.log("error in sqltasker query");
-            } else {
-                res.render("add_Requests", {cat: result.rows, tasker: result1.rows});
-            }
-        })
-      }
-    })
-});
-
-router.post("/addRequests", (req, res) => {
+router.post("/addRequests", ensureAuthenticated, (req, res) => {
     req.checkBody("taskName", "Task Name is required").notEmpty();
     req.checkBody("description", "Description is required").notEmpty();
     req.checkBody("duration", "Duration is required").notEmpty();
@@ -239,6 +164,73 @@ router.post("/addRequests", (req, res) => {
             }
         });
     }
+});
+
+
+router.get("/addRequests/:category/:ssid/:value/:tasker_id", ensureAuthenticated, async function(req, res) {
+    
+
+  var catId= req.params.category;
+  var ssId= req.params.ssid;
+  var taskerId= req.params.tasker_id;
+  var val= req.params.value;
+
+  var sqlprofile = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid) "+
+  "SELECT T.name, T.cusid, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
+  "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=" +catId + " and S.ssid=" +ssId + " and T.cusid=" +taskerId + ";"
+  
+  pool.query(sqlprofile, (err,profileresults)=> {
+    if (err) {
+      console.log("error in sqlprofile query" + err);
+    } else {
+      const sqlreviews = "SELECT C.catName as catName, RV.rating, RV.description, RV.taskId, CU1.name FROM Reviews RV join Requires R on RV.taskId=R.taskId "+
+      "join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=" + taskerId+ ";"
+        pool.query(sqlreviews, (err, reviewsresults)=> {
+        if (err){
+          console.log("error in sqlreviews query" + err);
+        } else {
+          var cat = "SELECT catname from skillcategories where catid=" + catId + ";"
+          pool.query(cat, (err, category) => {
+            if (err) {
+              console.log("error in cat query" + err);
+            } else {
+                res.render("viewTaskerProfileAndReviews", {
+                profile: profileresults.rows,
+                reviews: reviewsresults.rows,
+                catName: category.rows[0].catname,
+                catId,
+                val               
+                });
+              }
+              
+            }
+          )
+        }
+      })
+    }
+  });
+});
+
+router.get("/newTask/:catId/:taskerId", ensureAuthenticated, (req, res) => {
+    
+    var catId= req.params.catId;
+    var taskerId= req.params.taskerId;
+    const sqlcat ="SELECT catname, catId FROM skillcategories where catId=" + catId +";"
+    
+    pool.query(sqlcat, (err,result) =>{
+      if(err) {
+        console.log("error in sqlcat query");
+      } else {
+        const sqltasker ="SELECT name, cusId FROM customers where cusId=" + taskerId +";"
+        pool.query(sqltasker, (err,result1) =>{
+            if(err) {
+              console.log("error in sqltasker query");
+            } else {
+                res.render("add_Requests", {cat: result.rows, tasker: result1.rows});
+            }
+        })
+      }
+    })
 });
 
 router.get("/viewListings", (req, res) => {
@@ -500,20 +492,5 @@ router.get('/viewBids/:taskid', ensureAuthenticated, function (req, res) {
 
     });
 });
-
-    //Access Control
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-
-    } else {
-        req.flash('danger', 'Please Log In');
-        
-        res.redirect('/users/login');
-    }
-
-}
-
-  
 
 module.exports = router;

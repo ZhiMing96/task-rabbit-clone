@@ -1,50 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+    <head>
+        <%- include("include/head", {title: "PROFILE"}); %>
+    </head>
 
-<head>
-        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
-        <link rel='stylesheet' href='/css/style.css'>
-        <%- include("include/head", {title: "Register Form"}); %>
-      </head>
-    
-      <body>
-          <%- include("include/navbar"); %>
-        
-    <h1>Register
-        <form method="POST" action="/users/register">
-            <div id="form-group">
-                <label>Name:</label>
-                <input class="form-control" name="name" type="text" required />
-            </div>
-            <div id="form-group">
-                <label>Username: </label>
-                <input class="form-control" name="username" type="text" required/>
-            </div>
-            <div id="form-group">
-              <label>Gender: </label>
-              <select name="gender">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            </div>
-            <div id="form-group">
-                <label>Email: </label>
-                <input class="form-control" name="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required/>
-            </div>
-            <div id="form-group">
-                <label>Password: </label>
-                <input class="form-control" name="password" type="password" required/>
-            </div>
-            <div id="form-group">
-                <label>Confirm Password: </label>
-                <input class="form-control" name="password2" type="password" required/>
-            </div>
-            
-
-
-            <input class="btn btn-primary" type="submit" value="Register" />
-        </form>
-    </h1>
-</body>
-
+    <body>
+        <%- include("include/navbar"); %>
+        <div class="container">
+            <%- messages('include/message', locals) %>
+            <h1>Register</h1>
+            <form method="POST" action="/users/register">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Name</label>
+                        <input class="form-control" name="name" type="text" required />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Username</label>
+                        <input class="form-control" name="username" type="text" required/>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                      <label>Gender</label>
+                      <select class="form-control" name="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Email: </label>
+                        <input class="form-control" name="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required/>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Password: </label>
+                        <input class="form-control" name="password" type="password" required/>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Confirm Password: </label>
+                        <input class="form-control" name="password2" type="password" required/>
+                    </div>
+                    
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input class="btn btn-lg btn-primary" type="submit" value="Register" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body
 </html>

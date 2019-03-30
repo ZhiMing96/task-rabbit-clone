@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <%- include("head", {title: "Page Not Found"}); %>
+  </head>
+
+  <body style="background-color: #282c34">
+    <%- include("navbar"); %>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row justify-content-md-center">
+            <div class="col">
+              <h1>Page not found ):</h1>
+              <a href="javascript:history.back()">Go Back</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%- include("footer"); %>
+  </body>
+</html>

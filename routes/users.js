@@ -1,19 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 //const session = require('express-session');
 //const expressflash = require('express-flash');
 
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'cs2102project',
-    password: 'password',
-    port: 5432,
-});
-pool.connect();
+const pool = require('../config/database');
+const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 
 
@@ -35,23 +28,9 @@ router.post('/register', (req, res) => {
     req.checkBody('password2', 'Passwords do not match.').equals(req.body.password);
 
     if (req.body.password != req.body.password2){
-        req.flash('error', 'Passwords do not match');
-        res.redirect('/users/register');
-       
-        
-        
-    
-
-   // let errors = req.validationErrors();
-
-    //if (errors) {
-        //res.render('register', {
-            //errors: errors
-
-       // });
-
+        req.flash('warning', '<i class="fas fa-times"></i> Passwords do not match');
+        res.render('register');
     } else {
-
         let password = req.body.password;
 
         bcrypt.genSalt(10, function (error, salt) {
@@ -118,13 +97,14 @@ router.post('/login', function (req, res, next) {
     passport.authenticate('local', {
         successRedirect: '/',
         failureRedirect: '/users/login',
-        failureFlash: true
+        failureFlash: '<i class="fas fa-times"></i> Username/password combination wrong.'
     })(req, res, next);
 });
 
 
 //Logout
 router.get('/logout', function (req, res) {
+    req.flash('success', '<i class="fas fa-check"></i> You have successfully logged out.')
     req.logout();
     res.redirect('/users/login');
 });
