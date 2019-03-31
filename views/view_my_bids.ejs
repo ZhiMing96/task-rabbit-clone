@@ -16,6 +16,7 @@
   </head>
   <body>
 	<%- include("include/navbar"); %>
+
 	<% if(bid.length == 0 ){%>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>No Records Found!</Ri:a></strong> There are no bids records.
@@ -29,7 +30,8 @@
 						<a href="/taskers" class="btn btn-outline-secondary">Back</a>
 					</form>
         </div>
-    <% } else { %>
+		<% } else { %>
+		<h1 style="text-align: center">MY BIDS</h1></br>
 		<table class="table">
 			<thead>
 				<tr>
