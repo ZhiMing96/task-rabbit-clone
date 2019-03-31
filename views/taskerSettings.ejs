@@ -12,13 +12,8 @@
 </head>
 <body>
     <%- include("include/navbar"); %>
-    <h1>Account Settings - TASKER</h1>
-    <script>
-            $('#myModal').on('shown.bs.modal', function () {
-                $('#myInput').trigger('focus')
-            })
-    </script>
-
+    <h1 style="text-align: center">Account Settings - TASKER</h1>
+   
     <div>
         <h5>Name: <%= cusInfo[0].name %></h5>
         <h5>Username: <%= cusInfo[0].username %></h5>
