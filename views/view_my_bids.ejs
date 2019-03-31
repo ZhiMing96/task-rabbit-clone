@@ -36,6 +36,9 @@
 					<th scope="col">Task Name</th>
 					<th scope="col">My Bid Amount</th>
 					<th scope="col">Bidding Deadline</th>
+					<th scope="col">Days left to Deadline</th>
+					<th scope="col">Result</th>
+					
 					<th scope="col"></th>
 					<th scope="col"></th>
 				</tr>
@@ -45,8 +48,18 @@
 				<tr>
 					<td><%= bid[i].taskname%></td>
 					<td><%= bid[i].bidprice%></td>
-					<td><%= bid[i].biddingdeadline%></td>
+					<td><%= (bid[i].biddingdeadline).toString().substring(0,24)%></td>
+					<td><%= currentDateTime.getDate() - (bid[i].biddingdeadline).getDate()%></td>
+					
+					<% if(bid[i].winningbid){ %>
+					<td>Chosen Bid. YAY!</td>
+					<% } else if (bid[i].hasChosenBid) { %>
+						<td>Not Chosen</td>
+					<% } else { %>
+						<td>Pending</td>
+					<% } %>
 					<td>
+							<% if(currentDateTime < (bid[i].biddingdeadline)){ %>
 						<form action="/listings/updateBid/<%= bid[i].taskid%>", method="GET">
 							<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">UPDATE</button>
 						</form>

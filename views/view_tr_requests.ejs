@@ -58,11 +58,13 @@
 							<td> - </td>
 							<td> - </td>
 						<% } else {%>
-								<% if(task[i].accepted == true){%>
+								<% if (task[i].accepted){%>
 									<td> pending for completion </td>
+								<% } else if (task[i].hasResponded){%>
+									<td> Rejected </td>
 								<% } else {%>
-									<td> pending for acceptance </td>
-								<% } %>
+									<td> Pending for Acceptance </td>
+									<% }%>
 							<td>
 									<form action="/taskRequesters/updateRequests/<%= task[i].taskid%>", method="GET">
 										<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/updateRequests/<%= task[i].taskid %>">UPDATE</button>
@@ -103,7 +105,7 @@
 		</table>
 	<% } %>
 	<div class="text-center">
-			<a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
+			<a href="/taskRequesters" class="btn btn-outline-secondary btn-lg">Back</a>
 	</div>
   </body>
 </html>

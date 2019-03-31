@@ -86,11 +86,11 @@ app.get('*', function(req,res,next){
 //Home route
 
 app.get('/', (req, res) => {
-
     res.render('index');
 });
 
 //Route files. Anything with the first param will go to second param
+let home = require('./routes/home');
 let articles = require('./routes/articles');
 let users = require('./routes/users');
 let taskRequesters = require('./routes/taskRequesters');
@@ -99,6 +99,7 @@ let requests = require('./routes/requests');
 let listings  = require('./routes/listings');
 let categories  = require('./routes/categories');
 let calendar  = require('./routes/calendar');
+app.use('/home', home);
 app.use('/articles', articles);
 app.use('/users', users);
 
@@ -109,7 +110,10 @@ app.use('/listings', listings);
 app.use('/categories', categories);
 app.use('/calendar', calendar);
 
-
+app.use(function(req, res, next){
+  res.status(404);
+  res.render('include/404');
+});
 
 
 

@@ -1,22 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
       <%- include("include/head", {title: "Login Form"}); %>
   </head>
 
-  <body>
-      <%- include("include/navbar"); %>
-    <h1>Log In</h1>
-    <form method="POST" action="/users/login">
-      <div id="form-group">
-        <label>Username:</label>
-        <input class="form-control" name="username" type="text" />
+  <body style="background-color: #282c34">
+    <%- include("include/navbar"); %>
+    <div class="container-fluid pt-5" style="background-color: white;background-image:url('/images/boxes.jpg');background-repeat: no-repeat;background-position:center;background-size:cover;">
+      <div class="row">
+        <div class="container" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row justify-content-md-left">
+            <div class="col-md-4">
+              <br/>
+              <br/>
+              <div class="card">
+                <div class="card-header">
+                  <h3>Log In</h3>
+                </div>
+                <div class="card-body">
+                  <form method="POST" action="/users/login">
+                    <div id="form-group">
+                      <label>Username:</label>
+                      <input class="form-control" name="username" type="text" />
+                    </div>
+                    <div id="form-group">
+                      <label>Password: </label>
+                      <input class="form-control" name="password" type="password" />
+                    </div>
+                    <br/>
+                    <br/>
+                    <input class="btn btn-lg btn-primary" type="submit" value="Log In" />
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="form-group">
-        <label>Password: </label>
-        <input class="form-control" name="password" type="text" />
-      </div>
-      <input class="btn btn-primary" type="submit" value="Log In" />
-    </form>
+    </div>
+    <%- include("include/footer"); %>
   </body>
 </html>

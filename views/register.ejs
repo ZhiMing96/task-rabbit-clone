@@ -1,63 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+    <head>
+        <%- include("include/head", {title: "Register"}); %>
+    </head>
 
-<head>
-        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
-        <link rel='stylesheet' href='/css/style.css'>
-
-</head>
-
-<body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light"><a class="navbar-brand" href="/">NameOfProject</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-              aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span
-                class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-              <ul class="navbar-nav">
-                <li class="nav-item active"><a class="nav-link" href="/categories/add">Add Category <span class="sr-only">(current)</span></a></li>
-              </ul>
-              <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item"> <a class="nav-link" href="/users/register">Register</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/users/login">Log In</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/users/logout">Log Out</a></li>
-              </ul>
+    <body style="background-color: #282c34">
+        <%- include("include/navbar"); %>
+        <div class="container-fluid pt-5" style="background-color: white;background-image:url('/images/index_flatlay.jpg');background-repeat: no-repeat;background-position:center;background-size:cover;">
+            <div class="row">
+                <div class="container" style="min-height:70vh">
+                    <h1>Join the force.</h1>
+                    <%- messages('include/message', locals) %>
+                    <div class="row">
+                        <div class="col">
+                            <form method="POST" action="/users/register">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Name</label>
+                                        <input class="form-control" name="name" type="text" required />
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Username</label>
+                                        <input class="form-control" name="username" type="text" required/>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                      <label>Gender</label>
+                                      <select class="form-control" name="gender">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                      </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Email: </label>
+                                        <input class="form-control" name="email" type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required/>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Password: </label>
+                                        <input class="form-control" name="password" type="password" required/>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Confirm Password: </label>
+                                        <input class="form-control" name="password2" type="password" required/>
+                                    </div>
+                                    
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <input class="btn btn-lg btn-primary" type="submit" value="Register" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </nav>
-    <h1>Register
-        <form method="POST" action="/users/register">
-            <div id="form-group">
-                <label>Name:</label>
-                <input class="form-control" name="name" type="text" required />
-            </div>
-            <div id="form-group">
-                <label>Username: </label>
-                <input class="form-control" name="username" type="text" required/>
-            </div>
-            <div id="form-group">
-              <label>Gender: </label>
-              <select name="gender">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            </div>
-            <div id="form-group">
-                <label>Email: </label>
-                <input class="form-control" name="email" type="email" required/>
-            </div>
-            <div id="form-group">
-                <label>Password: </label>
-                <input class="form-control" name="password" type="password" required/>
-            </div>
-            <div id="form-group">
-                <label>Confirm Password: </label>
-                <input class="form-control" name="password2" type="password" required/>
-            </div>
-            
-
-
-            <input class="btn btn-primary" type="submit" value="Register" />
-        </form>
-    </h1>
-</body>
-
+        </div>
+        <%- include("include/footer"); %>
+    </body>
 </html>

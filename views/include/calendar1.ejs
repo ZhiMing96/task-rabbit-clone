@@ -1,0 +1,49 @@
+
+    <script type="text/javascript">
+        var timepicked;
+        var datepicked;
+        var today = new Date();
+        var duedate = new Date();
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.datepicker');
+            var dateinstances = M.Datepicker.init(elems, {
+                defaultDate: 'now',
+                autoClose: true,
+                minDate: today,
+                format: 'yyyy-mm-dd',
+
+                onClose: function () {
+                    datepicked = dateinstances[0].date;
+                }
+
+            });
+
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('time').value = time;
+            var elems = document.querySelectorAll('.timepicker');
+            var instances = M.Timepicker.init(elems, {
+                defaultTime: 'now',
+                autoClose: true,
+                twelvehour: false,
+                format: 'HH:ii',
+                onCloseEnd: function () {
+                    timepicked = instances[0].time + instances[0].amOrPm;
+                    console.log("hiii " + timepicked);
+
+                    document.getElementById("time").blur();
+
+                }
+            });
+            var a = M.Timepicker.getInstance(elems);
+            console.log("time", instances[0]);
+        });
+    </script>
+
+
+
