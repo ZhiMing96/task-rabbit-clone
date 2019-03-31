@@ -78,7 +78,7 @@ router.get("/viewRequests",ensureAuthenticated, (req, res) => {
     if(err) {
       throw err;
     } else {
-      console.log(result.rows);
+      // console.log(result.rows);
       res.render('pendingRequests', {requests: result.rows});
     }
     //res.redirect('/taskers');
