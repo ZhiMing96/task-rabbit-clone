@@ -361,7 +361,7 @@ router.get("/newTask/:catId/:taskerId", ensureAuthenticated, (req, res) => {
 
 router.get("/viewListings", (req, res) => {
     console.log("here")
-    const sql = "SELECT C.taskid as taskid, taskname, description, duration, manpower, taskdatetime, datecreated, A.cusid as cusid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1"
+    const sql = "SELECT C.taskid as taskid, taskname, description, duration, manpower, taskdatetime, datecreated, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
     const params = [parseInt(req.user.cusId)]
     console.log(req.user.cusId)
     
@@ -370,7 +370,7 @@ router.get("/viewListings", (req, res) => {
         if (error) {
             console.log('err: ', error);
         }
-  
+        console.log(result.rows[0].haschosenbid)
         res.render('view_tr_listings', {
             task: result.rows,
         });
