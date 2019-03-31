@@ -205,9 +205,9 @@ router.post("/addRequests", (req, res) => {
         
         const userID = parseInt(req.user.cusId)
         const TDT = req.body.taskDateTime
-        const dateCreated = new Date().toISOString().split('T')[0]
-        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING taskid;"
-        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
+        
+        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, now(), $6) RETURNING taskid;"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID]
         pool.query(sqlinserttask, params1)
         .then((results) => {
             var paramRequires = [req.body.catid, results.rows[0].taskid];
@@ -409,21 +409,30 @@ router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
 //Start: CRUD Requests
 
 router.get("/viewRequests", ensureAuthenticated, (req, res) => {
-    console.log("here")
-    const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.hasResponded, R.cusid, completed FROM (createdtasks C inner join Requests R on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1"
-    const params = [parseInt(req.user.cusId)]
-    console.log(req.user.cusId)
-    
-    pool.query(sql, params, (error, result) => {
-    
-        if (error) {
-            console.log('err: ', error);
-        }
+
+  const sqlUpdate = "UPDATE requests SET deadlinetoaccept = CURRENT_TIMESTAMP, accepted = false, hasresponded = true WHERE deadlinetoaccept <= CURRENT_TIMESTAMP and hasresponded = false;"
+
+  pool.query(sqlUpdate, (error, result) => {
   
-        res.render('view_tr_requests', {
-            task: result.rows,
-        });
-    });
+    if (error) {
+        console.log('err: ', error);
+    }
+  });
+  const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.hasResponded as hasresponded, R.deadlinetoaccept as deadlinetoaccept, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
+  const params = [parseInt(req.user.cusId)]
+  console.log(req.user.cusId)
+
+  pool.query(sql, params, (error, result) => {
+  
+      if (error) {
+          console.log('err: ', error);
+      }
+      
+      console.log(result.rows[0])
+      res.render('view_tr_requests', {
+          task: result.rows,
+      });
+  });
 
 });
 
