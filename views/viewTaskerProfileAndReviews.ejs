@@ -1,51 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <%- include("include/head", {title: "Tasker Profile"}); %>
   </head>
-
-<body>
+  <body style="background-color: #282c34">
     <%- include("include/navbar"); %>
-    <div class='container'>
-        <h1><%=profile[0].name%></h1>
-        <span class="align-items-center" style="font-size:1em">
-            <% for(var y=0;y<5;y++){%>
-                <i class="fa<%=(y<profile[0].taskerrating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
-            <%}%> 
-            <br>
-            <br>
-        </span>
-        <i class="far fa-check-circle" style="color:green"></i>   <%=((profile[0].num == null) ? 0 : profile[0].num) + " " + catName + " Tasks " %><br><br>
-
-        <%if (profile[0].taskerrating>=4 && profile[0].num>=0) { %> <!--numbers should be 4.8 and 50-->
-            <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
-        <% }%>  
-        <%if (val) { %>
-            <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></span>
-        <% }%> 
-    
-        $<%=profile[0].rateperhour%><span style="font-size:0.5em">/hr</span><br><br>
-         
-        
-        <% if (reviews== null) { %>
-          Tasker has no reviews.
-        <% }else {%>
-          <% for(var x=0; x < reviews.length; x++){%> <!--reviews-->
-            <%="Category Name: " + reviews[x].catname%><br>
-            Rating:
-            <% for(var z=0; z<5 ; z++){%>
-                <i class="fa<%=(z<reviews[x].rating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
-            <%}%> 
-            <%="Description: " + reviews[x].description%><br>
-            <%="Reviewer: " + reviews[x].name%><br><br>
-            <%="task id: " + reviews[x].taskid%><br><br>
-          <%}%>
-        <%}%> 
-        <div class="text-center">	
-          <a href="/taskRequesters/addRequests" class="btn btn-outline-secondary">Back</a>		
-          <a href="/taskRequesters/newTask/<%=catId%>/<%=profile[0].cusid%>" class="btn btn-outline-secondary">Select Tasker</a>		
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container pt-5 mb-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col-md-4">
+                <h5>Step 1: Choose a Category</h5>
+            </div>
+            <div class="col-md-8">
+              <button class="btn btn-primary">Housekeeping</button>
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="col-md-4">
+                <h5>Step 2: Choose a Date</h5>
+            </div>
+            <div class="col-md-8">
+              Some date lmao
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="col-md-4">
+                <h5>Step 3: Choose a Tasker</h5>
+            </div>
+            <div class="col-md-8">
+              <h3>
+                <div class="row no-gutters">
+                  <div class="col-md-10">
+                    <%=profile[0].name%>&nbsp;&nbsp;
+                    <span class="align-items-center" style="font-size:0.7em">
+                    <%- include('include/stars', {rating: profile[0].taskerrating}) %>
+                    </span>
+                    <%if (profile[0].taskerrating>=4 && profile[0].num>=0) { %> <!--numbers should be 4.8 and 50-->
+                        <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
+                    <% }%>
+                    <%if (val=="greatValue") { %> 
+                      <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></span>
+                    <% }%>
+                  </div>
+                  <div class="col-md-2 text-right">
+                      $<%=profile[0].rateperhour%><span style="font-size:0.5em">/hour</span>
+                  </div>   
+                </div>
+              </h3>
+              <div class="col-10">
+                  <i class="far fa-check-circle" style="color:green"></i>   <%=((profile[0].num == null) ? 0 : profile[0].num) + " " + catName + " Tasks " %>
+                  <br/>
+                  <br/>
+                  "<%=profile[0].description%>"<br>
+              </div>
+              <div class="col-2 align-right">        
+              </div>
+              <hr/>
+              <h4>Reviews</h4>
+              <% if (reviews== null) { %>
+                Tasker has no reviews.
+              <% }else {%>
+                <% for(var x=0; x < reviews.length; x++){%> <!--reviews-->
+                  <div class="card">
+                    <div class="card-header">
+                      Reviewed by: <%=reviews[x].name%>
+                      <button class="btn btn-sm btn-primary" style="float:right"><%=reviews[x].catname%></button>
+                    </div>
+                    <div class="card-body">
+                      <%-include('include/stars', {rating: reviews[x].rating}); %>
+                      <br/>
+                      <i>"<%=reviews[x].description%>"</i>
+                      <br/>
+                    </div>
+                  </div>
+                <%}%>
+              <%}%> 
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="col text-center">
+              <a href="/taskRequesters/newTask/<%=catId%>/<%=profile[0].cusid%>" class="btn btn-primary mx-3">Select Tasker</a>
+              <a href="/taskRequesters/addRequests" class="btn btn-outline-primary">Back</a>				
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+    <%- include("include/footer"); %>
     <script>
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()

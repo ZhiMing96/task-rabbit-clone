@@ -6,18 +6,56 @@
 
   <body style="background-color: #282c34">
     <%- include("include/navbar"); %>
-    <div class="container-fluid" style="background-color: white;background-image:url('/images/home.jpg');background-repeat: no-repeat;background-position:center;background-size:cover;">
+    <div class="container-fluid" style="background-color: white;background-image:url('/images/index_flatlay.jpg');background-repeat: no-repeat;background-position:center;background-size:cover;">
       <div class="row">
-        <div class="container mt-5" style="min-height:70vh">
+        <div class="container mt-8" style="min-height:70vh">
           <%- messages('include/message', locals) %>
           <div class="row py-5">
-            <div class="col">
+            <div class="col-8">
               <h1>Welcome to TaskForce.</h1>
+              <h3>Let's get you started.</h3>
+              <br/>
+              <br/>
+              <br/>
+              <h4>I am a...</h4>
+              <table class="table text-center border">
+                <thead class="thead-light">
+                  <tr>
+                    <th><h3><i class="fas fa-fist-raised"></i>&nbsp;&nbsp;&nbsp;Tasker</h3></th>
+                    <th><h3><i class="far fa-handshake"></i>&nbsp;&nbsp;&nbsp;TaskRequester</h3></th>
+                  </tr>
+                  <tr>
+                    <th>looking for some tasks to do:</th>
+                    <th>looking for some help with a Task:</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a href="#" class="btn btn-lg btn-link">Find a Task to do</a></td>
+                    <td><a href="/taskRequesters/addRequests" class="btn btn-lg btn-link">Create a Task</a></td>
+                  </tr>
+                  <tr>
+                    <td><a href="#" class="btn btn-lg btn-link">Update my Tasker Profile</a></td>
+                    <td><a href="/taskRequesters/addRequests" class="btn btn-lg btn-link">Request for a specific Tasker</a></td>
+                  </tr>
+                  <tr>
+                    <td><a href="#" class="btn btn-lg btn-link">Check Assigned Tasks</a></td>
+                    <td><a href="/taskRequesters/addRequests" class="btn btn-lg btn-link">Check Tasks in Progress</a></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid" style="background-color: white;background-image:url('/images/notebook_phone.jpg');background-repeat: no-repeat;background-position:center;background-size:cover;">
+      <div class="row">
+        <div class="container mt-5 py-5" style="min-height:100vh;">
+          <%- messages('include/message', locals) %>
           <div class="row">
             <div class="col-6">
-              <h3>Latest Tasks</h3>
+              <h3><i>Latest Tasks</i></h3>
               <table class="table">
                 <thead>
                   <th>Task</th>

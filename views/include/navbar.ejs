@@ -8,8 +8,31 @@
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
         <% if(typeof user !== 'undefined' && user != null){ %>
-          <li class="nav-item"><a class="nav-link" href="/taskers">As Tasker<span class="sr-only">(current)</span></a></li>
-          <li class="nav-item"><a class="nav-link" href="/taskRequesters/">As TaskRequester<span class="sr-only">(current)</span></a></li>
+          <li class="nav-item dropdown active mx-3">
+              <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                My Tasker Tasks
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/taskRequesters/">Find a Task</a>
+                <a class="dropdown-item" href="/taskers/">Bids Made</a>
+                <a class="dropdown-item" href="/taskers/">Requests Received</a>
+                <a class="dropdown-item" href="/taskers/">Tasks In Progress</a>
+                <a class="dropdown-item" href="/taskers/">Tasks Completed</a>
+              </div>
+          </li>
+          <li class="nav-item dropdown active mx-3">
+              <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                My TaskRequester Tasks
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/taskers/">Create a Task</a>
+                <a class="dropdown-item" href="/taskers/">Requests Sent Out</a>
+                <a class="dropdown-item" href="/taskers/">Bids Received</a>
+                <a class="dropdown-item" href="/taskers/">Tasks In Progress</a>
+                <a class="dropdown-item" href="/taskers/">Tasks Completed</a>
+                <a class="dropdown-item" href="/taskRequesters/"></a>
+              </div>
+          </li>
         <%}%>
       </ul>
       <ul class="navbar-nav ml-auto">
@@ -17,18 +40,19 @@
           <li class="nav-item"> <a class="btn btn-primary" href="/users/register">Register</a></li>&nbsp;&nbsp;&nbsp;
           <li class="nav-item"> <a class="btn btn-primary" href="/users/login">Login</a></li>
         <% } else { %>
-          <li class="nav-item">
+          <li class="nav-item mx-3">
             <a class="btn btn-primary" href="">Pending Tasks <span class="badge badge-light">0</span></a>
-          </li>&nbsp;&nbsp;&nbsp;
-          <li class="nav-item dropdown">
+          </li>
+          <li class="nav-item dropdown active mx-3">
               <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-user-circle"></i>&nbsp;&nbsp;&nbsp;<%=user.username%>
+                Account
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="/taskers">As Tasker</a>
-                  <a class="dropdown-item" href="/taskRequesters">As TaskRequester</a>
+                  <a class="dropdown-item disabled" href="/taskers/" ><i class="fas fa-user-circle"></i>&nbsp;&nbsp;&nbsp;<%=user.username%></a>
+                  <a class="dropdown-item" href="/taskers/">My Tasker Profile</a>
+                  <a class="dropdown-item" href="/taskRequesters/">My TaskRequester Profile</a>
                 </div>
-          </li>&nbsp;&nbsp;&nbsp;
+          </li>
               
           <li class="nav-item"><a class="btn btn-outline-primary" href="/users/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         <%}%>

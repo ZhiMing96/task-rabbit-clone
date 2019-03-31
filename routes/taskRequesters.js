@@ -10,7 +10,7 @@ router.get("/my_bids",ensureAuthenticated, (req, res) => {
     res.render("view_tr_bids",{bids: result.rows})
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.render("view_tr_bids");
   });
 });
@@ -24,13 +24,13 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthenti
     ])
   .then(([result,result2,result3]) => {
     if(result.rows.length == 0 || result2.rows.length == 0){
-      req.flash("warning",'<i class="fas fa-times"></i> Encountered an error. Please try again.');
+      req.flash("warning",'Encountered an error. Please try again.');
       res.redirect("/taskRequesters/my_bids/");
     }
     res.render("tr_accept_bid",{tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows});
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.redirect("/taskRequesters/my_bids/");
   });
 });
@@ -48,7 +48,7 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept",ensureA
     res.render("tr_accepted_bid",{result: result3.rows[0]});
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.redirect("/taskRequesters/my_bids/");
   });
 });
@@ -57,7 +57,7 @@ router.get("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, 
   pool.query("SELECT * FROM reviews as t1 WHERE t1.taskid=$1 AND t1.cusid=$2;", [req.params.taskid, req.params.tasker_id])
   .then((result)=>{
     if(result.rows.length > 0){
-      req.flash("warning",'<i class="fas fa-times"></i> Review has already been submitted for this task and this tasker.');
+      req.flash("warning",'Review has already been submitted for this task and this tasker.');
       res.redirect('/');
     }
   })
@@ -66,7 +66,7 @@ router.get("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, 
     res.render("tr_write_review",{result: result.rows[0]})
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.redirect("back");
   });
 });
@@ -74,11 +74,11 @@ router.get("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, 
 router.post("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, res) => {
   pool.query("INSERT INTO reviews(rating, description, taskid, cusid) VALUES($1,$2,$3,$4);",[req.body.rating,req.body.review,req.params.taskid,req.params.tasker_id])
   .then((result)=>{
-    req.flash("success", '<i class="fas fa-check"></i> Review submitted! Thanks for your review!')
+    req.flash("success", 'Review submitted! Thanks for your review!')
     res.redirect("/");
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.redirect("back");
   });
 });
@@ -194,7 +194,8 @@ router.post("/addRequests", (req, res) => {
     req.checkBody("duration", "Duration is required").notEmpty();
     req.checkBody("manpower", "manpower is required").notEmpty();
     req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
-    //req.checkBody("catName", "Category Name is required").notEmpty();
+    req.checkBody("deadline", "deadline is required").notEmpty();
+  
     let errors = req.validationErrors();
     if (errors) {
         res.render('add_category');
@@ -204,9 +205,9 @@ router.post("/addRequests", (req, res) => {
         
         const userID = parseInt(req.user.cusId)
         const TDT = req.body.taskDateTime
-        const dateCreated = new Date().toISOString().split('T')[0]
-        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING taskid;"
-        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
+        
+        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, now(), $6) RETURNING taskid;"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID]
         pool.query(sqlinserttask, params1)
         .then((results) => {
             var paramRequires = [req.body.catid, results.rows[0].taskid];
@@ -215,15 +216,17 @@ router.post("/addRequests", (req, res) => {
             return pool.query(sqlRequires, paramRequires);
         })
         .then((results) => {
-            var paramAssigned = [results.rows[0].taskid, req.body.taskerid];
-            var sqlAssigned = "INSERT INTO Assigned (taskid, cusid, completed) VALUES ($1, $2, FALSE) RETURNING taskid;"
-            return pool.query(sqlAssigned,paramAssigned); 
-        })
+          var paramRequests = [req.body.deadline, results.rows[0].taskid, req.body.taskerid];
+          var sqlRequests = "INSERT INTO Requests(deadlinetoaccept, taskid, cusid, hasResponded) VALUES ($1, $2, $3, false) RETURNING taskid;"
+          return pool.query(sqlRequests,paramRequests); 
+      })
+      
         .then((results) => {
             var taskid = [results.rows[0].taskid];
-            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join assigned A on T.taskid=A.taskid join customers C on A.cusid=C.cusid WHERE A.taskid=$1;"
+            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
             return pool.query(sqlNewTask,taskid); 
         })
+
         .then((results) => {
             //console.log(results)
             res.render('newTaskCreated', 
@@ -406,21 +409,30 @@ router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
 //Start: CRUD Requests
 
 router.get("/viewRequests", ensureAuthenticated, (req, res) => {
-    console.log("here")
-    const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.hasResponded, R.cusid, completed FROM (createdtasks C inner join Requests R on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1"
-    const params = [parseInt(req.user.cusId)]
-    console.log(req.user.cusId)
-    
-    pool.query(sql, params, (error, result) => {
-    
-        if (error) {
-            console.log('err: ', error);
-        }
+
+  const sqlUpdate = "UPDATE requests SET deadlinetoaccept = CURRENT_TIMESTAMP, accepted = false, hasresponded = true WHERE deadlinetoaccept <= CURRENT_TIMESTAMP and hasresponded = false;"
+
+  pool.query(sqlUpdate, (error, result) => {
   
-        res.render('view_tr_requests', {
-            task: result.rows,
-        });
-    });
+    if (error) {
+        console.log('err: ', error);
+    }
+  });
+  const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.hasResponded as hasresponded, R.deadlinetoaccept as deadlinetoaccept, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
+  const params = [parseInt(req.user.cusId)]
+  console.log(req.user.cusId)
+
+  pool.query(sql, params, (error, result) => {
+  
+      if (error) {
+          console.log('err: ', error);
+      }
+      
+      console.log(result.rows[0])
+      res.render('view_tr_requests', {
+          task: result.rows,
+      });
+  });
 
 });
 
@@ -553,7 +565,7 @@ router.get('/viewBids/:taskid', ensureAuthenticated, function (req, res) {
       res.render("view_tr_bids",{bids: result.rows})
     })
     .catch((error) => {
-      req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+      req.flash("warning",'Encountered an error: ' + error);
       res.render("view_tr_bids");
     });
 });
@@ -568,13 +580,13 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthent
       ])
     .then(([result,result2,result3]) => {
       if(result.rows.length == 0 || result2.rows.length == 0){
-        req.flash("warning",'<i class="fas fa-times"></i> Encountered an error. Please try again.');
+        req.flash("warning",'Encountered an error. Please try again.');
         res.redirect("/taskRequesters/my_bids/");
       }
       res.render("tr_accept_bid",{tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows});
     })
     .catch((error) => {
-      req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+      req.flash("warning",'Encountered an error: ' + error);
       res.redirect("/taskRequesters/my_bids/");
     });
   });
@@ -591,7 +603,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthent
       res.render("tr_accepted_bid",{result: result3.rows[0]});
     })
     .catch((error) => {
-      req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+      req.flash("warning",'Encountered an error: ' + error);
       res.redirect("/taskRequesters/my_bids/");
     });
   });
