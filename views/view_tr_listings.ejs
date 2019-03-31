@@ -49,8 +49,8 @@
 						<td><%= task[i].description%></td>
 						<td><%= task[i].duration%></td>
 						<td><%= task[i].manpower%></td>
-						<td><%= task[i].taskdatetime%></td>
-						<td><%= task[i].datecreated%></td>
+						<td><%= (task[i].taskdatetime).toString().substring(0,24)%></td>
+						<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
 						<!-- Check if task have completed attribute, If completed. dont show the button. Else show the buttons -->
 					<!-- if have check for status for winning. If not got winning bid then show pendings bids-->
 					<!-- if status is winning bid, then view pending completion. -->	
@@ -60,11 +60,11 @@
 							<td> - </td>
 							<td> - </td>
 						<% } else {%>
-								<% if(task[i].cusid > 0){%>
-									<td> pending for completion </td>
+								<% if(task[i].haschosenbid == true){%>
+									<td> Pending for completion </td>
 									<td>-</td>
 								<% } else {%>
-									<td> pending for bids </td>
+									<td> Pending for bids </td>
 									<td>
 											<form action="/taskRequesters/viewBids/<%= task[i].taskid%>", method="GET">
 												<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/viewBids/<%= task[i].taskid %>">BIDS</button>

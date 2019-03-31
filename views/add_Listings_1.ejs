@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("include/head", {title: "Choose a Cateogry"}); %>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+
+    <script>
+      $(document).ready(()=>{
+        var categories = [];
+
+        <% for(x=0;x<categories.length;x++){%>
+          categories.push("<%=categories[x].catname%>");
+        <%}%>
+
+        categories.forEach((item) => {
+          $("#" + item + "_show").click(()=>{
+            for(x=0;x<categories.length;x++){
+              if(categories[x] == item) {
+                $("#" + categories[x]).show();
+                $("#" + categories[x] + "_show").removeClass("btn-outline-primary");;
+                $("#" + categories[x] + "_show").addClass("btn-primary");;
+              } else {
+                $("#" + categories[x]).hide();
+                $("#" + categories[x] + "_show").removeClass("btn-primary");;
+                $("#" + categories[x] + "_show").addClass("btn-outline-primary");;
+              }
+            }
+          })
+        })
+      })
+    </script>
+    
+  </head>
+  <body style="background-color: #282c34">
+    <%- include("include/navbar"); %>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container pt-5 mb-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col-md-4">
+                <h5>Step 1: Choose a Category</h5>
+            </div>
+            <div class="col-md-8">
+                <% for(var i=0; i<categories.length; i++) { %>
+                    <button class="btn btn-outline-primary" id="<%=categories[i].catname%>_show"><%=categories[i].catname%></button>
+                <%}%>
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+            <div class="col-md-4">
+                <h5>Step 2: Choose a Date</h5>
+            </div>
+            <div class="col-md-8">
+              <div class="form-group">
+                  <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                      <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
+                      <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                      </div>
+                  </div>
+              </div>
+              <script type="text/javascript">
+                  $(function () {
+                      $('#datetimepicker1').datetimepicker();
+                  });
+              </script>
+            </div>
+          </div>
+          <hr/>
+          <div class="row">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+          <a href="/taskRequesters/newTask/<%=categories[i].catid%>" class="btn btn-primary mx-3">Add A New Listing</a>
+          <a href="/taskRequesters/addTasks" class="btn btn-outline-primary">Back</a>				
+        </div>
+    </div>
+    <%- include("include/footer"); %>
+    <script>
+      $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+  </body>
+</html>
