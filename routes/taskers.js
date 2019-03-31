@@ -70,8 +70,9 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
     if (err) {
       throw err;
     } else {
-      console.log(result.rows);
-      res.render('pendingRequests', { requests: result.rows });
+      // console.log(result.rows);
+      res.render('pendingRequests', {requests: result.rows});
+
     }
     //res.redirect('/taskers');
   });
@@ -337,14 +338,13 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
       if (error) {
         console.log('err: ', error);
-      }
-
+      } else {
       res.render('view_my_bids', {
         bid: result.rows,
         currentDateTime: new Date()
-
-
-      });
+        })
+      }
+          
     });
   });
 
@@ -358,15 +358,12 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
       if (error) {
         console.log('err: ', error);
-      }
+      } 
 
-      console.log(result);
-      res.render('view_my_reviews', {
-        reviews: result.rows,
-
-      });
+      //console.log(result);
+      res.render('view_my_reviews', {reviews: result.rows});
     });
-  })
+  });
 
 
   //When viewing tasker reviews before choosing tasker for task
