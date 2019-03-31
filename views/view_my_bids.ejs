@@ -29,7 +29,7 @@
 						<a href="/taskers" class="btn btn-outline-secondary">Back</a>
 					</form>
         </div>
-    <% } else {%>
+    <% } else { %>
 		<table class="table">
 			<thead>
 				<tr>
@@ -65,14 +65,17 @@
 						</form>
 					</td>
 					<td>
+							<form action="/listings/deleteBid/<%= bid[i].taskid%>", method="GET">
+								<button type="submit" class="btn btn-outline-danger" formaction="/listings/deleteBid/<%= bid[i].taskid %>">DELETE</button>
+							</form>
+
 						<!-- Button trigger modal -->
-						<button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#exampleModal">
+						<!-- <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#exampleModal">
 							Delete
-						</button>
-						<%}%>
+						</button> -->
 		
 						<!-- Modal -->
-						<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 							<div class="modal-dialog" role="document">
 								<div class="modal-content">
 									<div class="modal-header">
@@ -91,15 +94,20 @@
 									</div>
 								</div>
 							</div>
-						</div>
+						</div> -->
 					</td>		
 				</tr>
 				<% } %>
+			<% } %>
 			</tbody>
 		</table>
+		
+		<div class="text-center">	
+			<form action="listings/viewAllAvailable" method="GET">
+				<button type="submit" class="btn  btn-outline-primary" formaction="/listings/viewAllAvailable">Place a Bid!</button>
+				<a href="/taskers" class="btn btn-outline-secondary">Back</a>
+			</form>
+		</div>
 	<% } %>
-	<div class="text-center">
-			<a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
-	</div>
-  </body>
+	
 </html>

@@ -43,7 +43,7 @@ router.get("/taskerSettings", ensureAuthenticated, (req, res) => {
 
       var paramSkill = [parseInt(req.user.cusId)]
       var sqlSkill =
-        "SELECT s.ssid, s.description, c.catname FROM addedpersonalskills s INNER JOIN belongs b ON s.ssid = b.ssid INNER JOIN skillcategories c ON b.catid = c.catid WHERE cusid=$1";
+        "SELECT s.ssid, s.description, c.catname, s.name FROM addedpersonalskills s INNER JOIN belongs b ON s.ssid = b.ssid INNER JOIN skillcategories c ON b.catid = c.catid WHERE cusid=$1";
 
       pool.query(sqlSkill, paramSkill, (err, data) => {
         if (err) {
@@ -70,8 +70,9 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
     if (err) {
       throw err;
     } else {
-      console.log(result.rows);
-      res.render('pendingRequests', { requests: result.rows });
+      // console.log(result.rows);
+      res.render('pendingRequests', {requests: result.rows});
+
     }
     //res.redirect('/taskers');
   });
@@ -152,8 +153,9 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
   router.post("/addSkill", ensureAuthenticated, (req, res) => {
 
-    req.checkBody("description", "description is required").notEmpty();
-    req.checkBody("rate", "rate is required").notEmpty();
+    req.checkBody("skillName", "Name of personal skill is required").notEmpty();
+    req.checkBody("description", "Description is required").notEmpty();
+    req.checkBody("rate", "Rate is required").notEmpty();
     req.checkBody("catName", "Category Name is required").notEmpty();
     var cusId = parseInt(req.user.cusId);
 
@@ -163,8 +165,8 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
       res.redirect('/taskers/addSkill');
     }
 
-    const paramSkill = [cusId, req.body.description, req.body.rate];
-    const sqlAddSkill = "INSERT INTO AddedPersonalSkills(cusId,description,ratePerHour) VALUES($1,$2,$3) RETURNING ssid";
+    const paramSkill = [cusId, req.body.description, req.body.rate, req.body.skillName];
+    const sqlAddSkill = "INSERT INTO AddedPersonalSkills(cusId,description,ratePerHour, name) VALUES($1,$2,$3, $4) RETURNING ssid";
     pool.query(sqlAddSkill, paramSkill, (err, data) => {
       if (err) {
         console.log("Error inserting skill" + err);
@@ -223,22 +225,24 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
   });
 
   router.post("/updateSkill/:ssid", ensureAuthenticated, (req, res) => {
+    req.checkBody("skillName", "Name of personal skill is required").notEmpty();
     req.checkBody("newDescription", "Description is required").notEmpty();
     req.checkBody("newRate", "Rate is required").notEmpty();
     req.checkBody("catName", "Category is required").notEmpty();
     var ssId = req.params.ssid;
     console.log("SSID OF UPDATED SKILL IS:" + ssId);
+    console.log("New name:" + req.body.skillName);
     console.log("New Rate: " + req.body.newRate);
     console.log("New Description: " + req.body.newDescription);
     console.log("New Cat: " + req.body.catName);
 
     let error = req.validationErrors();
     if (error) {
-      res.render("/taskerSettings");
+      res.redirect("/taskers/taskerSettings");
       console.log('Error with inputs')
     } else {
-      const params = [req.body.newDescription, req.body.newRate, ssId];
-      var sql = "UPDATE addedpersonalskills SET description = $1, rateperhour = $2 WHERE ssid = $3";
+      const params = [req.body.newDescription, req.body.newRate, ssId, req.body.newSkillName];
+      var sql = "UPDATE addedpersonalskills SET description = $1, rateperhour = $2, name = $4 WHERE ssid = $3";
 
       pool.query(sql, params, (err, result) => {
         if (err) {
@@ -279,7 +283,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
     pool.query(sqlDeleteCat, (err, result) => {
       if (err) {
-        console.log("Unable to delete Category record" + err);
+        console.log("Unable to delete personal skill record" + err);
       } else {
         pool.query(sqlDeleteSkill);
         res.redirect("/taskers/taskerSettings");
@@ -334,15 +338,13 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
       if (error) {
         console.log('err: ', error);
+      } else {
+      res.render('view_my_bids', {
+        bid: result.rows,
+        currentDateTime: new Date()
+        })
       }
-
-      else {
-        res.render('view_my_bids', {
-          bid: result.rows,
-          currentDateTime: new Date()
-        });
-      }
-      
+          
     });
   });
 
@@ -356,15 +358,12 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
       if (error) {
         console.log('err: ', error);
-      }
+      } 
 
-      console.log(result);
-      res.render('view_my_reviews', {
-        reviews: result.rows,
-
-      });
+      //console.log(result);
+      res.render('view_my_reviews', {reviews: result.rows});
     });
-  })
+  });
 
 
   //When viewing tasker reviews before choosing tasker for task
