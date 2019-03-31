@@ -194,7 +194,8 @@ router.post("/addRequests", (req, res) => {
     req.checkBody("duration", "Duration is required").notEmpty();
     req.checkBody("manpower", "manpower is required").notEmpty();
     req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
-    //req.checkBody("catName", "Category Name is required").notEmpty();
+    req.checkBody("deadline", "deadline is required").notEmpty();
+  
     let errors = req.validationErrors();
     if (errors) {
         res.render('add_category');
@@ -215,15 +216,17 @@ router.post("/addRequests", (req, res) => {
             return pool.query(sqlRequires, paramRequires);
         })
         .then((results) => {
-            var paramAssigned = [results.rows[0].taskid, req.body.taskerid];
-            var sqlAssigned = "INSERT INTO Assigned (taskid, cusid, completed) VALUES ($1, $2, FALSE) RETURNING taskid;"
-            return pool.query(sqlAssigned,paramAssigned); 
-        })
+          var paramRequests = [req.body.deadline, results.rows[0].taskid, req.body.taskerid];
+          var sqlRequests = "INSERT INTO Requests(deadlinetoaccept, taskid, cusid, hasResponded) VALUES ($1, $2, $3, false) RETURNING taskid;"
+          return pool.query(sqlRequests,paramRequests); 
+      })
+      
         .then((results) => {
             var taskid = [results.rows[0].taskid];
-            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join assigned A on T.taskid=A.taskid join customers C on A.cusid=C.cusid WHERE A.taskid=$1;"
+            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
             return pool.query(sqlNewTask,taskid); 
         })
+
         .then((results) => {
             console.log(results)
             res.render('newTaskCreated', 
