@@ -326,6 +326,7 @@ router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
       res.render('view_my_bids', {
           bid: result.rows,
           
+          
       });
   });
 });
