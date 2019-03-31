@@ -10,7 +10,7 @@ router.get("/my_bids",ensureAuthenticated, (req, res) => {
     res.render("view_tr_bids",{bids: result.rows})
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.render("view_tr_bids");
   });
 });
@@ -24,13 +24,13 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthenti
     ])
   .then(([result,result2,result3]) => {
     if(result.rows.length == 0 || result2.rows.length == 0){
-      req.flash("warning",'<i class="fas fa-times"></i> Encountered an error. Please try again.');
+      req.flash("warning",'Encountered an error. Please try again.');
       res.redirect("/taskRequesters/my_bids/");
     }
     res.render("tr_accept_bid",{tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows});
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.redirect("/taskRequesters/my_bids/");
   });
 });
@@ -48,7 +48,7 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept",ensureA
     res.render("tr_accepted_bid",{result: result3.rows[0]});
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.redirect("/taskRequesters/my_bids/");
   });
 });
@@ -57,7 +57,7 @@ router.get("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, 
   pool.query("SELECT * FROM reviews as t1 WHERE t1.taskid=$1 AND t1.cusid=$2;", [req.params.taskid, req.params.tasker_id])
   .then((result)=>{
     if(result.rows.length > 0){
-      req.flash("warning",'<i class="fas fa-times"></i> Review has already been submitted for this task and this tasker.');
+      req.flash("warning",'Review has already been submitted for this task and this tasker.');
       res.redirect('/');
     }
   })
@@ -66,7 +66,7 @@ router.get("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, 
     res.render("tr_write_review",{result: result.rows[0]})
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.redirect("back");
   });
 });
@@ -74,11 +74,11 @@ router.get("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, 
 router.post("/write_review/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, res) => {
   pool.query("INSERT INTO reviews(rating, description, taskid, cusid) VALUES($1,$2,$3,$4);",[req.body.rating,req.body.review,req.params.taskid,req.params.tasker_id])
   .then((result)=>{
-    req.flash("success", '<i class="fas fa-check"></i> Review submitted! Thanks for your review!')
+    req.flash("success", 'Review submitted! Thanks for your review!')
     res.redirect("/");
   })
   .catch((error) => {
-    req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+    req.flash("warning",'Encountered an error: ' + error);
     res.redirect("back");
   });
 });
@@ -416,10 +416,13 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
         if (error) {
             console.log('err: ', error);
         }
-  
-        res.render('view_tr_requests', {
-            task: result.rows,
-        });
+        
+        else{
+            res.render('view_tr_requests', {
+                task: result.rows,
+            });
+        }
+        
     });
 
 });
@@ -553,7 +556,7 @@ router.get('/viewBids/:taskid', ensureAuthenticated, function (req, res) {
       res.render("view_tr_bids",{bids: result.rows})
     })
     .catch((error) => {
-      req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+      req.flash("warning",'Encountered an error: ' + error);
       res.render("view_tr_bids");
     });
 });
@@ -568,13 +571,13 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthent
       ])
     .then(([result,result2,result3]) => {
       if(result.rows.length == 0 || result2.rows.length == 0){
-        req.flash("warning",'<i class="fas fa-times"></i> Encountered an error. Please try again.');
+        req.flash("warning",'Encountered an error. Please try again.');
         res.redirect("/taskRequesters/my_bids/");
       }
       res.render("tr_accept_bid",{tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows});
     })
     .catch((error) => {
-      req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+      req.flash("warning",'Encountered an error: ' + error);
       res.redirect("/taskRequesters/my_bids/");
     });
   });
@@ -591,7 +594,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthent
       res.render("tr_accepted_bid",{result: result3.rows[0]});
     })
     .catch((error) => {
-      req.flash("warning",'<i class="fas fa-times"></i> Encountered an error: ' + error);
+      req.flash("warning",'Encountered an error: ' + error);
       res.redirect("/taskRequesters/my_bids/");
     });
   });

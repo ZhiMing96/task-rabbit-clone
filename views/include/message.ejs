@@ -5,7 +5,14 @@
         <% } else { %> 
         <div class="alert alert-<%= type %>" role="alert">
         <% }; messages[type].forEach(function (message) { %>
-            <%- message %>
+            <% if(type == "warning"){ %>
+                <i class="fas fa-exclamation"></i>
+            <% } else if (type == "success"){ %>
+                <i class="fas fa-check"></i>
+            <% } else { %>
+                <i class="fas fa-circle"></i>
+            <% } %>
+            &nbsp;&nbsp;&nbsp;<%- message %>
         <% }) %>
         </div>
     <% }) %>

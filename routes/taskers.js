@@ -336,12 +336,13 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
         console.log('err: ', error);
       }
 
-      res.render('view_my_bids', {
-        bid: result.rows,
-        currentDateTime: new Date()
-
-
-      });
+      else {
+        res.render('view_my_bids', {
+          bid: result.rows,
+          currentDateTime: new Date()
+        });
+      }
+      
     });
   });
 

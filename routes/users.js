@@ -31,7 +31,7 @@ router.post('/register', (req, res) => {
     req.checkBody('password2', 'Passwords do not match.').equals(req.body.password);
 
     if (req.body.password != req.body.password2){
-        req.flash('warning', '<i class="fas fa-times"></i> Passwords do not match');
+        req.flash('warning', 'Passwords do not match');
         res.render('register');
     } else {
         let password = req.body.password;
@@ -110,7 +110,7 @@ router.post('/login', function (req, res, next) {
 
 //Logout
 router.get('/logout', function (req, res) {
-    req.flash('success', '<i class="fas fa-check"></i> You have successfully logged out.')
+    req.flash('success', 'You have successfully logged out.')
     req.logout();
     res.redirect('/users/login');
 });
