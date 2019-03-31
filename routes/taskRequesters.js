@@ -40,6 +40,8 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept",ensureA
   return Promise.all([
       pool.query("UPDATE bids SET winningbid=true WHERE cusid=$2 AND taskid=$1;",[req.params.taskid,req.params.tasker_id]),
       pool.query("INSERT INTO Assigned(taskid,cusid,completed) VALUES($1,$2,false);",[req.params.taskid,req.params.tasker_id]),
+      pool.query("UPDATE Listings SET hasChosenBid = true WHERE taskid = $1;",[req.params.taskid]),
+      pool.query("UPDATE Listings SET biddingDeadline = now() WHERE taskid = $1;",[req.params.taskid]),
       pool.query("SELECT t1.*, t2.bidprice,t3.name FROM createdtasks as t1 INNER JOIN bids as t2 on t1.taskid=t2.taskid INNER JOIN customers as t3 on t2.cusid=t3.cusid WHERE t2.taskid=$1 AND t2.cusid=$2;",[req.params.taskid, req.params.tasker_id])
     ])
   .then(([result,result2,result3]) => {
@@ -405,7 +407,7 @@ router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
 
 router.get("/viewRequests", ensureAuthenticated, (req, res) => {
     console.log("here")
-    const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.cusid, completed FROM (createdtasks C inner join Requests R on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1"
+    const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.hasResponded, R.cusid, completed FROM (createdtasks C inner join Requests R on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1"
     const params = [parseInt(req.user.cusId)]
     console.log(req.user.cusId)
     
