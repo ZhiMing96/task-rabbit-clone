@@ -109,10 +109,50 @@ router.get("/addTasks", ensureAuthenticated, (req, res) => {
 
 
 //Add route
-router.get("/addListings", ensureAuthenticated, (req, res) => {
+/*
+router.get("/newListings/:catId", ensureAuthenticated, (req, res) => {
+    
+  var catId= req.params.catId;
+  const sqlcat ="SELECT catname, catId FROM skillcategories where catId=" + catId +";"
+  
+  pool.query(sqlcat, (err,result) =>{
+    if(err) {
+      console.log("error in sqlcat query");
+    } else {
+              res.render("add_Listings", {cat: result.rows});
+    }
+  })
+});
+*/
+/*
+router.get("/addListings", ensureAuthenticated, async function(req, res){
+  const categoryQuery ="SELECT * FROM skillcategories";
+  var categoryResult = await pool.query(categoryQuery);
+
+  var taskersByCategory = [];
+
+  for(x=0;x<categoryResult.rows.length;x++){
+      var sqlQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
+      " SELECT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description, S.ssid "+
+      "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=$1 order by ratePerHour desc;"
+      var sqlParams = [categoryResult.rows[x].catid]; 
+      var result = await pool.query(sqlQuery, sqlParams);
+      taskersByCategory.push(result.rows);
+  }
+  
+  console.log(taskersByCategory);
+
+  res.render("add_Listings_1", {
+      categories: categoryResult.rows,
+      taskersByCategory: taskersByCategory
+  });
+});
+*/
+
+router.get("/addListings", ensureAuthenticated, async function(req, res){
     res.render("add_Listings");
 });
-  
+
 router.post("/addListings", ensureAuthenticated, (req, res) => {
     req.checkBody("taskName", "Task Name is required").notEmpty();
     req.checkBody("description", "Description is required").notEmpty();
@@ -130,36 +170,41 @@ router.post("/addListings", ensureAuthenticated, (req, res) => {
         
         const userID = parseInt(req.user.cusId)
         var TDT = req.body.taskDateTime
-        var DL = req.body.deadline     
-        var dateCreated = new Date().toISOString().split('T')[0]
-        const sql1 = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7)"
-        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
-        pool.query(sql1, params1, (error, result) => {
-            if (error) {
-                console.log("err: ", error);
-            }
-        });
-        
-        const sql2 = "select count(taskid) from createdtasks"
+    
+        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, now(), $6) RETURNING taskid;"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID]
+        pool.query(sqlinserttask, params1)
+        .then((results) => {
+          var paramRequires = [results.rows[0].taskid];
+          //var paramRequires = [req.body.catid, results.rows[0].taskid];
+          var sqlRequires = "INSERT INTO Requires(catid,taskid) VALUES (1,$1) RETURNING taskid";
+          return pool.query(sqlRequires, paramRequires);
+        })
+        .then((results) => {
+            const sqlListings = "INSERT INTO Listings (biddingDeadline, startingBid, taskId, hasChosenBid) VALUES ($1, $2, $3, false) RETURNING taskid"
+            const paramsListings = [req.body.deadline, req.body.startingBid, results.rows[0].taskid]
+            return pool.query(sqlListings, paramsListings);
+        })
+        .then((results) => {
+          var taskid = [results.rows[0].taskid];
+          var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime FROM createdtasks T join Listings L on T.taskid = L.taskid WHERE L.taskid=$1;"
+          return pool.query(sqlNewTask,taskid); 
+        })
 
-        pool.query(sql2, (error, result) => {
-            if (error) {
-                console.log("err: ", error);
-            }
-            console.log(req.body.taskName)
-            const resTaskId = result.rows[0].count
-            const sql3 = "INSERT INTO Listings (biddingDeadline, startingBid, taskId) VALUES ($1, $2, $3)"
-            const params3 = [req.body.deadline, req.body.startingBid, resTaskId]
-            pool.query(sql3, params3, (error, result) => {
-                if (error) {
-                    console.log("err: ", error);
-                }
-                //req.flash('success', 'Article Added');
-                console.log("result?", result);
-                res.redirect("/");
-            });
-
-        });
+      .then((results) => {
+          console.log(results)
+          res.render('newListingCreated', 
+          {   taskname: results.rows[0].taskname,
+              description: results.rows[0].description,
+              manpower: results.rows[0].manpower,
+              taskDateTime: results.rows[0].taskDateTime,
+          });
+      })
+      .catch((error) => {
+          console.log("Error creating new task", error);
+          req.flash("warning", "An error was encountered. Please try again.")
+          res.redirect('/addListings');
+      })
     }
 
 });
