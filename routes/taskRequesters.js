@@ -180,7 +180,7 @@ router.get("/addRequests", ensureAuthenticated, async function(req, res) {
         taskersByCategory.push(result.rows);
     }
     
-    console.log(taskersByCategory);
+    //console.log(taskersByCategory);
 
     res.render("select_tasker", {
         categories: categoryResult.rows,
@@ -225,7 +225,7 @@ router.post("/addRequests", (req, res) => {
             return pool.query(sqlNewTask,taskid); 
         })
         .then((results) => {
-            console.log(results)
+            //console.log(results)
             res.render('newTaskCreated', 
             {   taskname: results.rows[0].taskname,
                 description: results.rows[0].description,
