@@ -86,7 +86,11 @@ app.get('*', function(req,res,next){
 //Home route
 
 app.get('/', (req, res) => {
-    res.render('index');
+    if (req.isAuthenticated()) {
+        res.redirect('/home');
+    } else {
+        res.render('index');
+    }
 });
 
 //Route files. Anything with the first param will go to second param
