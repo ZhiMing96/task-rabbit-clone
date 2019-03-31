@@ -194,7 +194,8 @@ router.post("/addRequests", (req, res) => {
     req.checkBody("duration", "Duration is required").notEmpty();
     req.checkBody("manpower", "manpower is required").notEmpty();
     req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
-    //req.checkBody("catName", "Category Name is required").notEmpty();
+    req.checkBody("deadline", "deadline is required").notEmpty();
+  
     let errors = req.validationErrors();
     if (errors) {
         res.render('add_category');
@@ -204,9 +205,9 @@ router.post("/addRequests", (req, res) => {
         
         const userID = parseInt(req.user.cusId)
         const TDT = req.body.taskDateTime
-        const dateCreated = new Date().toISOString().split('T')[0]
-        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING taskid;"
-        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, dateCreated, userID]
+        
+        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, now(), $6) RETURNING taskid;"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID]
         pool.query(sqlinserttask, params1)
         .then((results) => {
             var paramRequires = [req.body.catid, results.rows[0].taskid];
@@ -215,15 +216,17 @@ router.post("/addRequests", (req, res) => {
             return pool.query(sqlRequires, paramRequires);
         })
         .then((results) => {
-            var paramAssigned = [results.rows[0].taskid, req.body.taskerid];
-            var sqlAssigned = "INSERT INTO Assigned (taskid, cusid, completed) VALUES ($1, $2, FALSE) RETURNING taskid;"
-            return pool.query(sqlAssigned,paramAssigned); 
-        })
+          var paramRequests = [req.body.deadline, results.rows[0].taskid, req.body.taskerid];
+          var sqlRequests = "INSERT INTO Requests(deadlinetoaccept, taskid, cusid, hasResponded) VALUES ($1, $2, $3, false) RETURNING taskid;"
+          return pool.query(sqlRequests,paramRequests); 
+      })
+      
         .then((results) => {
             var taskid = [results.rows[0].taskid];
-            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join assigned A on T.taskid=A.taskid join customers C on A.cusid=C.cusid WHERE A.taskid=$1;"
+            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
             return pool.query(sqlNewTask,taskid); 
         })
+
         .then((results) => {
             console.log(results)
             res.render('newTaskCreated', 
@@ -406,24 +409,30 @@ router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
 //Start: CRUD Requests
 
 router.get("/viewRequests", ensureAuthenticated, (req, res) => {
-    console.log("here")
-    const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.hasResponded, R.cusid, completed FROM (createdtasks C inner join Requests R on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1"
-    const params = [parseInt(req.user.cusId)]
-    console.log(req.user.cusId)
-    
-    pool.query(sql, params, (error, result) => {
-    
-        if (error) {
-            console.log('err: ', error);
-        }
-        
-        else{
-            res.render('view_tr_requests', {
-                task: result.rows,
-            });
-        }
-        
-    });
+
+  const sqlUpdate = "UPDATE requests SET deadlinetoaccept = CURRENT_TIMESTAMP, accepted = false, hasresponded = true WHERE deadlinetoaccept <= CURRENT_TIMESTAMP and hasresponded = false;"
+
+  pool.query(sqlUpdate, (error, result) => {
+  
+    if (error) {
+        console.log('err: ', error);
+    }
+  });
+  const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.hasResponded as hasresponded, R.deadlinetoaccept as deadlinetoaccept, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
+  const params = [parseInt(req.user.cusId)]
+  console.log(req.user.cusId)
+
+  pool.query(sql, params, (error, result) => {
+  
+      if (error) {
+          console.log('err: ', error);
+      }
+      
+      console.log(result.rows[0])
+      res.render('view_tr_requests', {
+          task: result.rows,
+      });
+  });
 
 });
 
