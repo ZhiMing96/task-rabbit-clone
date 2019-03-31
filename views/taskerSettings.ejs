@@ -30,9 +30,10 @@
            
             <form action="/taskers/deleteSkill/<%= allSkills[i].ssid %>" method="GET" class="list-group-item list-group-item-action flex-column align-items-start"> 
                 <div class="d-flex w-100 justify-content-between">
-                    <h2 name="catName" class="mb-1"><%= allSkills[i].catname%></h2>
+                    <h2 name="skillName" class="mb-1"><%= allSkills[i].name%></h2>
                 </div>
-                <p class="mb-1"><%= allSkills[i].description%></p>
+                <p class="mb-1">Category: <%= allSkills[i].catname%></p>
+                <p class="mb-1">Description: <%= allSkills[i].description%></p>
 
                 <div class="text-right">
                     <form action="/taskers/updateSkill/<%= allSkills[i].ssid %>" method="GET">

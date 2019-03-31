@@ -1,0 +1,94 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function startTime() {
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            var ampm = h >= 12 ? ' PM' : ' AM';
+            h = h % 12;
+            h = h ? h : 12;
+            // add a zero in front of numbers<10
+            m = checkTime(m);
+            s = checkTime(s);
+            if ((ampm == " AM" && h < 10) || (ampm == " PM" && h > 10)) {
+                document.getElementById("printTime").innerHTML = "12:00 PM";
+            } else {
+                document.getElementById("printTime").innerHTML = h + ":" + m + ampm;
+            }
+
+            // document.getElementById('timeinput').
+            //     t = setTimeout('startTime()', 500);
+        }
+        function checkTime(i) {
+            if (i < 10) {
+                i = "0" + i;
+            }
+            return i;
+        }
+
+    </script>
+
+
+</head>
+
+<body>
+
+
+    <script type="text/javascript">
+        var timepicked;
+        var datepicked;
+        var today = new Date();
+        var duedate = new Date();
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.datepicker');
+            var dateinstances = M.Datepicker.init(elems, {
+                defaultDate: 'now',
+                autoClose: true,
+                minDate: today,
+                format: 'yyyy-mm-dd',
+
+                onClose: function () {
+                    datepicked = dateinstances[0].date;
+                }
+
+            });
+
+
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('time').value = time;
+            var elems = document.querySelectorAll('.timepicker');
+            var instances = M.Timepicker.init(elems, {
+                defaultTime: 'now',
+                autoClose: true,
+                twelvehour: false,
+                format: 'HH:ii',
+                onCloseEnd: function () {
+                    timepicked = instances[0].time + instances[0].amOrPm;
+                    console.log("hiii " + timepicked);
+
+                    document.getElementById("time").blur();
+
+                }
+            });
+            var a = M.Timepicker.getInstance(elems);
+            console.log("time", instances[0]);
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>
