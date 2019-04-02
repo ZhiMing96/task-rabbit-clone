@@ -171,18 +171,18 @@ router.post("/addListings", ensureAuthenticated, (req, res) => {
         const userID = parseInt(req.user.cusId)
         var TDT = req.body.taskDateTime
     
-        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, now(), $6) RETURNING taskid;"
-        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID]
+        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4, $5, now(), $6, $7) RETURNING taskid;"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID, req.body.deadline]
         pool.query(sqlinserttask, params1)
         .then((results) => {
           var paramRequires = [results.rows[0].taskid];
-          //var paramRequires = [req.body.catid, results.rows[0].taskid];
+          // for now i just hard insert the catid until the category is implemented
           var sqlRequires = "INSERT INTO Requires(catid,taskid) VALUES (1,$1) RETURNING taskid";
           return pool.query(sqlRequires, paramRequires);
         })
         .then((results) => {
-            const sqlListings = "INSERT INTO Listings (biddingDeadline, startingBid, taskId, hasChosenBid) VALUES ($1, $2, $3, false) RETURNING taskid"
-            const paramsListings = [req.body.deadline, req.body.startingBid, results.rows[0].taskid]
+            const sqlListings = "INSERT INTO Listings (startingBid, taskId, hasChosenBid) VALUES ($1, $2, false) RETURNING taskid"
+            const paramsListings = [req.body.startingBid, results.rows[0].taskid]
             return pool.query(sqlListings, paramsListings);
         })
         .then((results) => {
@@ -251,8 +251,8 @@ router.post("/addRequests", (req, res) => {
         const userID = parseInt(req.user.cusId)
         const TDT = req.body.taskDateTime
         
-        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId) VALUES ($1, $2, $3, $4, $5, now(), $6) RETURNING taskid;"
-        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID]
+        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4, $5, now(), $6, $7) RETURNING taskid;"
+        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID, req.body.deadline]
         pool.query(sqlinserttask, params1)
         .then((results) => {
             var paramRequires = [req.body.catid, results.rows[0].taskid];
@@ -261,8 +261,8 @@ router.post("/addRequests", (req, res) => {
             return pool.query(sqlRequires, paramRequires);
         })
         .then((results) => {
-          var paramRequests = [req.body.deadline, results.rows[0].taskid, req.body.taskerid];
-          var sqlRequests = "INSERT INTO Requests(deadlinetoaccept, taskid, cusid, hasResponded) VALUES ($1, $2, $3, false) RETURNING taskid;"
+          var paramRequests = [results.rows[0].taskid, req.body.taskerid];
+          var sqlRequests = "INSERT INTO Requests(taskid, cusid, hasResponded) VALUES ($1, $2, false) RETURNING taskid;"
           return pool.query(sqlRequests,paramRequests); 
       })
       
@@ -361,7 +361,7 @@ router.get("/newTask/:catId/:taskerId", ensureAuthenticated, (req, res) => {
 
 router.get("/viewListings", (req, res) => {
     console.log("here")
-    const sql = "SELECT C.taskid as taskid, taskname, description, duration, manpower, taskdatetime, datecreated, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
+    const sql = "SELECT C.taskid as taskid, taskname, description, duration, manpower, taskdatetime, datecreated, deadline, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
     const params = [parseInt(req.user.cusId)]
     console.log(req.user.cusId)
     
@@ -370,7 +370,6 @@ router.get("/viewListings", (req, res) => {
         if (error) {
             console.log('err: ', error);
         }
-        console.log(result.rows[0].haschosenbid)
         res.render('view_tr_listings', {
             task: result.rows,
         });
@@ -403,15 +402,18 @@ router.post("/updateListings/:taskid",ensureAuthenticated, (req, res) => {
     req.checkBody("newDeadline", "deadline is required").notEmpty();
     var taskid = req.params.taskid;
   
-    const params1 = [req.body.newDescription, req.body.newDuration, req.body.newManpower, req.body.newTaskDateTime, taskid];
-    var sqlUpCreatedTask = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4 WHERE taskid = $5";
+    const params1 = [req.body.newDescription, req.body.newDuration, req.body.newManpower, req.body.newTaskDateTime, req.body.newDeadline, taskid];
+    var sqlUpCreatedTask = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4, deadline = $5 WHERE taskid = $6";
   
     pool.query(sqlUpCreatedTask, params1,(err, result) =>{
         if(err){
           console.log(err + " ERROR UPDATING CREATED TASKS");
-        } 
+        } else { 
+          res.redirect('/taskRequesters/viewListings');
+        }
       });
 
+    /*
     const params2 = [req.body.newDeadline, taskid];
     var sqlUpListings = "UPDATE Listings SET biddingDeadline = $1 WHERE taskid = $2";
     pool.query(sqlUpListings, params2,(err, result) =>{
@@ -422,7 +424,7 @@ router.post("/updateListings/:taskid",ensureAuthenticated, (req, res) => {
             res.redirect('/taskRequesters/viewListings');
         }
     });
-    
+    */
   });
     
 router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
@@ -455,15 +457,17 @@ router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
 
 router.get("/viewRequests", ensureAuthenticated, (req, res) => {
 
+  /*
   const sqlUpdate = "UPDATE requests SET deadlinetoaccept = CURRENT_TIMESTAMP, accepted = false, hasresponded = true WHERE deadlinetoaccept <= CURRENT_TIMESTAMP and hasresponded = false;"
-
+  
   pool.query(sqlUpdate, (error, result) => {
   
     if (error) {
         console.log('err: ', error);
     }
   });
-  const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, accepted, R.hasResponded as hasresponded, R.deadlinetoaccept as deadlinetoaccept, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
+  */
+  const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, deadline, accepted, R.hasResponded as hasresponded, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
   console.log(req.user.cusId)
 
@@ -541,11 +545,7 @@ router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
     var taskid = parseInt(req.params.taskid);
 
     sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
-    /*
-    sqlDeleteRequests = "DELETE FROM requests WHERE taskid = " + taskid
-    sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
-    sqlDeleteRequires  = "DELETE FROM requires WHERE taskid = " + taskid
-    */
+   
     pool.query(sqlDeleteCreatedTask,(err,result)=> {
       if(err){
         console.log("Unable to delete requests record" + err);
