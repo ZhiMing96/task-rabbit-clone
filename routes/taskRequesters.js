@@ -153,7 +153,7 @@ router.get("/addListings", ensureAuthenticated, async function(req, res){
     res.render("add_Listings");
 });
 
-router.post("/addListings", ensureAuthenticated, (req, res) => {
+router.post("/addListings", ensureAuthenticated, async function(req, res) {
     req.checkBody("taskName", "Task Name is required").notEmpty();
     req.checkBody("description", "Description is required").notEmpty();
     req.checkBody("duration", "Duration is required").notEmpty();
@@ -173,7 +173,8 @@ router.post("/addListings", ensureAuthenticated, (req, res) => {
     
         const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4, $5, now(), $6, $7) RETURNING taskid;"
         const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID, req.body.deadline]
-        pool.query(sqlinserttask, params1)
+        await pool.query("BEGIN")
+        await pool.query(sqlinserttask, params1)
         .then((results) => {
           var paramRequires = [results.rows[0].taskid];
           // for now i just hard insert the catid until the category is implemented
@@ -193,6 +194,7 @@ router.post("/addListings", ensureAuthenticated, (req, res) => {
 
       .then((results) => {
           console.log(results)
+          pool.query("COMMIT")
           res.render('newListingCreated', 
           {   taskname: results.rows[0].taskname,
               description: results.rows[0].description,
@@ -203,6 +205,7 @@ router.post("/addListings", ensureAuthenticated, (req, res) => {
       .catch((error) => {
           console.log("Error creating new task", error);
           req.flash("warning", "An error was encountered. Please try again.")
+          pool.query("ROLLBACK")
           res.redirect('/addListings');
       })
     }
@@ -233,7 +236,7 @@ router.get("/addRequests", ensureAuthenticated, async function(req, res) {
     });
 });
 
-router.post("/addRequests", (req, res) => {
+router.post("/addRequests", async function(req, res){
     req.checkBody("taskName", "Task Name is required").notEmpty();
     req.checkBody("description", "Description is required").notEmpty();
     req.checkBody("duration", "Duration is required").notEmpty();
@@ -253,7 +256,8 @@ router.post("/addRequests", (req, res) => {
         
         const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4, $5, now(), $6, $7) RETURNING taskid;"
         const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID, req.body.deadline]
-        pool.query(sqlinserttask, params1)
+        await pool.query("BEGIN")
+        await pool.query(sqlinserttask, params1)
         .then((results) => {
             var paramRequires = [req.body.catid, results.rows[0].taskid];
             
@@ -264,16 +268,17 @@ router.post("/addRequests", (req, res) => {
           var paramRequests = [results.rows[0].taskid, req.body.taskerid];
           var sqlRequests = "INSERT INTO Requests(taskid, cusid, hasResponded) VALUES ($1, $2, false) RETURNING taskid;"
           return pool.query(sqlRequests,paramRequests); 
-      })
+        })
       
         .then((results) => {
             var taskid = [results.rows[0].taskid];
-            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
+            //var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
             return pool.query(sqlNewTask,taskid); 
         })
 
         .then((results) => {
             //console.log(results)
+            pool.query("COMMIT")
             res.render('newTaskCreated', 
             {   taskname: results.rows[0].taskname,
                 description: results.rows[0].description,
@@ -286,9 +291,9 @@ router.post("/addRequests", (req, res) => {
         .catch((error) => {
             console.log("Error creating new task", error);
             req.flash("warning", "An error was encountered. Please try again.")
+            pool.query("ROLLBACK")
             res.redirect('/addRequests');
         })
-
     }
 });
 
@@ -458,7 +463,7 @@ router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
 router.get("/viewRequests", ensureAuthenticated, (req, res) => {
 
   
-  const sqlUpdate = "UPDATE requests SET accepted = false, hasresponded = true WHERE (select taskid from createdtasks where deadline <= CURRENT_TIMESTAMP) = requests.taskid and hasresponded = false;"
+  const sqlUpdate = "UPDATE requests SET accepted = false, hasresponded = true WHERE taskid in ((select taskid from createdtasks where deadline <= CURRENT_TIMESTAMP)) and hasresponded = false;"
   
   pool.query(sqlUpdate, (error, result) => {
   
