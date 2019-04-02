@@ -272,7 +272,7 @@ router.post("/addRequests", async function(req, res){
       
         .then((results) => {
             var taskid = [results.rows[0].taskid];
-            //var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
+            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
             return pool.query(sqlNewTask,taskid); 
         })
 
@@ -418,18 +418,6 @@ router.post("/updateListings/:taskid",ensureAuthenticated, (req, res) => {
         }
       });
 
-    /*
-    const params2 = [req.body.newDeadline, taskid];
-    var sqlUpListings = "UPDATE Listings SET biddingDeadline = $1 WHERE taskid = $2";
-    pool.query(sqlUpListings, params2,(err, result) =>{
-        if(err){
-            console.log(err + " ERROR UPDATING LISTINGS");
-        }
-        else { 
-            res.redirect('/taskRequesters/viewListings');
-        }
-    });
-    */
   });
     
 router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
@@ -460,7 +448,7 @@ router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
 
 //Start: CRUD Requests
 
-router.get("/viewRequests", ensureAuthenticated, (req, res) => {
+router.get("/viewRequests", ensureAuthenticated, (req, res) =>{
 
   
   const sqlUpdate = "UPDATE requests SET accepted = false, hasresponded = true WHERE taskid in ((select taskid from createdtasks where deadline <= CURRENT_TIMESTAMP)) and hasresponded = false;"
@@ -474,15 +462,13 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
   
   const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, deadline, accepted, R.hasResponded as hasresponded, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
-  console.log(req.user.cusId)
 
-  pool.query(sql, params, (error, result) => {
+   pool.query(sql, params, (error, result) => {
   
       if (error) {
           console.log('err: ', error);
       }
-      
-      console.log(result.rows[0])
+      console.log("view")
       res.render('view_tr_requests', {
           task: result.rows,
       });
@@ -507,43 +493,37 @@ router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
     });  
   });
   
-  router.post("/updateRequests/:taskid",ensureAuthenticated, (req, res) => {
+  router.post("/updateRequests/:taskid",ensureAuthenticated, async function(req, res) {
     req.checkBody("newDescription", "description is required").notEmpty();
     req.checkBody("newDuration", "duration is required").notEmpty();
     req.checkBody("newManpower", "manpower is required").notEmpty();
     req.checkBody("newTaskDateTime", "taskDateTime is required").notEmpty();
     var taskid = req.params.taskid;
-  
     let error = req.validationErrors();
       const params = [req.body.newDescription,req.body.newDuration,req.body.newManpower,req.body.newTaskDateTime, taskid];
-      var sql = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4 WHERE taskid = $5";
-  
-      pool.query(sql, params,(err, result) =>{
-        if(err){
-          console.log(err + " ERROR UPDATING TASKS");
-        } else {
-          //delete assigned 
-          sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
-          pool.query(sqlDeleteAssigned, (err,data)=>{
-            if(err){
-              console.log(err + "ERROR DELETE ASSIGNED");
-            } 
-          });
-          
-          //update Requests -> change Accept to false 
-          var sqlupdateRequests = "UPDATE requests SET accepted = false WHERE taskid = " + taskid
-          pool.query(sqlupdateRequests, (err,data)=>{
-            if(err){
-              console.log(err + "ERROR UPDATING REQUESTS");
-            } 
-          });
-          //send request to tasker again 
+      var sql = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4 WHERE taskid = $5 RETURNING taskid";
 
-          res.redirect('/taskRequesters/viewRequests');
-
-        }
-      });
-    
+    await pool.query("BEGIN")
+    await pool.query(sql, params) 
+    .then(() => {
+        sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
+        return pool.query(sqlDeleteAssigned);
+    })
+    .then(() => {
+    var sqlupdateRequests = "UPDATE requests SET accepted = false, hasResponded = false WHERE taskid = " + taskid
+    return pool.query(sqlupdateRequests);
+    })
+    .then(() => {
+    console.log("COMMITTED")
+    pool.query("COMMIT");
+    res.redirect('/taskRequesters/viewRequests');
+    })
+    .catch((error) => {
+    console.log("Error creating new task", error);
+    req.flash("warning", "An error was encountered. Please try again.")
+    pool.query("ROLLBACK")
+    res.redirect('/addRequests');
+    })
   });
   
   router.get("/deleteRequests/:taskid", ensureAuthenticated,(req, res) => {
@@ -556,7 +536,7 @@ router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
         console.log("Unable to delete requests record" + err);
       } else { 
 
-        res.redirect('/taskRequesters/viewRequests');
+        res.render('view_tr_requests');
       }
     });
     
