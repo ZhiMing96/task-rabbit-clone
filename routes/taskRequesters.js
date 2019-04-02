@@ -407,6 +407,7 @@ router.post("/updateListings/:taskid",ensureAuthenticated, (req, res) => {
     req.checkBody("newDeadline", "deadline is required").notEmpty();
     var taskid = req.params.taskid;
   
+    //Update listing dont need to delete assigned cause once assigned, there will be no more updates allowed 
     const params1 = [req.body.newDescription, req.body.newDuration, req.body.newManpower, req.body.newTaskDateTime, req.body.newDeadline, taskid];
     var sqlUpCreatedTask = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4, deadline = $5 WHERE taskid = $6";
   
