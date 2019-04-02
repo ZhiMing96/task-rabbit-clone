@@ -521,7 +521,6 @@ router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
     console.log("Error creating new task", error);
     req.flash("warning", "An error was encountered. Please try again.")
     pool.query("ROLLBACK")
-    res.redirect('/addRequests');
     })
   });
   
@@ -535,7 +534,7 @@ router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
         console.log("Unable to delete requests record" + err);
       } else { 
 
-        res.render('view_tr_requests');
+        res.redirect('/taskRequesters/viewRequests');
       }
     });
     
