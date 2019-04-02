@@ -72,7 +72,7 @@
 										<td> - </td>
 								<% } else {%>
 									<td> Pending for acceptance </td>
-									<td> <%= (task[i].deadlinetoaccept).toString().substring(0,24)%> </td>
+									<td> <%= (task[i].deadline).toString().substring(0,24)%> </td>
 								<% }%>
 							<td>
 								<form action="/taskRequesters/updateRequests/<%= task[i].taskid%>", method="GET">
