@@ -420,28 +420,27 @@ router.post("/updateListings/:taskid",ensureAuthenticated, (req, res) => {
 
   });
     
-router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
+router.get("/deleteListings/:taskid", ensureAuthenticated, async function(req, res){
     var taskid = parseInt(req.params.taskid);
 
     sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
     sqlDeleteBids = "DELETE FROM Bids WHERE taskid = " + taskid
 
-   pool.query(sqlDeleteBids,(err,result)=> {
-    if(err){
-      console.log("Unable to delete Bids " + err);
-    } else { 
-    }
-  });
-
-    pool.query(sqlDeleteCreatedTask,(err,result)=> {
-      if(err){
-        console.log("Unable to delete created task" + err);
-      } else { 
-
-        res.redirect('/taskRequesters/viewListings');
-      }
-    });
-    
+  await pool.query("BEGIN")
+  await pool.query(sqlDeleteBids)
+  .then(() =>{
+    return pool.query(sqlDeleteCreatedTask)
+  })
+  .then(() =>{
+    pool.query("COMMIT")
+    res.redirect('/taskRequesters/viewListings');
+  })
+  .catch((error) => {
+    console.log(error)
+    req.flash("warning", "An error was encountered. Please try again.")
+    pool.query("ROLLBACK")
+    res.redirect('/addRequests');
+  })
 });
 
 //End: CRUD Listings 
