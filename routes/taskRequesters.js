@@ -457,8 +457,8 @@ router.get("/deleteListings/:taskid", ensureAuthenticated,(req, res) => {
 
 router.get("/viewRequests", ensureAuthenticated, (req, res) => {
 
-  /*
-  const sqlUpdate = "UPDATE requests SET deadlinetoaccept = CURRENT_TIMESTAMP, accepted = false, hasresponded = true WHERE deadlinetoaccept <= CURRENT_TIMESTAMP and hasresponded = false;"
+  
+  const sqlUpdate = "UPDATE requests SET accepted = false, hasresponded = true WHERE (select taskid from createdtasks where deadline <= CURRENT_TIMESTAMP) = requests.taskid and hasresponded = false;"
   
   pool.query(sqlUpdate, (error, result) => {
   
@@ -466,7 +466,7 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
         console.log('err: ', error);
     }
   });
-  */
+  
   const sql = "SELECT C.taskid, taskname, description, duration, manpower, taskdatetime, datecreated, deadline, accepted, R.hasResponded as hasresponded, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
   console.log(req.user.cusId)
