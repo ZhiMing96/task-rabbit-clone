@@ -23,9 +23,6 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div> 
-        <div class="text-center">	
-						<a href="/taskRequesters" class="btn btn-outline-secondary">Back</a>
-        </div>
     <% } else {%>
 		<table class="table">
 			<thead>
@@ -37,6 +34,7 @@
 					<th scope="col">Date and Time</th>
 					<th scope="col">Date Created</th>
 					<th scope="col">Status</th>
+					<th scope="col">Deadline</th>
 					<th scope="col"></th>
 					<th scope="col"></th>
 					<th scope="col"></th>
@@ -59,17 +57,20 @@
 							<td> - </td>
 							<td> - </td>
 							<td> - </td>
+							<td> - </td>
 						<% } else {%>
 								<% if(task[i].haschosenbid == true){%>
 									<td> Pending for completion </td>
 									<td>-</td>
+									<td>-</td>
 								<% } else {%>
 									<td> Pending for bids </td>
+									<td><%= (task[i].deadline).toString().substring(0,24)%></td>
 									<td>
 											<form action="/taskRequesters/viewBids/<%= task[i].taskid%>", method="GET">
 												<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/viewBids/<%= task[i].taskid %>">BIDS</button>
 											</form>
-									</td>
+									</td>	
 								<% } %>
 							 <td>
 									<form action="/taskRequesters/updateListings/<%= task[i].taskid%>", method="GET">
