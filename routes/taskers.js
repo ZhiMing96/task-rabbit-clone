@@ -107,8 +107,13 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
     })
     .catch((error) => {
       console.log("Error Accepting Task", error);
-      req.flash("warning", "An error was encountered. Please try again.")
-      res.redirect('/taskers/viewMyPendingTasks');
+      res.render('view_my_tasks', {
+        task: {},
+        taskType: 'PENDING',
+        errorMsg: 'Unable to Accept, You have a task during that time!'
+      });
+      //req.failureflash("warning", "An error was encountered. Please try again.")
+      //res.redirect('/taskers/viewMyPendingTasks');
     })
   })
 
@@ -134,7 +139,12 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
       })
       .catch((error) => {
         console.log("Error Rejecting Task", error);
-        req.flash("warning", "An error was encountered. Please try again.")
+        //req.flash("warning", "Unable to Accept, You have a task during that time!")
+        // res.render('view_my_tasks', {
+        //   task: {},
+        //   taskType: 'PENDING',
+        //   errorMsg: 'Unable to Accept, You have a task during that time!'
+        // });
         res.redirect('/taskers/viewMyPendingTasks');
       })
     })
@@ -304,7 +314,8 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
       res.render('view_my_tasks', {
         task: result.rows,
-        taskType: 'COMPLETED'
+        taskType: 'COMPLETED',
+        errorMsg: null
       });
 
     });
@@ -323,7 +334,8 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
       res.render('view_my_tasks', {
         task: result.rows,
-        taskType: 'PENDING'
+        taskType: 'PENDING',
+        errorMsg:null
       });
 
     });
