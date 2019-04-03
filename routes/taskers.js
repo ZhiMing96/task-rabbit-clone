@@ -83,71 +83,76 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
 // }
 // console.log("THERE ARE NO PENDING REQUESTS!");
 
-router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
+router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
   const user = req.user.cusId;
   const taskId = req.params.taskid;
   const sql = "UPDATE requests SET accepted = true WHERE taskid = $1 AND cusid = $2";
   const param = [taskId, user];
 
-  pool.query(sql, param)
-    .then((result) => {
-      const sqlRequests1 = "UPDATE requests SET hasResponded = true WHERE taskid = $1 AND cusid = $2";
-      const paramRequests1 = [taskId, user];
-      return pool.query(sqlRequests1, paramRequests1);
-    })
-    .then((result) => {
-      const sqlAssign = "INSERT INTO assigned(taskid,cusid,completed) VALUES ($1,$2,false)";
-      const paramAssign = [taskId, user];
-      return pool.query(sqlAssign, paramAssign);
-    })
-    .then((result) => {
-      console.log(result)
-      res.redirect('/taskers');
-
-    })
-    .catch((error) => {
-      console.log("Error Accepting Task", error);
-      res.render('view_my_tasks', {
-        task: {},
-        taskType: 'PENDING',
-        errorMsg: 'Unable to Accept, You have a task during that time!'
-      });
-      //req.failureflash("warning", "An error was encountered. Please try again.")
-      //res.redirect('/taskers/viewMyPendingTasks');
-    })
+  await pool.query("BEGIN")
+  await pool.query(sql, param)
+  .then(() => {
+    const sqlRequests1 = "UPDATE requests SET hasResponded = true WHERE taskid = $1 AND cusid = $2";
+    const paramRequests1 = [taskId, user];
+    return pool.query(sqlRequests1, paramRequests1);
   })
+  .then(() => {
+    const sqlAssign = "INSERT INTO assigned(taskid,cusid,completed) VALUES ($1,$2,false)";
+    const paramAssign = [taskId, user];
+    return pool.query(sqlAssign, paramAssign);
+  })
+  .then((result) => {
+    console.log(result)
+    pool.query("COMMIT")
+    res.redirect('/taskers');
 
-  
+  })
+  .catch((error) => {
+    console.log("Error Accepting Task", error);
+    pool.query("ROLLBACK")
+    res.render('view_my_tasks', {
+      task: {},
+      taskType: 'PENDING',
+      errorMsg: 'Unable to Accept, You have a task during that time!'
+    });
+    //req.failureflash("warning", "An error was encountered. Please try again.")
+    //res.redirect('/taskers/viewMyPendingTasks');
+  })
+})
 
 
-  router.get("/rejectRequest/:taskid", ensureAuthenticated, (req, res) => {
+
+  router.get("/rejectRequest/:taskid", ensureAuthenticated, async (req, res) => {
     const user = req.user.cusId;
     const taskId = req.params.taskid;
     const sql = "UPDATE requests SET accepted = false WHERE taskid = $1 AND cusid = $2";
     const param = [taskId, user];
   
-    pool.query(sql, param)
-      .then((result) => {
-        const sqlRequests1 = "UPDATE requests SET hasResponded = true WHERE taskid = $1 AND cusid = $2";
-        const paramRequests1 = [taskId, user];
-        return pool.query(sqlRequests1, paramRequests1);
-      })
-      .then((result) => {
-        console.log(result)
-        res.redirect('/taskers');
-  
-      })
-      .catch((error) => {
-        console.log("Error Rejecting Task", error);
-        //req.flash("warning", "Unable to Accept, You have a task during that time!")
-        // res.render('view_my_tasks', {
-        //   task: {},
-        //   taskType: 'PENDING',
-        //   errorMsg: 'Unable to Accept, You have a task during that time!'
-        // });
-        res.redirect('/taskers/viewMyPendingTasks');
-      })
+    await pool.query("BEGIN")
+    await pool.query(sql, param)
+    .then(() => {
+      const sqlRequests1 = "UPDATE requests SET hasResponded = true WHERE taskid = $1 AND cusid = $2";
+      const paramRequests1 = [taskId, user];
+      return pool.query(sqlRequests1, paramRequests1);
     })
+    .then((result) => {
+      console.log(result)
+      pool.query("COMMIT")
+      res.redirect('/taskers');
+
+    })
+    .catch((error) => {
+      console.log("Error Rejecting Task", error);
+      pool.query("ROLLBACK")
+      //req.flash("warning", "Unable to Accept, You have a task during that time!")
+      // res.render('view_my_tasks', {
+      //   task: {},
+      //   taskType: 'PENDING',
+      //   errorMsg: 'Unable to Accept, You have a task during that time!'
+      // });
+      res.redirect('/taskers/viewMyPendingTasks');
+    })
+  })
 
   router.get("/addSkill", ensureAuthenticated, (req, res) => {
 
@@ -161,7 +166,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
     });
   });
 
-  router.post("/addSkill", ensureAuthenticated, (req, res) => {
+  router.post("/addSkill", ensureAuthenticated, async (req, res) => {
 
     req.checkBody("skillName", "Name of personal skill is required").notEmpty();
     req.checkBody("description", "Description is required").notEmpty();
@@ -177,24 +182,32 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
     const paramSkill = [cusId, req.body.description, req.body.rate, req.body.skillName];
     const sqlAddSkill = "INSERT INTO AddedPersonalSkills(cusId,description,ratePerHour, name) VALUES($1,$2,$3, $4) RETURNING ssid";
+    await pool.query("BEGIN")
     pool.query(sqlAddSkill, paramSkill, (err, data) => {
       if (err) {
         console.log("Error inserting skill" + err);
+        pool.query("ROLLBACK")
       } else {
         var skillId = data.rows[0].ssid;
-
         const paramCatName = [req.body.catName];
         // console.log("category name:" + paramCatName);
         var sqlCat = "SELECT * FROM skillcategories WHERE catname = $1";
-
         pool.query(sqlCat, paramCatName, (err, result) => {
           if (err) {
             console.log("ERROR RETRIEVING CATEGORY ID" + err);
+            pool.query("ROLLBACK")
           } else {
             var paramBelongs = [result.rows[0].catid, skillId];
             var sqlBelongs = "INSERT INTO belongs(catid,ssid) VALUES ($1,$2)";
-            pool.query(sqlBelongs, paramBelongs);
-            res.redirect("/taskers/taskerSettings");
+            pool.query(sqlBelongs, paramBelongs, (err, result) => {
+              if (err) {
+                console.log("ERROR INSERTING INTO BELONGS" + err);
+                pool.query("ROLLBACK")
+              } else {
+                pool.query("COMMIT")
+                res.redirect("/taskers/taskerSettings");
+              }
+            })
           }
         });
       }
@@ -234,7 +247,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
   });
 
-  router.post("/updateSkill/:ssid", ensureAuthenticated, (req, res) => {
+  router.post("/updateSkill/:ssid", ensureAuthenticated, async (req, res) => {
     req.checkBody("skillName", "Name of personal skill is required").notEmpty();
     req.checkBody("newDescription", "Description is required").notEmpty();
     req.checkBody("newRate", "Rate is required").notEmpty();
@@ -253,16 +266,19 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
     } else {
       const params = [req.body.newDescription, req.body.newRate, ssId, req.body.newSkillName];
       var sql = "UPDATE addedpersonalskills SET description = $1, rateperhour = $2, name = $4 WHERE ssid = $3";
-
+      
+      await pool.query("BEGIN")
       pool.query(sql, params, (err, result) => {
         if (err) {
           console.log(err + " ERROR UPDATING SKILL");
+          pool.query("ROLLBACK")
         } else {
           var params2 = [req.body.catName];
           var sqlCatId = "SELECT * FROM skillcategories WHERE catname = $1";
           pool.query(sqlCatId, params2, (err, data) => {
             if (err) {
               console.log(err + "ERROR GETTING CATID");
+              pool.query("ROLLBACK")
             } else {
               var params3 = [data.rows[0].catid, ssId];
               var sqlUpdate = "UPDATE belongs SET catid = $1 WHERE ssid = $2";
@@ -270,7 +286,9 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
               pool.query(sqlUpdate, params3, (err, data1) => {
                 if (err) {
                   console.log(err + "ERROR GETTING CATID");
+                  pool.query("ROLLBACK")
                 } else {
+                  pool.query("COMMIT")
                   res.redirect('/taskers/taskerSettings');
                 }
               });
@@ -282,7 +300,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
 
   });
 
-  router.get("/deleteSkill/:ssid", ensureAuthenticated, (req, res) => {
+  router.get("/deleteSkill/:ssid", ensureAuthenticated, async (req, res) => {
     //var cusId = parseInt(req.user.cusId);
     var ssId = parseInt(req.params.ssid);
     // console.log(ssId);
@@ -291,12 +309,21 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
     sqlDeleteSkill = "DELETE FROM addedpersonalskills WHERE ssid = " + ssId;
     sqlDeleteCat = "DELETE FROM belongs WHERE ssid = " + ssId;
 
+    await pool.query("BEGIN")
     pool.query(sqlDeleteCat, (err, result) => {
       if (err) {
+        pool.query("ROLLBACK")
         console.log("Unable to delete personal skill record" + err);
       } else {
-        pool.query(sqlDeleteSkill);
-        res.redirect("/taskers/taskerSettings");
+        pool.query(sqlDeleteSkill, (err, result) => {
+          if (err) {
+            pool.query("ROLLBACK")
+            console.log("Unable to delete FROM BELONGS" + err);
+          } else {
+            pool.query("COMMIT")
+            res.redirect("/taskers/taskerSettings");
+          }
+        })
       }
     });
   });
@@ -377,55 +404,6 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, (req, res) => {
     });
   });
 
-
-  //When viewing tasker reviews before choosing tasker for task
-  // router.get("/tasker/:catId/:ssId/:value/:taskerId",ensureAuthenticated, async (req, res) => {
-
-  //   var catId= req.params.catId;
-  //   var ssId= req.params.ssId;
-  //   var taskerId= req.params.taskerId;
-  //   var val;
-  //    if (req.params.value === "greatValue") {
-  //      val = true;
-  //    }else {
-  //      val = false;
-  //    }
-
-  //   var sqlprofile = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid) "+
-  //   "SELECT T.name, T.cusid, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
-  //   "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=" +catId + " and S.ssid=" +ssId + " and T.cusid=" +taskerId + ";"
-
-  //   pool.query(sqlprofile, (err,profileresults)=> {
-  //     if (err) {
-  //       console.log("error in sqlprofile query" + err);
-  //     } else {
-  //       const sqlreviews = "SELECT C.catName as catName, RV.rating, RV.description, RV.taskId, CU1.name FROM Reviews RV join Requires R on RV.taskId=R.taskId "+
-  //       "join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=" + taskerId+ ";"
-  //         pool.query(sqlreviews, (err, reviewsresults)=> {
-  //         if (err){
-  //           console.log("error in sqlreviews query" + err);
-  //         } else {
-  //           var cat = "SELECT catname from skillcategories where catid=" + catId + ";"
-  //           pool.query(cat, (err, category) => {
-  //             if (err) {
-  //               console.log("error in cat query" + err);
-  //             } else {
-  //                 res.render("viewTaskerProfileAndReviews", {
-  //                 profile: profileresults.rows,
-  //                 reviews: reviewsresults.rows,
-  //                 catName: category.rows[0].catname,
-  //                 catId,
-  //                 val
-  //                 });
-  //               }
-
-  //             }
-  //           )
-  //         }
-  //       })
-  //     }
-  //   });
-  //});
 
   module.exports = router;
 

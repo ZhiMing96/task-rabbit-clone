@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
+    
 <head>
   <%- include("include/head", {title: "Put a Task up for Bidding"}); %>
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
   <!-- JavaScript for Interactivity -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
+    crossorigin="anonymous">
+  </script>
 </head>
 
-<body>
-
-  <%- include("include/navbar"); %>
+<body style="background-color: #282c34"></bodystyle>
+  <div class="container-fluid" style="background-color: white">
+    <%- include("include/navbar"); %>
   <h1>Put a Task up for Bidding</h1>
   <form method="POST" , action="/taskRequesters/addListings">
     <div id="form-group">
@@ -47,6 +50,7 @@
 
     <input class="btn btn-primary" type="submit" value="Submit" />
   </form>
+  </div>
 </body>
 
 </html>

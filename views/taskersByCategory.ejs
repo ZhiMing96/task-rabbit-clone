@@ -1,4 +1,22 @@
-<!DOCTYPE html>
+<!-- 
+    
+    
+    DONT USE THIS EJS, USE select_tasker.ejs
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!DOCTYPE html>
 <html>
   <head>
     <%- include("include/head", {title: "Taskers By Cateogry"}); %>
@@ -15,7 +33,7 @@
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-3"> <!--sorting and filtering on the left-->
+            <div class="col-3"> 
                             <div class="form-group">
                                 <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
                                     <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
@@ -42,7 +60,7 @@
                                         <i class="fa<%=(y<taskers[x].taskerrating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
                                     <%}%> 
                                     </span>
-                                    <%if (taskers[x].taskerrating>=4 && taskers[x].num>=0) { %> <!--numbers should be 4.8 and 50-->
+                                    <%if (taskers[x].taskerrating>=4 && taskers[x].num>=0) { %> 
                                         <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
                                     <% }%>  
                                     <%if (taskers[x].taskerrating>=1 && x>=taskers.length/4) { %>
@@ -80,4 +98,4 @@
           })
     </script>
   </body>
-</html>
+</html> -->

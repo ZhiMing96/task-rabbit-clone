@@ -4,6 +4,7 @@ const router = express.Router();
 const pool = require('../config/database');
 const ensureAuthenticated = require('../config/ensureAuthenticated');
 
+//VIEW ALL OF MY BIDS
 router.get("/my_bids",ensureAuthenticated, (req, res) => {
   pool.query("SELECT t3.name,t3.avg,t3.completedTasks,t1.cusid,t1.bidprice,t1.winningbid,t2.taskname,t1.taskid FROM bids as t1 INNER JOIN createdtasks as t2 on t1.taskid=t2.taskid INNER JOIN (SELECT t11.cusid, t11.name, COUNT(t22.*) as completedTasks, AVG(t33.rating) FROM Customers as t11 LEFT JOIN assigned as t22 ON t11.cusid=t22.cusid AND t22.completed=true LEFT JOIN reviews as t33 ON t11.cusid=t33.cusid GROUP BY t11.cusid) as t3 ON t1.cusid = t3.cusid WHERE t2.cusid=$1;",[req.user.cusId])
   .then((result) => {
@@ -14,7 +15,7 @@ router.get("/my_bids",ensureAuthenticated, (req, res) => {
     res.render("view_tr_bids");
   });
 });
-
+//VIEW TASKER PROFILE BEFORE ACCEPTING BID
 router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, res) => {
 
   return Promise.all([
@@ -35,20 +36,25 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthenti
   });
 });
 
-router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept",ensureAuthenticated, (req, res) => {
+//SELECT WINNING BID
+router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept",ensureAuthenticated, async (req, res) => {
 
-  return Promise.all([
+  await pool.query("BEGIN")
+  .then(() =>{ return Promise.all([
       pool.query("UPDATE bids SET winningbid=true WHERE cusid=$2 AND taskid=$1;",[req.params.taskid,req.params.tasker_id]),
       pool.query("INSERT INTO Assigned(taskid,cusid,completed) VALUES($1,$2,false);",[req.params.taskid,req.params.tasker_id]),
       pool.query("UPDATE Listings SET hasChosenBid = true WHERE taskid = $1;",[req.params.taskid]),
       pool.query("UPDATE Listings SET biddingDeadline = now() WHERE taskid = $1;",[req.params.taskid]),
       pool.query("SELECT t1.*, t2.bidprice,t3.name FROM createdtasks as t1 INNER JOIN bids as t2 on t1.taskid=t2.taskid INNER JOIN customers as t3 on t2.cusid=t3.cusid WHERE t2.taskid=$1 AND t2.cusid=$2;",[req.params.taskid, req.params.tasker_id])
     ])
+  })
   .then(([result,result2,result3]) => {
+    pool.query("COMMIT")
     res.render("tr_accepted_bid",{result: result3.rows[0]});
   })
   .catch((error) => {
     req.flash("warning",'Encountered an error: ' + error);
+    pool.query("ROLLBACK")
     res.redirect("/taskRequesters/my_bids/");
   });
 });
@@ -149,8 +155,15 @@ router.get("/addListings", ensureAuthenticated, async function(req, res){
 });
 */
 
-router.get("/addListings", ensureAuthenticated, async function(req, res){
-    res.render("add_Listings");
+router.get("/addListings", ensureAuthenticated, function(req, res){
+  
+    try {
+      var categories =  pool.query("SELECT * FROM skillcategories");
+      res.render("add_Listings", {categories: categories.rows});
+    } catch(error){
+      console.log(error)
+    }  
+  
 });
 
 router.post("/addListings", ensureAuthenticated, async function(req, res) {
@@ -212,28 +225,41 @@ router.post("/addListings", ensureAuthenticated, async function(req, res) {
 
 });
 
-//Add route
+
 router.get("/addRequests", ensureAuthenticated, async function(req, res) {
-    const categoryQuery ="SELECT * FROM skillcategories";
-    var categoryResult = await pool.query(categoryQuery);
-
-    var taskersByCategory = [];
-
-    for(x=0;x<categoryResult.rows.length;x++){
-        var sqlQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
-        " SELECT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description, S.ssid "+
-        "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=$1 order by ratePerHour desc;"
-        var sqlParams = [categoryResult.rows[x].catid]; 
-        var result = await pool.query(sqlQuery, sqlParams);
-        taskersByCategory.push(result.rows);
-    }
-    
-    //console.log(taskersByCategory);
-
-    res.render("select_tasker", {
+  var taskersByCategory = [];
+  var greatValueTaskersList = [];
+  var categoryResult = [];
+  
+  try {
+      categoryResult = await pool.query("SELECT * FROM skillcategories");
+      for(x=0;x<categoryResult.rows.length;x++){      
+          var taskersQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)"+ 
+                " SELECT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description, S.ssid "+
+                "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid="+ [categoryResult.rows[x].catid] +" order by ratePerHour desc;"
+          var numTasksQuery = "select count(*) as num from belongs where catid=" +[categoryResult.rows[x].catid] +";";
+          const greatValueTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT S.cusId, S.ssId FROM AddedPersonalSkills S JOIN TaskerRating T ON S.cusId=T.cusId JOIN Belongs B ON S.ssId=B.ssId WHERE tr>=4 and B.catid="+[categoryResult.rows[x].catid]+" order by ratePerHour desc limit $1/4;"
+  
+          var tmp = await pool.query(taskersQuery);
+          taskersByCategory.push(tmp.rows);
+          var tmp2 = await pool.query(numTasksQuery);        
+          var tmp3 = await pool.query(greatValueTaskersQuery, [tmp2.num]);
+          greatValueTaskersList.push(tmp3.rows);
+      }
+      const eliteTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT cusId FROM TaskerRating R WHERE 1<=(SELECT count(*) FROM Assigned A WHERE R.cusId=A.cusId AND completed=TRUE) AND tr>=4.0;";
+      eliteTaskerResult = await pool.query(eliteTaskersQuery)
+      console.log(eliteTaskerResult.rows)
+          
+      res.render("select_tasker", {
         categories: categoryResult.rows,
-        taskersByCategory: taskersByCategory
-    });
+        taskersByCategory: taskersByCategory,
+        eliteList: eliteTaskerResult.rows,
+        greatValueList: greatValueTaskersList
+      });
+      
+  } catch(error){
+      console.log(error)
+  }
 });
 
 router.post("/addRequests", async function(req, res){
@@ -251,96 +277,90 @@ router.post("/addRequests", async function(req, res){
 
     } else {
         
-        const userID = parseInt(req.user.cusId)
-        const TDT = req.body.taskDateTime
-        
-        const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4, $5, now(), $6, $7) RETURNING taskid;"
-        const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID, req.body.deadline]
-        await pool.query("BEGIN")
-        await pool.query(sqlinserttask, params1)
-        .then((results) => {
-            var paramRequires = [req.body.catid, results.rows[0].taskid];
-            
-            var sqlRequires = "INSERT INTO Requires(catid,taskid) VALUES ($1,$2) RETURNING taskid";
-            return pool.query(sqlRequires, paramRequires);
-        })
-        .then((results) => {
-          var paramRequests = [results.rows[0].taskid, req.body.taskerid];
-          var sqlRequests = "INSERT INTO Requests(taskid, cusid, hasResponded) VALUES ($1, $2, false) RETURNING taskid;"
-          return pool.query(sqlRequests,paramRequests); 
-        })
+      const userID = parseInt(req.user.cusId)
+      const TDT = req.body.taskDateTime
       
-        .then((results) => {
-            var taskid = [results.rows[0].taskid];
-            var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
-            return pool.query(sqlNewTask,taskid); 
-        })
+      const sqlinserttask = "INSERT INTO createdTasks (taskname, description, duration, manpower, taskDateTime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4, $5, now(), $6, $7) RETURNING taskid;"
+      const params1 = [req.body.taskName, req.body.description, parseInt(req.body.duration), parseInt(req.body.manpower), TDT, userID, req.body.deadline]
+      await pool.query("BEGIN")
+      await pool.query(sqlinserttask, params1)
+      .then((results) => {
+          var paramRequires = [req.body.catid, results.rows[0].taskid];
+          
+          var sqlRequires = "INSERT INTO Requires(catid,taskid) VALUES ($1,$2) RETURNING taskid";
+          return pool.query(sqlRequires, paramRequires);
+      })
+      .then((results) => {
+        var paramRequests = [results.rows[0].taskid, req.body.taskerid];
+        var sqlRequests = "INSERT INTO Requests(taskid, cusid, hasResponded) VALUES ($1, $2, false) RETURNING taskid;"
+        return pool.query(sqlRequests,paramRequests); 
+      })
+    
+      .then((results) => {
+          var taskid = [results.rows[0].taskid];
+          var sqlNewTask = "SELECT T.taskname, T.description, T.manpower, T.taskDateTime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
+          return pool.query(sqlNewTask,taskid); 
+      })
 
-        .then((results) => {
-            //console.log(results)
-            pool.query("COMMIT")
-            res.render('newTaskCreated', 
-            {   taskname: results.rows[0].taskname,
-                description: results.rows[0].description,
-                manpower: results.rows[0].manpower,
-                taskDateTime: results.rows[0].taskDateTime,
-                tasker: results.rows[0].name
+      .then((results) => {
+          //console.log(results)
+          pool.query("COMMIT")
+          res.render('newTaskCreated', 
+          {   taskname: results.rows[0].taskname,
+              description: results.rows[0].description,
+              manpower: results.rows[0].manpower,
+              taskDateTime: results.rows[0].taskDateTime,
+              tasker: results.rows[0].name
 
-            });
-        })
-        .catch((error) => {
-            console.log("Error creating new task", error);
-            req.flash("warning", "An error was encountered. Please try again.")
-            pool.query("ROLLBACK")
-            res.redirect('/addRequests');
-        })
+          });
+      })
+      .catch((error) => {
+          console.log("Error creating new task", error);
+          req.flash("warning", "An error was encountered. Please try again.")
+          pool.query("ROLLBACK")
+          res.redirect('/addRequests');
+      })
     }
 });
 
 
-router.get("/addRequests/:category/:ssid/:value/:tasker_id", ensureAuthenticated, async function(req, res) {
+router.post("/addRequests/:category/:ssid/:tasker_id", ensureAuthenticated, async function(req, res) {
     
 
   var catId= req.params.category;
   var ssId= req.params.ssid;
   var taskerId= req.params.tasker_id;
-  var val= req.params.value;
-
-  var sqlprofile = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid) "+
-  "SELECT T.name, T.cusid, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
-  "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=" +catId + " and S.ssid=" +ssId + " and T.cusid=" +taskerId + ";"
+  console.log("VALUE THING" + req.body.value)
   
-  pool.query(sqlprofile, (err,profileresults)=> {
-    if (err) {
-      console.log("error in sqlprofile query" + err);
+
+  return Promise.all([
+    pool.query("with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid) "+
+    "SELECT T.name, T.cusid, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description "+
+    "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=" +catId + " and S.ssid=" +ssId + " and T.cusid=" +taskerId + ";"),
+    pool.query("SELECT C.catName as catName, RV.rating, RV.description, RV.taskId, CU1.name FROM Reviews RV join Requires R on RV.taskId=R.taskId "+
+    "join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=" + taskerId+ ";"),
+    pool.query("SELECT catname from skillcategories where catid=" + catId + ";"),
+  ])
+  .then (([profileresults,reviewsresults,category]) => {
+    if (req.body.value=="greatValue") {
+      val = true;
     } else {
-      const sqlreviews = "SELECT C.catName as catName, RV.rating, RV.description, RV.taskId, CU1.name FROM Reviews RV join Requires R on RV.taskId=R.taskId "+
-      "join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=" + taskerId+ ";"
-        pool.query(sqlreviews, (err, reviewsresults)=> {
-        if (err){
-          console.log("error in sqlreviews query" + err);
-        } else {
-          var cat = "SELECT catname from skillcategories where catid=" + catId + ";"
-          pool.query(cat, (err, category) => {
-            if (err) {
-              console.log("error in cat query" + err);
-            } else {
-                res.render("viewTaskerProfileAndReviews", {
-                profile: profileresults.rows,
-                reviews: reviewsresults.rows,
-                catName: category.rows[0].catname,
-                catId,
-                val               
-                });
-              }
-              
-            }
-          )
-        }
-      })
+      val = false;
     }
+    res.render("viewTaskerProfileAndReviews", {
+      profile: profileresults.rows,
+      reviews: reviewsresults.rows,
+      catName: category.rows[0].catname,
+      catId,
+      val               
+    });
+  })
+  .catch((error) => {
+    req.flash("warning",'Encountered an error viewing particular tasker: ' + error);
+    res.redirect("/taskRequesters/addRequests");
   });
 });
+
 
 router.get("/newTask/:catId/:taskerId", ensureAuthenticated, (req, res) => {
     
@@ -491,55 +511,55 @@ router.get("/updateRequests/:taskid", ensureAuthenticated,(req, res) => {
             });
         }
     });  
+});
+  
+router.post("/updateRequests/:taskid",ensureAuthenticated, async function(req, res) {
+  req.checkBody("newDescription", "description is required").notEmpty();
+  req.checkBody("newDuration", "duration is required").notEmpty();
+  req.checkBody("newManpower", "manpower is required").notEmpty();
+  req.checkBody("newTaskDateTime", "taskDateTime is required").notEmpty();
+  var taskid = req.params.taskid;
+  let error = req.validationErrors();
+    const params = [req.body.newDescription,req.body.newDuration,req.body.newManpower,req.body.newTaskDateTime, taskid];
+    var sql = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4 WHERE taskid = $5 RETURNING taskid";
+
+  await pool.query("BEGIN")
+  await pool.query(sql, params) 
+  .then(() => {
+      sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
+      return pool.query(sqlDeleteAssigned);
+  })
+  .then(() => {
+  var sqlupdateRequests = "UPDATE requests SET accepted = false, hasResponded = false WHERE taskid = " + taskid
+  return pool.query(sqlupdateRequests);
+  })
+  .then(() => {
+  console.log("COMMITTED")
+  pool.query("COMMIT");
+  res.redirect('/taskRequesters/viewRequests');
+  })
+  .catch((error) => {
+  console.log("Error creating new task", error);
+  req.flash("warning", "An error was encountered. Please try again.")
+  pool.query("ROLLBACK")
+  })
+});
+  
+router.get("/deleteRequests/:taskid", ensureAuthenticated,(req, res) => {
+  var taskid = parseInt(req.params.taskid);
+
+  sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
+  
+  pool.query(sqlDeleteCreatedTask,(err,result)=> {
+    if(err){
+      console.log("Unable to delete requests record" + err);
+    } else { 
+
+      res.redirect('/taskRequesters/viewRequests');
+    }
   });
   
-  router.post("/updateRequests/:taskid",ensureAuthenticated, async function(req, res) {
-    req.checkBody("newDescription", "description is required").notEmpty();
-    req.checkBody("newDuration", "duration is required").notEmpty();
-    req.checkBody("newManpower", "manpower is required").notEmpty();
-    req.checkBody("newTaskDateTime", "taskDateTime is required").notEmpty();
-    var taskid = req.params.taskid;
-    let error = req.validationErrors();
-      const params = [req.body.newDescription,req.body.newDuration,req.body.newManpower,req.body.newTaskDateTime, taskid];
-      var sql = "UPDATE createdTasks SET description = $1, duration = $2, manpower = $3, taskDateTime = $4 WHERE taskid = $5 RETURNING taskid";
-
-    await pool.query("BEGIN")
-    await pool.query(sql, params) 
-    .then(() => {
-        sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
-        return pool.query(sqlDeleteAssigned);
-    })
-    .then(() => {
-    var sqlupdateRequests = "UPDATE requests SET accepted = false, hasResponded = false WHERE taskid = " + taskid
-    return pool.query(sqlupdateRequests);
-    })
-    .then(() => {
-    console.log("COMMITTED")
-    pool.query("COMMIT");
-    res.redirect('/taskRequesters/viewRequests');
-    })
-    .catch((error) => {
-    console.log("Error creating new task", error);
-    req.flash("warning", "An error was encountered. Please try again.")
-    pool.query("ROLLBACK")
-    })
-  });
-  
-  router.get("/deleteRequests/:taskid", ensureAuthenticated,(req, res) => {
-    var taskid = parseInt(req.params.taskid);
-
-    sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
-   
-    pool.query(sqlDeleteCreatedTask,(err,result)=> {
-      if(err){
-        console.log("Unable to delete requests record" + err);
-      } else { 
-
-        res.redirect('/taskRequesters/viewRequests');
-      }
-    });
-    
-  });
+});
   
   
 //End: CRUD Requests 
@@ -599,42 +619,6 @@ router.get('/viewBids/:taskid', ensureAuthenticated, function (req, res) {
     });
 });
 
-//View tasker profile before accepting bid
-router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id",ensureAuthenticated, (req, res) => {
 
-    return Promise.all([
-        pool.query("SELECT t1.bidprice, t2.name,AVG(t3.rating) as rating,COUNT(t4.*) as count,t5.taskname FROM bids as t1 INNER JOIN customers as t2 ON t2.cusid=$2 LEFT JOIN reviews as t3 ON t3.cusid=$2 LEFT JOIN assigned as t4 ON t4.cusid=$2 AND t4.completed=true INNER JOIN createdtasks as t5 ON t5.taskid=$1 WHERE t1.taskid=$1 AND t1.cusid=$2 GROUP BY t2.name, t5.taskname, t1.bidprice;",[req.params.taskid,req.params.tasker_id]),
-        pool.query("SELECT t3.description FROM requires as t1 INNER JOIN belongs as t2 ON t1.catid=t2.catid INNER JOIN addedpersonalskills as t3 ON t2.ssid=t3.ssid AND t3.cusid=$2 WHERE taskid=$1;",[req.params.taskid, req.params.tasker_id]),
-        pool.query("SELECT t1.rating,t1.description,t3.name FROM reviews as t1 INNER JOIN createdtasks as t2 ON t2.taskid=$1 INNER JOIN customers as t3 ON t2.cusid=t3.cusid WHERE t1.cusid=$2",[req.params.taskid, req.params.tasker_id])
-      ])
-    .then(([result,result2,result3]) => {
-      if(result.rows.length == 0 || result2.rows.length == 0){
-        req.flash("warning",'Encountered an error. Please try again.');
-        res.redirect("/taskRequesters/my_bids/");
-      }
-      res.render("tr_accept_bid",{tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows});
-    })
-    .catch((error) => {
-      req.flash("warning",'Encountered an error: ' + error);
-      res.redirect("/taskRequesters/my_bids/");
-    });
-  });
-  
-  //Select winning bid
-  router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept",ensureAuthenticated, (req, res) => {
-  
-    return Promise.all([
-        pool.query("UPDATE bids SET winningbid=true WHERE cusid=$2 AND taskid=$1;",[req.params.taskid,req.params.tasker_id]),
-        pool.query("INSERT INTO Assigned(taskid,cusid,completed) VALUES($1,$2,false);",[req.params.taskid,req.params.tasker_id]),
-        pool.query("SELECT t1.*, t2.bidprice,t3.name FROM createdtasks as t1 INNER JOIN bids as t2 on t1.taskid=t2.taskid INNER JOIN customers as t3 on t2.cusid=t3.cusid WHERE t2.taskid=$1 AND t2.cusid=$2;",[req.params.taskid, req.params.tasker_id])
-      ])
-    .then(([result,result2,result3]) => {
-      res.render("tr_accepted_bid",{result: result3.rows[0]});
-    })
-    .catch((error) => {
-      req.flash("warning",'Encountered an error: ' + error);
-      res.redirect("/taskRequesters/my_bids/");
-    });
-  });
 
 module.exports = router;

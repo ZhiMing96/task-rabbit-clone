@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include("include/head", {title: "Choose a Cateogry"}); %>
+    <%- include("include/head", {title: "Choose a Tasker"}); %>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
 
     <script>
       $(document).ready(()=>{
         var categories = [];
-
+        
         <% for(x=0;x<categories.length;x++){%>
           categories.push("<%=categories[x].catname%>");
         <%}%>
@@ -30,6 +30,7 @@
         })
       })
     </script>
+    
     
   </head>
   <body style="background-color: #282c34">
@@ -88,12 +89,13 @@
                                 <i class="fa<%=(y<taskersByCategory[z][x].taskerrating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
                             <%}%> 
                             </span>
-                            <%if (taskersByCategory[z][x].taskerrating>=4 && taskersByCategory[z][x].num>=0) { %> <!--numbers should be 4.8 and 50-->
+                           
+                            <% for (i=0;i<eliteList.length;i++) { if (eliteList[i].cusid==taskersByCategory[z][x].cusid) { %> <!--numbers should be 4.8 and 50-->
                                 <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
-                            <% }%>  
-                            <%if (taskersByCategory[z][x].taskerrating>=1 && x>=taskersByCategory[z].length/4) { %>
+                            <% }}%>  
+                            <% for (j=0;j<greatValueList.length;j++) { if (greatValueList[j].cusid==taskersByCategory[z][x].cusid) { %>
                                 <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></spanx`>
-                            <% }%> 
+                            <% }}%> 
                           </div>
                           <div class="col-md-2 text-right">
                               $<%=taskersByCategory[z][x].rateperhour%><span style="font-size:0.5em">/hour</span>
@@ -107,11 +109,15 @@
                               "<%=taskersByCategory[z][x].description%>"<br>
                           </div>
                           <div class="col-2 align-right">
-                              <%if (taskersByCategory[z][x].taskerrating>=1 && x>=taskersByCategory[z].length/4) { %>
-                                  <a href="../taskRequester/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/greatValue/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
-                              <%} else  {%>
-                                  <a href="../taskRequesters/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/value/<%=taskersByCategory[z][x].cusid%>"><button type="button" class="btn btn-outline-primary">Select</button></a>
-                              <%}%>                              
+                              <form action="../taskRequesters/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/<%=taskersByCategory[z][x].cusid%>" method="POST">
+                               
+                                <% if (greatValueList.includes(taskersByCategory[z][x].cusid)) { %>
+                                  <button type="submit" class="btn btn-outline-primary" name="value" id="greatValue">Select</button>
+                                  
+                                <% } else { %>
+                                  <button type="submit" class="btn btn-outline-primary" name="value" id="value">Select</button>
+                                <% }%> 
+                              </form>
                           </div>
                       </div>
                     </div>

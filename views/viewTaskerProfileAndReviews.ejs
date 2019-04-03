@@ -42,7 +42,7 @@
                     <%if (profile[0].taskerrating>=4 && profile[0].num>=0) { %> <!--numbers should be 4.8 and 50-->
                         <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
                     <% }%>
-                    <%if (val=="greatValue") { %> 
+                    <%if (val) { %> 
                       <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></span>
                     <% }%>
                   </div>
