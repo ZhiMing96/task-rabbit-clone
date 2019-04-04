@@ -330,7 +330,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View All My completed Tasks
   router.get('/viewMyCompletedTasks', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)'
+    const sql = 'SELECT taskname, description, taskstartdatetime, taskendtime FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {
@@ -350,7 +350,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View all My pending Tasks
   router.get('/viewMyPendingTasks', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = false)'
+    const sql = 'SELECT taskname, description, taskstartdatetime, taskendtime FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {
@@ -370,7 +370,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View all My bids placed
   router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT B.taskId, C.taskName, B.bidPrice, L.biddingDeadline, B.winningBid, L.hasChosenBid FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
+    const sql = 'SELECT B.taskId, C.taskName, B.bidPrice, C.deadline, B.winningBid, L.hasChosenBid FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {

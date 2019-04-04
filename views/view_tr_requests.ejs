@@ -49,8 +49,8 @@
 						<td><%= task[i].taskname%></td>
 						<td><%= task[i].description%></td>
 						<td><%= task[i].duration%></td>
-						<td><%= task[i].manpower%></td>
-						<td><%= (task[i].taskdatetime).toString().substring(0,24)%></td>
+						<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
+						<td><%= (task[i].taskendtime)%></td>
 						<td><%= task[i].datecreated.toString().substring(0,24)%></td>
 						<td><%= task[i].taskername%></td>
 						<!-- Check if taskrequesters have completed attribute, If completed. dont show the button. Else show the buttons -->

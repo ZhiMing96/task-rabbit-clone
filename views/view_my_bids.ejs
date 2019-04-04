@@ -50,8 +50,8 @@
 				<tr>
 					<td><%= bid[i].taskname%></td>
 					<td><%= bid[i].bidprice%></td>
-					<td><%= (bid[i].biddingdeadline).toString().substring(0,24)%></td>
-					<td><%= currentDateTime.getDate() - (bid[i].biddingdeadline).getDate()%></td>
+					<td><%= (bid[i].deadline).toString().substring(0,24)%></td>
+					<td><%= (bid[i].deadline).getDate() - currentDateTime.getDate()%></td>
 					
 					<% if(bid[i].winningbid){ %>
 					<td>Chosen Bid. YAY!</td>
@@ -61,7 +61,7 @@
 						<td>Pending</td>
 					<% } %>
 					<td>
-							<% if(currentDateTime < (bid[i].biddingdeadline)){ %>
+							<% if(currentDateTime < (bid[i].deadline)){ %>
 						<form action="/listings/updateBid/<%= bid[i].taskid%>", method="GET">
 							<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">UPDATE</button>
 						</form>

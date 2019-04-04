@@ -33,10 +33,9 @@
 				<tr>
 					<th scope="col">Task Name</th>
 					<th scope="col">Description</th>
-					<th scope="col">Num Hours</th>
-					<th scope="col">Num People Needed</th>
-					<th scope="col">Date and Time</th>
-					<th scope="col">Date Created</th>
+					<th scope="col">Task Start Date/Time</th>
+					<th scope="col">Task End Time</th>
+					
 				</tr>
 			</thead>
 			<tbody>
@@ -44,10 +43,9 @@
 				<tr>
 					<td><%= task[i].taskname%></td>
 					<td><%= task[i].description%></td>
-					<td><%= task[i].duration%></td>
-					<td><%= task[i].manpower%></td>
-					<td><%= (task[i].taskdatetime).toString().substring(0,24)%></td>
-					<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
+					<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
+					<td><%= task[i].taskendtime%></td>
+				
 					
 					
 				</tr>
