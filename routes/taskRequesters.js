@@ -170,16 +170,15 @@ router.get("/addListings", ensureAuthenticated, function (req, res) {
 router.post("/addListings", ensureAuthenticated, async function (req, res) {
   req.checkBody("taskName", "Task Name is required").notEmpty();
   req.checkBody("description", "Description is required").notEmpty();
-  req.checkBody("duration", "Duration is required").notEmpty();
-  req.checkBody("manpower", "manpower is required").notEmpty();
-  req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
+  req.checkBody("taskstartdatetime", "taskstartdatetime is required").notEmpty();
+  req.checkBody("taskendtime", "taskendtime is required").notEmpty();
   req.checkBody("deadline", "Deadline is required").notEmpty();
   req.checkBody("startingBid", "Starting bid is required").notEmpty();
   let errors = req.validationErrors();
+  
   if (errors) {
-    res.render('add_category');
+    res.redirect('/addListings');
     console.log(errors);
-
   } else {
 
     const userID = parseInt(req.user.cusId)
@@ -388,7 +387,7 @@ router.get("/newTask/:catId/:taskerId", ensureAuthenticated, (req, res) => {
 
 router.get("/viewListings", (req, res) => {
   console.log("here")
-  const sql = "SELECT C.taskid as taskid, taskname, description, duration, manpower, taskdatetime, datecreated, deadline, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
+  const sql = "SELECT C.taskid as taskid, taskname, description, taskStartDateTime, taskEndTime, datecreated, deadline, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
   console.log(req.user.cusId)
 
