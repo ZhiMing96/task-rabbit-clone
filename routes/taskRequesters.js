@@ -266,14 +266,13 @@ router.get("/addRequests", ensureAuthenticated, async function (req, res) {
 router.post("/addRequests", async function (req, res) {
   req.checkBody("taskName", "Task Name is required").notEmpty();
   req.checkBody("description", "Description is required").notEmpty();
-  req.checkBody("duration", "Duration is required").notEmpty();
-  req.checkBody("manpower", "manpower is required").notEmpty();
-  req.checkBody("taskDateTime", "taskDateTime is required").notEmpty();
+  req.checkBody("taskstartdatetime", "taskstartdatetime is required").notEmpty();
+  req.checkBody("taskendtime", "taskendtime is required").notEmpty();
   req.checkBody("deadline", "deadline is required").notEmpty();
 
   let errors = req.validationErrors();
   if (errors) {
-    res.render('add_category');
+    res.redirect('/addRequests');
     console.log(errors);
 
   } else {
