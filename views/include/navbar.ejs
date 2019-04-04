@@ -1,60 +1,71 @@
-  <nav class="navbar sticky-top navbar-expand-lg navbar-light" style="background-color:#e3f2fd;">
-    <a class="navbar-brand" href="/">
-      <img src="/images/logo.png" width="137" height="30" alt="">
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span
-        class="navbar-toggler-icon"></span></button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
-        <% if(typeof user !== 'undefined' && user != null){ %>
-          <li class="nav-item dropdown active mx-3">
-              <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                My Tasker Tasks
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="/listings/viewAllAvailable/">Find a Task</a>
-                <a class="dropdown-item" href="/taskers/viewMyBids/">Bids Made</a>
-                <a class="dropdown-item" href="/taskers/viewRequests">Requests Received</a>
-                <a class="dropdown-item" href="/taskers/viewMyPendingTasks/">Tasks In Progress</a>
-                <a class="dropdown-item" href="/taskers/viewMyCompletedTasks/">Tasks Completed</a>
-              </div>
-          </li>
-          <li class="nav-item dropdown active mx-3">
-              <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                My TaskRequester Tasks
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="/taskers/">Create a Task</a>
-                <a class="dropdown-item" href="/taskers/">Requests Sent Out</a>
-                <a class="dropdown-item" href="/taskers/">Bids Received</a>
-                <a class="dropdown-item" href="/taskers/">Tasks In Progress</a>
-                <a class="dropdown-item" href="/taskers/">Tasks Completed</a>
-                <a class="dropdown-item" href="/taskRequesters/"></a>
-              </div>
-          </li>
-        <%}%>
+<nav class="navbar sticky-top navbar-expand-lg navbar-light" style="background-color:#e3f2fd;">
+  <a class="navbar-brand" href="/">
+    <img src="/images/logo.png" width="137" height="30" alt="">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation"><span
+      class="navbar-toggler-icon"></span></button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <% if(typeof user !== 'undefined' && user != null && user.username !== 'admin1'){ %>
+      <li class="nav-item dropdown active mx-3">
+        <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          My Tasker Tasks
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/listings/viewAllAvailable/">Find a Task</a>
+          <a class="dropdown-item" href="/taskers/viewMyBids/">Bids Made</a>
+          <a class="dropdown-item" href="/taskers/viewRequests">Requests Received</a>
+          <a class="dropdown-item" href="/taskers/viewMyPendingTasks/">Tasks In Progress</a>
+          <a class="dropdown-item" href="/taskers/viewMyCompletedTasks/">Tasks Completed</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown active mx-3">
+        <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          My TaskRequester Tasks
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/taskers/">Create a Task</a>
+          <a class="dropdown-item" href="/taskers/">Requests Sent Out</a>
+          <a class="dropdown-item" href="/taskers/">Bids Received</a>
+          <a class="dropdown-item" href="/taskers/">Tasks In Progress</a>
+          <a class="dropdown-item" href="/taskers/">Tasks Completed</a>
+          <a class="dropdown-item" href="/taskRequesters/"></a>
+        </div>
+      </li>
+      <%}%>
       </ul>
       <ul class="navbar-nav ml-auto">
         <% if(typeof user === 'undefined' || user == null){ %>
-          <li class="nav-item"> <a class="btn btn-primary" href="/users/register">Register</a></li>&nbsp;&nbsp;&nbsp;
-          <li class="nav-item"> <a class="btn btn-primary" href="/users/login">Login</a></li>
-        <% } else { %>
-          
-          <li class="nav-item dropdown active mx-3">
-              <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Account
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item disabled" href="/taskers/" ><i class="fas fa-user-circle"></i>&nbsp;&nbsp;&nbsp;<%=user.username%></a>
-                  <a class="dropdown-item" href="/taskers/">My Tasker Profile</a>
-                  <a class="dropdown-item" href="/taskRequesters/">My TaskRequester Profile</a>
-                </div>
-          </li>
-              
-          <li class="nav-item"><a class="btn btn-outline-primary" href="/users/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-        <%}%>
-      </ul>
-    </div>
+      <li class="nav-item"> <a class="btn btn-primary" href="/users/register">Register</a></li>&nbsp;&nbsp;&nbsp;
+      <li class="nav-item"> <a class="btn btn-primary" href="/users/login">Login</a></li>
 
-  </nav>
+      <% } else { %>
+
+        <% if(user.username !== 'admin1'){ %>
+      <li class="nav-item dropdown active mx-3">
+        <a class="nav-link dropdown-toggle" href="/users/login" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Account
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item disabled" href="/taskers/"><i
+              class="fas fa-user-circle"></i>&nbsp;&nbsp;&nbsp;<%=user.username%></a>
+          <a class="dropdown-item" href="/taskers/">My Tasker Profile</a>
+          <a class="dropdown-item" href="/taskRequesters/">My TaskRequester Profile</a>
+        </div>
+      </li>
+      <%} else { %>
+        <li class="nav-item"><a class="btn btn-outline-primary" href="/categories"><i class="fas fa-book"></i>
+          View Categories</a></li>
+        <li class="nav-item"><a class="btn btn-outline-primary" href="/categories/add"><i class="fas fa-sign-out-alt"></i>
+          Add Category</a></li>
+      <%}%> 
+          <li class="nav-item"><a class="btn btn-outline-primary" href="/users/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      <%}%>
+    </ul>
+  </div>
+
+</nav>
