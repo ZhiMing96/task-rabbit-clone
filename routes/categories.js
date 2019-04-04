@@ -10,7 +10,6 @@ router.get("/add", function(req, res) {
 });
 
 router.post("/add", (req, res) => {
-  req.checkBody("catId", "Id is required").notEmpty();
   req.checkBody("catName", "Category Name is required").notEmpty();
   let errors = req.validationErrors();
   if (errors) {
@@ -18,8 +17,8 @@ router.post("/add", (req, res) => {
     console.log(errors);
 
   } else {
-    const sql = "INSERT INTO skillCategories (catId, catName) VALUES ($1, $2)";
-    const params = [req.body.catId, req.body.catName];
+    const sql = "INSERT INTO skillCategories (catName) VALUES ($1)";
+    const params = [req.body.catName];
     pool.query(sql, params, (error, result) => {
       if (error) {
         console.log("err: ", error);
@@ -30,5 +29,40 @@ router.post("/add", (req, res) => {
     });
   }
 });
+
+router.get('/', ensureAuthenticated, function (req, res) {
+  const sql = 'SELECT * FROM SkillCategories';
+  pool.query(sql, (error, result) => {
+
+    if (error) {
+      console.log('err: ', error);
+    } else {
+    res.render('view_categories', {
+      categories: result.rows,
+      
+      })
+    }
+        
+  });
+});
+
+router.post('/delete/:id', ensureAuthenticated, function (req, res) {
+  const sql =  "DELETE FROM SkillCategories WHERE catId = " + parseInt(req.params.id);
+  pool.query(sql, (error, result) => {
+
+    if (error) {
+      console.log('err: ', error);
+      res.redirect("/categories");
+    } else {
+      res.redirect('/categories');
+      
+      
+    }
+        
+  });
+});
+
+
+
 
 module.exports = router;
