@@ -6,7 +6,8 @@ const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 //View All Available Listings
 router.get('/viewAllAvailable',ensureAuthenticated,function (req, res) {
-    const sql = 'SELECT taskid, taskname, description, duration, manpower, taskdatetime, datecreated FROM createdTasks C WHERE taskId IN (SELECT taskId FROM listings WHERE biddingDeadline > (SELECT NOW())) AND cusId <> $1 AND taskdatetime > (SELECT NOW()) AND taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND taskid = C.taskId)' ;
+    const sql = "SELECT taskname, description, taskstartdatetime, taskendtime, datecreated, username, deadline FROM CreatedTasks C INNER JOIN Customers C1 on C.cusId = C1.cusId WHERE C.deadline > (SELECT NOW()) AND C.cusId <> $1 AND C.taskstartdatetime > (SELECT NOW()) AND C.taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND bids.taskid = C.taskId)";
+                                                                    
     const params =  [parseInt(req.user.cusId)];
     pool.query(sql, params ,(error, result) => {
         if (error) {
@@ -55,7 +56,7 @@ router.get('/updateBid/:taskid',ensureAuthenticated,(req,res)=>{
     const taskId = req.params.taskid ;
     const cusId = req.user.cusId; 
     //console.log(cusId);
-    const sql = 'SELECT B.taskId, C.taskName, B.bidPrice, L.biddingDeadline FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId) WHERE B.taskId = $1 AND B.cusId = $2';
+    const sql = 'SELECT B.taskId, C.taskName, B.bidPrice, C.deadline FROM CreatedTasks C join Bids B on (C.taskId = B.taskId) WHERE B.taskId = $1 AND B.cusId = $2';
 
   const params = [taskId,cusId];
 
