@@ -339,7 +339,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
         console.log('err: ', error);
       }
 
-      res.render('view_my_tasks', {
+      res.render('view_my_completed_tasks', {
         task: result.rows,
         taskType: 'COMPLETED',
         errorMsg: null
@@ -350,7 +350,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View all My pending Tasks
   router.get('/viewMyPendingTasks', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT taskname, description, taskstartdatetime, taskendtime FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)'
+    const sql = 'SELECT c1.email, taskname, description, taskstartdatetime, taskendtime FROM customers C1 join (createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)) on (C1.cusid = C.cusid)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {
@@ -359,7 +359,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
         console.log('err: ', error);
       }
 
-      res.render('view_my_tasks', {
+      res.render('view_my_pending_tasks', {
         task: result.rows,
         taskType: 'PENDING',
         errorMsg:null

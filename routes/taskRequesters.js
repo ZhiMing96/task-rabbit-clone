@@ -588,7 +588,7 @@ router.get('/viewCompletedTasks', function (req, res) {
 
 //View all my pending Tasks
 router.get('/viewPendingTasks', function (req, res) {
-  const sql = 'select taskname, description, taskstartdatetime, taskendtime, datecreated from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = false'
+  const sql = '	select C1.email, taskname, description, taskstartdatetime, taskendtime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = C.cusid) where C.cusId = $1 and A.completed = false';
   const params = [parseInt(req.user.cusId)]
 
   pool.query(sql, params, (error, result) => {

@@ -17,7 +17,7 @@
 		<%- include("include/navbar"); %>
 		<% if(task.length == 0 ){%>
 			<div class="alert alert-danger alert-dismissible fade show" role="alert">
-					<strong>No Completed Task Found!</Ri:a></strong> There are no completed task records.
+					<strong>No Pending Task Found!</Ri:a></strong> There are no pending task records.
 					<button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
 							<span aria-hidden="true">&times;</span>
 					</button>
@@ -31,6 +31,7 @@
 						<th scope="col">Task Start Date/Time</th>			
 						<th scope="col">Task End Time</th>
 						<th scope="col">Date Created</th>
+						<th scope="col">Tasker's Contact Email</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -41,6 +42,7 @@
 						<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
 						<td><%= task[i].taskendtime%></td>
 						<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
+						<td><%= (task[i].email)%></td>
 						
 					</tr>
 					<% } %>
