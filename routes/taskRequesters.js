@@ -196,7 +196,7 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
       })
       .then((results) => {
         var taskid = [results.rows[0].taskid];
-        var sqlNewTask = "SELECT T.taskname, T.description, T.taskstartdatetime, T.taskenddatetime FROM createdtasks T join Listings L on T.taskid = L.taskid WHERE L.taskid=$1;"
+        var sqlNewTask = "SELECT T.taskname, T.description, T.taskstartdatetime, T.taskenddatetime, T.deadline FROM createdtasks T join Listings L on T.taskid = L.taskid WHERE L.taskid=$1;"
         return pool.query(sqlNewTask, taskid);
       })
 
@@ -209,6 +209,7 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
             description: results.rows[0].description,
             taskstartdatetime: results.rows[0].taskstartdatetime,
             taskenddatetime: results.rows[0].taskenddatetime,
+            deadline: results.rows[0].deadline,
           });
       })
       .catch((error) => {
@@ -326,7 +327,6 @@ router.get("/addRequests/:category/:ssid/:tasker_id", ensureAuthenticated, async
   var catId = req.params.category;
   var ssId = req.params.ssid;
   var taskerId = req.params.tasker_id;
-  console.log("VALUE THING" + req.body.value)
 
 
   return Promise.all([
@@ -336,19 +336,16 @@ router.get("/addRequests/:category/:ssid/:tasker_id", ensureAuthenticated, async
     pool.query("SELECT C.catName as catName, RV.rating, RV.description, RV.taskId, CU1.name FROM Reviews RV join Requires R on RV.taskId=R.taskId " +
       "join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=" + taskerId + ";"),
     pool.query("SELECT catname from skillcategories where catid=" + catId + ";"),
+
   ])
     .then(([profileresults, reviewsresults, category]) => {
-      if (req.body.value == "greatValue") {
-        val = true;
-      } else {
-        val = false;
-      }
+      
       res.render("viewTaskerProfileAndReviews", {
         profile: profileresults.rows,
         reviews: reviewsresults.rows,
         catName: category.rows[0].catname,
         catId,
-        val
+        
       });
     })
     .catch((error) => {
@@ -589,7 +586,7 @@ router.get("/viewAllTasks", function (req, res) {
 router.get('/viewCompletedTasks', function (req, res) {
 
   const params = [parseInt(req.user.cusId)]
-  const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskendtime, C.datecreated, A.cusid from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
+  const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskenddatetime, C.datecreated, A.cusid from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
 
   pool.query(sql, params, (error, result) => {
 
@@ -607,7 +604,7 @@ router.get('/viewCompletedTasks', function (req, res) {
 
 //View all my pending Tasks
 router.get('/viewPendingTasks', function (req, res) {
-  const sql = '	select C1.email, C.taskid, taskname, description, taskstartdatetime, taskendtime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = A.cusid) where C.cusId = $1 and A.completed = false';
+  const sql = '	select C1.email, C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = A.cusid) where C.cusId = $1 and A.completed = false';
   const params = [parseInt(req.user.cusId)]
 
   pool.query(sql, params, (error, result) => {

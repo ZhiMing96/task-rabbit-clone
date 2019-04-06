@@ -110,15 +110,9 @@
                               "<%=taskersByCategory[z][x].description%>"<br/><br/>
                           </div>
                           <div class="col-2 align-right">
-                              <form action="../taskRequesters/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/<%=taskersByCategory[z][x].cusid%>" method="POST">
-                               
-                                <% if (greatValueList.includes(taskersByCategory[z][x].cusid)) { %>
-                                  <button type="submit" class="btn btn-outline-primary" name="value" id="greatValue">Select</button>
-                                  
-                                <% } else { %>
-                                  <button type="submit" class="btn btn-outline-primary" name="value" id="value">Select</button>
-                                <% }%> 
-                              </form>
+
+                            <a href="/taskRequesters/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/<%=taskersByCategory[z][x].cusid%>" class="btn btn-outline-primary">Select</a>
+                              
                           </div>
                       </div>
                     </div>

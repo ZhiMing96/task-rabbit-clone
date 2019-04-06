@@ -1,61 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+      <%- include("include/head", {title: "Create New Task"}); %>
+  </head>
 
-<head>
-  <title>Task Details</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
-  <!-- JavaScript for Interactivity -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
-    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
-    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-    crossorigin="anonymous"></script>
 
-</head>
+<body style="background-color: #282c34">
+    <%- include("include/navbar"); %>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container pt-5 mb-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col text-center">
+                <h3>Fill in Task Details</h3>
+            </div>
+          </div>
+          <div class="row px-3">
+            <div class="col text-left">
+              Category: <b><%=cat[0].catname%></b><br/><br/>
+              Tasker: <b><%=tasker[0].name%></b><br/><br/>
+            </div>
+          </div>
+            <form method="POST" , action="/taskRequesters/addRequests">
+              <div id="form-group row">
+                <label class="col-sm-2 col-form-label py-3">Task Name:</label>
+                <div class="col-sm-10 py-3">
+                  <textarea class="form-control" name="taskName" placeholder="Headline of your task e.g. Help Moving to 5-room apartment"></textarea>
+                </div>
+                
+              </div>
+              <div id="form-group row">
+                  <label class="col-sm-2 col-form-label py-3">Description:</label>
+                  <div class="col-sm-10 py-3">
+                    <textarea class="form-control" name="description" placeholder="Describe the scale of your task, expected duration, equipment/vehicle needed from tasker, location etc. The more details the better!" rows="5"></textarea>
+                  </div>
+                  
+              </div>
+              
+              <div id="form-group row">
+                  <label class="col-sm-2 col-form-label py-3">Task Start Date / Time:</label>
+                  <div class="col-sm-10 py-3">
+                    <input type="datetime-local" name="taskstartdatetime">
+                  </div>
+              </div>
+              <div id="form-group row">
+                  <label class="col-sm-2 col-form-label py-3">Task End Date / Time:</label>
+                  <div class="col-sm-10 py-3">
+                    <input type="datetime-local" name="taskenddatetime">
+                  </div>
+              </div>
 
-<body>
+              <div id="form-group row">
+                  <label class="col-sm-2 col-form-label py-3">Deadline To Accept:</label>
+                  <div class="col-sm-10 py-3">
+                    <input type="datetime-local" name="deadline">
+                  </div>
+              </div>
+              
+              <br/>
+              <div class="form-group row">
+                  <div class="col text-center">
+                      <input type="hidden" id="taskerid" name="taskerid" value="<%=tasker[0].cusid%>">
+                      <input type="hidden" id="catid" name="catid" value="<%=cat[0].catid%>">
+                    <input class="btn btn-primary" type="submit" value="Submit" />
+                  </div>
+                </div>
 
-  <%- include("include/navbar"); %>
-  <%- messages('include/message', locals) %>
-  <div class='container'>
-  
-  <h1>Task Details</h1>
-  
-  Category: <%=cat[0].catname%><br/>
-  Tasker: <%=tasker[0].name%>
-  <form method="POST" , action="/taskRequesters/addRequests">
-    <div id="form-group">
-      <label>Task Name:</label>
-      <textarea class="form-control" name="taskName"></textarea>
+            </form>
+          
+        </div>
+      </div>
     </div>
-    <div id="form-group">
-        <label>Description:</label>
-        <textarea class="form-control" name="description"></textarea>
-    </div>
-    <div id="form-group">
-        <label>Task Start Date / Time:</label>
-        <input type="datetime-local" name="taskstartdatetime">
-    </div>
-    <div id="form-group">
-        <label>Task End Time:</label>
-        <input type="datetime-local" name="taskenddatetime">
-    </div>
-    <div id="form-group">
-        <label>Deadline to accept:</label>
-        <input type="datetime-local" name="deadline">
-    </div>
-    
-      <input type="hidden" id="taskerid" name="taskerid" value="<%=tasker[0].cusid%>">
-      <input type="hidden" id="catid" name="catid" value="<%=cat[0].catid%>">
-    <input class="btn btn-primary" type="submit" value="Submit" />
-  </form>
+  </div>
+  <%- include("include/footer"); %>
 </body>
-  
-</div>
-
 </html>
