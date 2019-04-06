@@ -38,6 +38,7 @@
 					<th scope="col"></th>
 					<th scope="col"></th>
 					<th scope="col"></th>
+					<th scope="col"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -57,14 +58,21 @@
 							<td> - </td>
 							<td> - </td>
 							<td> - </td>
+							<td> - </td>
 						<% } else {%>
 								<% if(task[i].haschosenbid == true){%>
 									<td> Pending for completion </td>
+									<td>
+											<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
+												<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
+											</form>
+									</td>	
 									<td>-</td>
 									<td>-</td>
 								<% } else {%>
 									<td> Pending for bids </td>
 									<td><%= (task[i].deadline).toString().substring(0,24)%></td>
+									<td> - </td>
 									<td>
 											<form action="/taskRequesters/viewBids/<%= task[i].taskid%>", method="GET">
 												<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/viewBids/<%= task[i].taskid %>">BIDS</button>
