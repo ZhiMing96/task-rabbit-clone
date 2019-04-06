@@ -12,6 +12,7 @@
 </head>
 <body>
     <%- include("include/navbar"); %>
+    <%- messages('include/message', locals) %>
     <h1 style="text-align: center">Account Settings - TASKER</h1>
    
     <div>
@@ -29,6 +30,7 @@
                 </div>
                 <p class="mb-1">Category: <%= allSkills[i].catname%></p>
                 <p class="mb-1">Description: <%= allSkills[i].description%></p>
+                <p class="mb-1">Rate/hour: $<%= allSkills[i].rateperhour%></p>
 
                 <div class="text-right">
                     <form action="/taskers/updateSkill/<%= allSkills[i].ssid %>" method="GET">

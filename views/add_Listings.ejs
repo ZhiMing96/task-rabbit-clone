@@ -18,6 +18,7 @@
   <div class="container-fluid" style="background-color: white">
     <%- include("include/navbar"); %>
   <h1>Put a Task up for Bidding</h1>
+  <%- messages('include/message', locals) %>
   <form method="POST" , action="/taskRequesters/addListings">
     <div id="form-group">
       <label>Task Name:</label>

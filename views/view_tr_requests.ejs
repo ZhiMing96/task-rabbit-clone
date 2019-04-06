@@ -16,6 +16,7 @@
   </head>
   <body>
 	<%- include("include/navbar"); %>
+	<%- messages('include/message', locals) %>
 	<% if(task.length == 0 ){%>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>NO TASK REQUESTS FOUND!</Ri:a></strong>

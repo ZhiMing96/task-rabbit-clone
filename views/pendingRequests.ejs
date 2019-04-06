@@ -12,10 +12,15 @@
 </head>
 <body>
     <%- include("include/navbar"); %>
-     
+
+    <%- messages('include/message', locals) %>
+
+    <% if(requests.error != null ){%>
+        <%= error.errorMsg %>
+    <% } %>
 
     <% if(requests.length == 0 ){%>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="text-align: center">
             <strong>No Records Found!</Ri:a></strong> There are currently no requests for you.
             <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
                 <span aria-hidden="true">&times;</span>
