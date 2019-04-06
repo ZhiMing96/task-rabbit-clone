@@ -560,6 +560,28 @@ router.get("/deleteRequests/:taskid", ensureAuthenticated, (req, res) => {
 
 });
 
+//select Task to complete 
+router.get("/completeTasks/:taskid", (req, res) => {
+  var paramComplete = [req.params.taskid];
+  var sqlComplete = "UPDATE assigned SET completed = true where taskid = $1 RETURNING taskid";
+
+  pool.query(sqlComplete, paramComplete)
+    .then((results) => {
+      var paramRequires = [results.rows[0].taskid];
+      var sqlRequires = "select C.taskid, taskname, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid where C.taskid = $1";
+      return pool.query(sqlRequires, paramRequires);
+    })
+    .then((results) => {
+      res.render('tr_write_review', {
+        result: results.rows,
+      });
+    })
+    .catch((error) => {
+      console.log("Error completing a task", error);
+      res.redirect('/viewRequests');
+    })
+  
+});
 
 //End: CRUD Requests 
 
@@ -571,7 +593,7 @@ router.get("/viewAllTasks", function (req, res) {
 router.get('/viewCompletedTasks', function (req, res) {
 
   const params = [parseInt(req.user.cusId)]
-  const sql = 'select taskname, description, taskstartdatetime, taskendtime, datecreated from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
+  const sql = 'select taskname, description, taskstartdatetime, taskenddatetime, datecreated from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
 
   pool.query(sql, params, (error, result) => {
 
@@ -589,7 +611,7 @@ router.get('/viewCompletedTasks', function (req, res) {
 
 //View all my pending Tasks
 router.get('/viewPendingTasks', function (req, res) {
-  const sql = '	select C1.email, taskname, description, taskstartdatetime, taskendtime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = C.cusid) where C.cusId = $1 and A.completed = false';
+  const sql = '	select C1.email, C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = A.cusid) where C.cusId = $1 and A.completed = false';
   const params = [parseInt(req.user.cusId)]
 
   pool.query(sql, params, (error, result) => {
