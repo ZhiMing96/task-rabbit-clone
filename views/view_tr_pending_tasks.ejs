@@ -32,6 +32,7 @@
 						<th scope="col">Task End Time</th>
 						<th scope="col">Date Created</th>
 						<th scope="col">Tasker's Contact Email</th>
+						<th scope="col"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -43,7 +44,11 @@
 						<td><%= task[i].taskendtime%></td>
 						<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
 						<td><%= (task[i].email)%></td>
-						
+						<td>
+								<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
+									<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
+								</form>
+						</td>	
 					</tr>
 					<% } %>
 				</tbody>
