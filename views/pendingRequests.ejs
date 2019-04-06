@@ -17,6 +17,7 @@
 					<div class="row">
                         <%- include("include/tasker_sidebar"); %>
 						<div class="col-9">
+                            <h1 style="text-align: center">My Requests</h1>
                             <% if(requests.length == 0 ){%>
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <strong>No Records Found!</Ri:a></strong> There are currently no requests for you.
@@ -29,8 +30,7 @@
                                         <button type="submit" class="btn  btn-outline-secondary" formaction="/taskers">BACK</button>
                                     </form>
                                 </div>
-                            <% } {%>
-                                <h1 style="text-align: center">My Requests</h1>
+                            <% } else {%>
                                 <table class="table">
                                     <thead class="table-primary">
                                         <tr>
