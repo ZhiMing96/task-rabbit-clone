@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
 <html lang="en">
     <head>
         <%- include("include/head", {title: "My Requests: Tasker"}); %>
@@ -74,39 +73,6 @@
                     </div>
                 </div>
             </div>
-=======
-<html lang="en"></html>
-<head>
-    <title>Profile</title>
-    <%- include("include/head", {title: "Tasker Requests"}); %>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-</head>
-<body>
-    <%- include("include/navbar"); %>
-
-    <%- messages('include/message', locals) %>
-
-    <% if(requests.error != null ){%>
-        <%= error.errorMsg %>
-    <% } %>
-
-    <% if(requests.length == 0 ){%>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="text-align: center">
-            <strong>No Records Found!</Ri:a></strong> There are currently no requests for you.
-            <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div> 
-        <div class="text-center">
-            <form action="/taskers" method="GET">
-                <button type="submit" class="btn  btn-outline-secondary" formaction="/taskers">BACK</button>
-            </form>
->>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
         </div>
 		<%- include("include/footer"); %>
     </body>

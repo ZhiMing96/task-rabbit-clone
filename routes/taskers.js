@@ -371,7 +371,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
       res.render('view_my_completed_tasks', {
         task: result.rows,
-        taskType: 'COMPLETED',
+        taskType: 'Completed',
         errorMsg: null
       });
 
@@ -391,7 +391,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
       res.render('view_my_pending_tasks', {
         task: result.rows,
-        taskType: 'PENDING',
+        taskType: 'Pending',
         errorMsg:null
       });
 

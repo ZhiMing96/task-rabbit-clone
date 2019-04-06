@@ -589,11 +589,7 @@ router.get("/viewAllTasks", function (req, res) {
 router.get('/viewCompletedTasks', function (req, res) {
 
   const params = [parseInt(req.user.cusId)]
-<<<<<<< HEAD
   const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskendtime, C.datecreated, A.cusid from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
-=======
-  const sql = 'select taskname, description, taskstartdatetime, taskenddatetime, datecreated from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
->>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
 
   pool.query(sql, params, (error, result) => {
 
@@ -611,7 +607,7 @@ router.get('/viewCompletedTasks', function (req, res) {
 
 //View all my pending Tasks
 router.get('/viewPendingTasks', function (req, res) {
-  const sql = '	select C1.email, C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = A.cusid) where C.cusId = $1 and A.completed = false';
+  const sql = '	select C1.email, C.taskid, taskname, description, taskstartdatetime, taskendtime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = A.cusid) where C.cusId = $1 and A.completed = false';
   const params = [parseInt(req.user.cusId)]
 
   pool.query(sql, params, (error, result) => {
@@ -622,7 +618,7 @@ router.get('/viewPendingTasks', function (req, res) {
 
     res.render('view_tr_pending_tasks', {
       task: result.rows,
-      taskType: 'PENDING'
+      taskType: 'Pending'
     });
 
   });

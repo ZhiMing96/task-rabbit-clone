@@ -3,7 +3,6 @@
   <head>
       <%- include("include/head", {title: "My Bids: Tasker"}); %>
   </head>
-<<<<<<< HEAD
 	<body style="background-color: #282c34">
 		<%- include("include/navbar"); %>
 		<div class="container-fluid" style="background-color: white">
@@ -18,64 +17,6 @@
 					<div class="row">
 						<%- include("include/tasker_sidebar"); %>
 						<div class="col-9">
-=======
-  <body>
-	<%- include("include/navbar"); %>
-	<%- messages('include/message', locals) %>
-	<% if(bid.length == 0 ){%>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>No Records Found!</Ri:a></strong> There are no bids records.
-            <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div> 
-        <div class="text-center">	
-					<form action="listings/viewAllAvailable" method="GET">
-						<button type="submit" class="btn  btn-outline-primary" formaction="/listings/viewAllAvailable">Place a Bid!</button>
-						<a href="/taskers" class="btn btn-outline-secondary">Back</a>
-					</form>
-        </div>
-		<% } else { %>
-		<h1 style="text-align: center">MY BIDS</h1></br>
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col">Task Name</th>
-					<th scope="col">My Bid Amount</th>
-					<th scope="col">Bidding Deadline</th>
-					<th scope="col">Days left to Deadline</th>
-					<th scope="col">Result</th>
-					
-					<th scope="col"></th>
-					<th scope="col"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<% for(var i=0; i<bid.length; i++) { %>
-				<tr>
-					<td><%= bid[i].taskname%></td>
-					<td><%= bid[i].bidprice%></td>
-					<td><%= (bid[i].deadline).toString().substring(0,24)%></td>
-					<td><%= (bid[i].deadline).getDate() - currentDateTime.getDate()%></td>
-					
-					<% if(bid[i].winningbid){ %>
-					<td>Chosen Bid. YAY!</td>
-					<% } else if (bid[i].hasChosenBid) { %>
-						<td>Not Chosen</td>
-					<% } else { %>
-						<td>Pending</td>
-					<% } %>
-					<td>
-							<% if(currentDateTime < (bid[i].deadline)){ %>
-						<form action="/listings/updateBid/<%= bid[i].taskid%>", method="GET">
-							<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">UPDATE</button>
-						</form>
-					</td>
-					<td>
-							<form action="/listings/deleteBid/<%= bid[i].taskid%>", method="GET">
-								<button type="submit" class="btn btn-outline-danger" formaction="/listings/deleteBid/<%= bid[i].taskid %>">DELETE</button>
-							</form>
->>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
 
 							<% if(bid.length == 0 ){ %>
 								<div class="alert alert-danger alert-dismissible fade show" role="alert">
