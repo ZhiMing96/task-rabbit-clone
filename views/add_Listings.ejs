@@ -1,54 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-    
-<head>
-  <%- include("include/head", {title: "Put a Task up for Bidding"}); %>
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
-  <!-- JavaScript for Interactivity -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous">
-  </script>
-</head>
+  <head>
+    <%- include("include/head", {title: "Put a Task up for Bidding"}); %>
+  </head>
 
-<body style="background-color: #282c34"></bodystyle>
-  <div class="container-fluid" style="background-color: white">
+  <body style="background-color: #282c34">
     <%- include("include/navbar"); %>
-  <h1>Put a Task up for Bidding</h1>
-  <%- messages('include/message', locals) %>
-  <form method="POST" , action="/taskRequesters/addListings">
-    <div id="form-group">
-      <label>Task Name:</label>
-      <textarea class="form-control" name="taskName"></textarea>
-    </div>
-    <div id="form-group">
-        <label>Description:</label>
-        <textarea class="form-control" name="description"></textarea>
-    </div>
-    <div id="form-group">
-        <label>Task Start Date / Time:</label>
-        <input type="datetime-local" name="taskstartdatetime">
-    </div>
-    <div id="form-group">
-        <label>Task End Date / Time:</label>
-        <input type="datetime-local" name="taskenddatetime">
-    </div>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container pt-5 mb-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col text-center">
+              <h3>Put a Task up for Bidding</h3>
+            </div>
+          </div>
+            
+              <form method="POST" , action="/taskRequesters/addListings">
+                <div id="form-group row">
+                  <label class="col-sm-2 col-form-label py-3">Task Name:</label>
+                  <div class="col-sm-10 py-3">
+                    <textarea class="form-control" name="taskName" placeholder="Headline of your task e.g. Help Moving to 5-room apartment"></textarea>
+                  </div>
+                  
+                </div>
+                <div id="form-group row">
+                    <label class="col-sm-2 col-form-label py-3">Description:</label>
+                    <div class="col-sm-10 py-3">
+                      <textarea class="form-control" name="description" placeholder="Describe the scale of your task, expected duration, equipment/vehicle needed from tasker, location etc. The more details the better!" rows="5"></textarea>
+                    </div>
+                    
+                </div>
+                
+                <div id="form-group row">
+                    <label class="col-sm-2 col-form-label py-3">Task Start Date / Time:</label>
+                    <div class="col-sm-10 py-3">
+                      <input type="datetime-local" name="taskstartdatetime">
+                    </div>
+                </div>
+                <div id="form-group row">
+                    <label class="col-sm-2 col-form-label py-3">Task End Date / Time:</label>
+                    <div class="col-sm-10 py-3">
+                      <input type="datetime-local" name="taskendtime">
+                    </div>
+                </div>
 
-    <div id="form-group">
-        <label>Deadline:</label>
-        <input type="datetime-local" name="deadline">
-    </div>
-    <div id="form-group">
-        <label>Starting Bid:</label>
-        <input type="number" name="startingBid">
-    </div>
+                <div id="form-group row">
+                    <label class="col-sm-2 col-form-label py-3">Deadline:</label>
+                    <div class="col-sm-10 py-3">
+                      <input type="datetime-local" name="deadline">
+                    </div>
+                </div>
+                <div id="form-group row">
+                    <label class="col-sm-2 col-form-label py-3">Starting Bid:</label>
+                    <div class="col-sm-10 py-3">
+                       $ <input type="number" name="startingBid">
+                    </div>
+                </div>
+                <br/>
+                <div class="form-group row">
+                    <div class="col text-center">
+                      <input class="btn btn-primary" type="submit" value="Submit" />
+                    </div>
+                  </div>
 
-    <input class="btn btn-primary" type="submit" value="Submit" />
-  </form>
-  </div>
-</body>
-
+              </form>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <%- include("include/footer"); %>
+  </body>
 </html>

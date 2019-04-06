@@ -1,52 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-        <title>Update Skills</title>
-        <link rel="stylesheet" href="/css/style.css" />
-        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
-        <!-- JavaScript for Interactivity -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-          crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
-          integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
-          crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
-          integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-          crossorigin="anonymous"></script>
-</head>
-<body>
-    <%- include("include/navbar"); %>
-    <%- messages('include/message', locals) %>
-    <h1>UPDATE SKILLS FOR <%= skills[0].ssid %></h1>
-    
-    <form action="/taskers/updateSkill/<%= skills[0].ssid %>", method="POST">
-        <div class="form-group">
-            <label for="skillName">Name of Personal Skill</label>
-            <input type="text" class="form-control" id="skillName" value="<%= skills[0].name %>" name = newSkillName required>
+  <head>
+      <%- include("include/head", {title: "Update Skill Details"}); %>
+  </head>
+	<body style="background-color: #282c34">
+		<%- include("include/navbar"); %>
+		<div class="container-fluid" style="background-color: white">
+			<div class="row">
+				<div class="container pt-5 mb-5" style="min-height:70vh">
+					<%- messages('include/message', locals) %>
+					<div class="row">
+                        <div class="col">
+                            <h1>Update Skill Details : <%= skills[0].ssid %></h1>
+
+                            <form action="/taskers/updateSkill/<%= skills[0].ssid %>", method="POST">
+                                <div class="form-group">
+                                    <label for="skillName">Name of Personal Skill</label>
+                                    <input type="text" class="form-control" id="skillName" value="<%= skills[0].name %>" name = newSkillName required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <input type="text" class="form-control" id="description" value="<%= skills[0].description %>" name = newDescription required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rate">Rate(/h)</label>
+                                    <input type="number" class="form-control" id="rate" value="<%= skills[0].rateperhour %>" name = newRate required>
+                                </div>
+                                <div class="form-group"">
+                                    <label for="Category">Category</label>
+                                    <select name="catName" class="form-control" id="Category" required>
+                                        <option><%= category[0].catname %></option>    
+                                        <% for(var i=0; i<allCats.length; i++) { %>
+                                        <option><%= allCats[i].catname%></option>
+                                        <% } %>
+                                        <option value="" disabled>...</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">UPDATE</button>
+                                <a href="/taskers" class="btn btn-outline-secondary">Back</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="description">Description</label>
-            <input type="text" class="form-control" id="description" value="<%= skills[0].description %>" name = newDescription required>
-        </div>
-        <div class="form-group">
-            <label for="rate">Rate(/h)</label>
-            <input type="number" class="form-control" id="rate" value="<%= skills[0].rateperhour %>" name = newRate required>
-        </div>
-        <div class="form-group"">
-            <label for="Category">Category</label>
-            <select name="catName" class="form-control" id="Category" required>
-                <option><%= category[0].catname %></option>    
-                <% for(var i=0; i<allCats.length; i++) { %>
-                <option><%= allCats[i].catname%></option>
-                <% } %>
-                <option value="" disabled>...</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">UPDATE</button>
-        <a href="/taskers" class="btn btn-outline-secondary">Back</a>
-    </form>
-    
-  
-</body>
+		<%- include("include/footer"); %>
+    </body>
 </html>

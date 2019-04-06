@@ -90,11 +90,11 @@
                             <%}%> 
                             </span>
                            
-                            <% for (i=0;i<eliteList.length;i++) { if (eliteList[i].cusid==taskersByCategory[z][x].cusid) { %> <!--numbers should be 4.8 and 50-->
+                            <% for (i=0;i<eliteList.length;i++) { if (eliteList[i].cusid==taskersByCategory[z][x].cusid) { %> 
                                 <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
                             <% }}%>  
-                            <% for (j=0;j<greatValueList.length;j++) { if (greatValueList[j].cusid==taskersByCategory[z][x].cusid) { %>
-                                <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></spanx`>
+                            <% for (j=0;j<greatValueList[z].length;j++) { if (greatValueList[z][j].cusid==taskersByCategory[z][x].cusid) { %>
+                                <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></span>
                             <% }}%> 
                           </div>
                           <div class="col-md-2 text-right">
@@ -106,7 +106,8 @@
                       <div class="card-body">
                           <div class="col-10">
                               <i class="far fa-check-circle" style="color:green"></i>   <%=((taskersByCategory[z][x].num == null) ? 0 : taskersByCategory[z][x].num) + " " + categories[z].catname + " Tasks " %><br><br>
-                              "<%=taskersByCategory[z][x].description%>"<br>
+                              <i><b><%=taskersByCategory[z][x].ssname%> :<br/></b></i>
+                              "<%=taskersByCategory[z][x].description%>"<br/><br/>
                           </div>
                           <div class="col-2 align-right">
                               <form action="../taskRequesters/addRequests/<%=categories[z].catid%>/<%=taskersByCategory[z][x].ssid%>/<%=taskersByCategory[z][x].cusid%>" method="POST">

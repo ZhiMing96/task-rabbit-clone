@@ -1,54 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>Profile</title>
-    <%- include("include/head", {title: "Account Settings"}); %>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <head>
+        <%- include("include/head", {title: "Account Settings: Tasker"}); %>
+    </head>
+	<body style="background-color: #282c34">
+		<%- include("include/navbar"); %>
+		<div class="container-fluid" style="background-color: white">
+			<div class="row">
+				<div class="container pt-5 mb-5" style="min-height:70vh">
+                    <%- messages('include/message', locals) %>
+                    <div class="row">
+							<div class="col">
+								<h4><i class="fas fa-fist-raised"></i>&nbsp;&nbsp; <i>Tasker</i></h4>
+							</div>
+					</div>
+					<div class="row">
+                        <%- include("include/tasker_sidebar"); %>
+						<div class="col-9">
+                            <h1 style="text-align: center">Account Settings</h1>
+                        
+                            <div>
+                                <h5>Name: <%= cusInfo[0].name %></h5>
+                                <h5>Username: <%= cusInfo[0].username %></h5>
+                                <h5>Email: <%= cusInfo[0].email %></h5>
+                            </div>
+                            <br/>
+                            <br/>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+                            <h2>My Skills</h2>
+                            <% for(var i=0; i<allSkills.length; i++) { %>
+                                <div class="list-group">
+                                
+                                    <form action="/taskers/deleteSkill/<%= allSkills[i].ssid %>" method="GET" class="list-group-item list-group-item-action flex-column align-items-start"> 
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h2 name="skillName" class="mb-1"><%= allSkills[i].name%></h2>
+                                        </div>
+                                        <p class="mb-1">Category: <%= allSkills[i].catname%></p>
+                                        <p class="mb-1">Description: <%= allSkills[i].description%></p>
+                                        <p class="mb-1">Rate/hour: $<%= allSkills[i].rateperhour%></p>
 
-</head>
-<body>
-    <%- include("include/navbar"); %>
-    <%- messages('include/message', locals) %>
-    <h1 style="text-align: center">Account Settings </h1>
-   
-    <div style="text-align: center">
-        <h5>Name: <%= cusInfo[0].name %></h5>
-        <h5>Username: <%= cusInfo[0].username %></h5>
-        <h5>Email Address: <%= cusInfo[0].email %></h5>
-    </div></br></br>
+                                        <div class="text-right">
+                                            <form action="/taskers/updateSkill/<%= allSkills[i].ssid %>" method="GET">
+                                                <button type="submit" class="btn btn-outline-info btn-small" formaction="/taskers/updateSkill/<%= allSkills[i].ssid %>">Update</button>
+                                            </form>
+                                            <button type="submit" class="btn btn-outline-danger" formaction="/taskers/deleteSkill/<%= allSkills[i].ssid %>">DELETE</button>
+                                        </div>
+                                    </form>   
+                                </div> 
+                            <% } %>
+                            </br></br>
 
-    <h2>Skills</h2>
-    <% for(var i=0; i<allSkills.length; i++) { %>
-        <div class="list-group">
-           
-            <form action="/taskers/deleteSkill/<%= allSkills[i].ssid %>" method="GET" class="list-group-item list-group-item-action flex-column align-items-start"> 
-                <div class="d-flex w-100 justify-content-between">
-                    <h2 name="skillName" class="mb-1"><%= allSkills[i].name%></h2>
+                            <div class="text-center">
+                                <form action="/taskers/addSkill" method="get">
+                                    <button type="submit" class="btn btn-outline-primary btn-small">Add a New Skill</button> 
+                                    <a href="/taskers" class="btn btn-outline-secondary">Back</a>
+                                </form>
+                                
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <p class="mb-1">Category: <%= allSkills[i].catname%></p>
-                <p class="mb-1">Description: <%= allSkills[i].description%></p>
-                <p class="mb-1">Rate/hour: $<%= allSkills[i].rateperhour%></p>
-
-                <div class="text-right">
-                    <form action="/taskers/updateSkill/<%= allSkills[i].ssid %>" method="GET">
-                        <button type="submit" class="btn btn-outline-info btn-small" formaction="/taskers/updateSkill/<%= allSkills[i].ssid %>">Update</button>
-                    </form>
-                    <button type="submit" class="btn btn-outline-danger" formaction="/taskers/deleteSkill/<%= allSkills[i].ssid %>">DELETE</button>
-            </form>   
-        </div> 
-    <% } %>
-    </br></br>
-
-    <div class="text-center">
-        <form action="/taskers/addSkill" method="get">
-            <button type="submit" class="btn btn-outline-primary btn-small">Add a New Skill</button> 
-            <a href="/taskers" class="btn btn-outline-secondary">Back</a>
-        </form>
-        
-    </div>
-</body>
+            </div>
+        </div>
+		<%- include("include/footer"); %>
+    </body>
 </html>

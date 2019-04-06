@@ -12,6 +12,7 @@ const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 //Register Form 
 router.get('/register', function (req, res) {
+    req.flash('warning', 'Passwords do not match');
     if (req.isAuthenticated()) {
         res.redirect("/home");
     }
@@ -71,7 +72,7 @@ router.post('/register', (req, res) => {
                             if (error) {
                                 console.log('error adding to taskers: ', error);
                             } else {
-                                req.flash('success', 'You have successfully registered as a user');
+                                req.flash('success', 'You have successfully registered as a user! <i class="far fa-laugh-beam"></i>');
                                 res.redirect('/users/login');
                             }
                         });

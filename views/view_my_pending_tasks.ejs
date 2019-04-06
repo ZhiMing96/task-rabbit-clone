@@ -1,54 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-		<!-- Page Title -->
-    <title>View My <%= taskType%> Tasks</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-		
-		<!-- CSS for Styling -->
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-		
-		<!-- JavaScript for Interactivity -->
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+      <%- include("include/head", {title: "My Pending Tasks: Tasker"}); %>
   </head>
-  <body>
+	<body style="background-color: #282c34">
 		<%- include("include/navbar"); %>
-		<%- messages('include/message', locals) %>
-		
-		
-		<h1 style="text-align: center">MY <%= taskType%> TASKS</h1>
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col">Task Name</th>
-					<th scope="col">Description</th>
-					<th scope="col">Task Start Date/Time</th>
-					<th scope="col">Task End Date/Time</th>
-					<th scope="col">Task Requester's Email</th>
-					
-				</tr>
-			</thead>
-			<tbody>
-				<% for(var i=0; i<task.length; i++) { %>
-				<tr>
-					<td><%= task[i].taskname%></td>
-					<td><%= task[i].description%></td>
-					<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
-					<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
-					<td><%= task[i].email%></td>
-				
-					
-					
-				</tr>
-				<% } %>
-			</tbody>
-		</table>
-		<div class="text-center">
-				<a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
+		<div class="container-fluid" style="background-color: white">
+			<div class="row">
+				<div class="container pt-5 mb-5" style="min-height:70vh">
+					<%- messages('include/message', locals) %>
+					<div class="row">
+							<div class="col">
+								<h4><i class="fas fa-fist-raised"></i>&nbsp;&nbsp; <i>Tasker</i></h4>
+							</div>
+					</div>
+					<div class="row">
+						<%- include("include/tasker_sidebar"); %>
+						<div class="col-9">
+							<h1 style="text-align: center">My <%= taskType%> Tasks</h1>
+							<table class="table">
+								<thead class="table-primary">
+									<tr>
+										<th scope="col">Task Name</th>
+										<th scope="col">Description</th>
+										<th scope="col">Task Start Date/Time</th>
+										<th scope="col">Task End Date/Time</th>
+										<th scope="col">Task Requester's Email</th>
+										
+									</tr>
+								</thead>
+								<tbody>
+									<% for(var i=0; i<task.length; i++) { %>
+									<tr>
+										<td><%= task[i].taskname%></td>
+										<td><%= task[i].description%></td>
+										<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
+										<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
+										<td><%= task[i].email%></td>
+									
+										
+										
+									</tr>
+									<% } %>
+								</tbody>
+							</table>
+							<div class="text-center">
+									<a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-		
-
+    <%- include("include/footer"); %>
   </body>
 </html>
