@@ -1,74 +1,79 @@
 <!DOCTYPE html>
-<html lang="en"></html>
-<head>
-    <title>Profile</title>
-    <%- include("include/head", {title: "Tasker Requests"}); %>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-</head>
-<body>
-    <%- include("include/navbar"); %>
-     
-
-    <% if(requests.length == 0 ){%>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>No Records Found!</Ri:a></strong> There are currently no requests for you.
-            <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div> 
-        <div class="text-center">
-            <form action="/taskers" method="GET">
-                <button type="submit" class="btn  btn-outline-secondary" formaction="/taskers">BACK</button>
-            </form>
+<html lang="en">
+    <head>
+        <%- include("include/head", {title: "My Requests: Tasker"}); %>
+    </head>
+	<body style="background-color: #282c34">
+		<%- include("include/navbar"); %>
+		<div class="container-fluid" style="background-color: white">
+			<div class="row">
+				<div class="container pt-5 mb-5" style="min-height:70vh">
+                    <%- messages('include/message', locals) %>
+                    <div class="row">
+							<div class="col">
+								<h4><i class="fas fa-fist-raised"></i>&nbsp;&nbsp; <i>Tasker</i></h4>
+							</div>
+					</div>
+					<div class="row">
+                        <%- include("include/tasker_sidebar"); %>
+						<div class="col-9">
+                            <% if(requests.length == 0 ){%>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>No Records Found!</Ri:a></strong> There are currently no requests for you.
+                                    <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div> 
+                                <div class="text-center">
+                                    <form action="/taskers" method="GET">
+                                        <button type="submit" class="btn  btn-outline-secondary" formaction="/taskers">BACK</button>
+                                    </form>
+                                </div>
+                            <% } {%>
+                                <h1 style="text-align: center">My Requests</h1>
+                                <table class="table">
+                                    <thead class="table-primary">
+                                        <tr>
+                                            <th scope="col">Task Name</th>
+                                            <th scope="col">Task Description</th>
+                                            <th scope="col">Task Start Date/Time</th>
+                                            <th scope="col">Task End Time</th>
+                                            <th scope="col">Deadline to Accept</th>
+                                            <th scope="col"></th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% for(var i=0; i<requests.length; i++) { %>
+                                            <tr>
+                                                <td><%= requests[i].taskname%></td>
+                                                <td><%= requests[i].description%></td>
+                                                <td><%= (requests[i].taskstartdatetime).toString().substring(0,24)%> </td>
+                                                <td><%= requests[i].taskendtime%> </td>
+                                                <td><%= (requests[i].deadline).toString().substring(0,24)%></td>
+                                                <td>
+                                                    <form action="/taskers/acceptRequest/<%= requests[i].taskid%>", method="GET">
+                                                        <button type="submit" class="btn btn-outline-success" formaction="/taskers/acceptRequest/<%= requests[i].taskid %>">ACCEPT!</button>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <form action="/taskers/rejectRequest/<%= requests[i].taskid%>", method="GET">
+                                                        <button type="submit" class="btn btn-outline-danger" formaction="/taskers/rejectRequest/<%= requests[i].taskid %>">REJECT</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>    
+                                <div class="text-center">
+                                    <a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    <% } else {%>
-
-        <h1>All Requests - TASKER</h1>
-            
-
-        <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Task Name</th>
-                        <th scope="col">Task Description</th>
-                        <th scope="col">Task Start Date/Time</th>
-                        <th scope="col">Task End Time</th>
-                        <th scope="col">Deadline to Accept</th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% for(var i=0; i<requests.length; i++) { %>
-                    <tr>
-                        <td><%= requests[i].taskname%></td>
-                        <td><%= requests[i].description%></td>
-                        <td><%= (requests[i].taskstartdatetime).toString().substring(0,24)%> </td>
-                        <td><%= requests[i].taskendtime%> </td>
-                        <td><%= (requests[i].deadline).toString().substring(0,24)%></td>
-                        <td>
-                            <form action="/taskers/acceptRequest/<%= requests[i].taskid%>", method="GET">
-                                <button type="submit" class="btn btn-outline-success" formaction="/taskers/acceptRequest/<%= requests[i].taskid %>">ACCEPT!</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form action="/taskers/rejectRequest/<%= requests[i].taskid%>", method="GET">
-                                <button type="submit" class="btn btn-outline-danger" formaction="/taskers/rejectRequest/<%= requests[i].taskid %>">REJECT</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <% } %>
-                </tbody>
-            </table>    
-            <div class="text-center">
-				<a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
-		    </div>
-        <% } %>
-        
-</body>
+		<%- include("include/footer"); %>
+    </body>
 </html>

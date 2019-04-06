@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include("include/head", {title: "PROFILE"}); %>
+    <%- include("include/head", {title: "Task Requester Profile"}); %>
     <script>
     $('#myModal').on('shown.bs.modal', function () {
       $('#myInput').trigger('focus') })
@@ -15,22 +15,18 @@
         <div class="container" style="min-height:70vh">
           <div class="row">
             <div class="col">
-              <h1>Task Requester Home Page</h1>
+              <h1><i class="fas fa-home"></i>&nbsp;&nbsp; Task Requester</h1>
             </div>
           </div>
-          <div class="row mt-5">
+          <div class="row mt-3">
               <%- include("include/tr_sidebar"); %>
-            <div class="col-9">
-              <h3>Profile</h3>
-              <div class="card">
-                  <h5 class="card-header">Profile Info</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">Name: <%= cusInfo[0].name %></h5>
-                    <p class="card-text">Username: <%= cusInfo[0].username %></p>
-                  </div>
-              </div>
+            <div class="col-9 pl-5">
+              <%- include("include/userProfile"); %>
+              <i class="far fa-check-circle"></i>&nbsp;Total Tasks Done:  <br/><br/>
+              <i class="far fa-calendar-minus"></i>&nbsp; Date Joined:<br/>
+
+              <br/>
             </div>
-            <br/>
           </div>
         </div>
       </div>

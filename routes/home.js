@@ -11,7 +11,7 @@ router.get('/', ensureAuthenticated, function (req, res) {
     })
     .catch((error)=>{
         req.flash("warning", "An error occured.");
-        res.render("/home")
+        res.render("home")
     })
     
 });

@@ -1,73 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+      <%- include("include/head", {title: "Title"}); %>
+  </head>
+	<body style="background-color: #282c34">
+		<%- include("include/navbar"); %>
+		<div class="container-fluid" style="background-color: white">
+			<div class="row">
+				<div class="container pt-5 mb-5" style="min-height:70vh">
+					<%- messages('include/message', locals) %>
+					<div class="row">
+            <div class="col">
+              <h1>ADD A NEW SKILL!</h1>
+              
+              <form method="POST" , action="/taskers/addSkill", id="form" >
+                <div class="form-group row">
+                  <label for="skillName" class="col-sm-2 col-form-label">Name of Personal Skill</label>
+                  <div class="col-sm-10">
+                    <textarea class="form-control" name="skillName" rows="5" placeholder="Enter Name of Personal Skill" required></textarea>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="description" class="col-sm-2 col-form-label">Description</label>
+                  <div class="col-sm-10">
+                    <textarea class="form-control" name="description" rows="5" placeholder="Enter Description" required></textarea>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="rate" class="col-sm-2 col-form-label">Rate(/hour) $:</label>
+                  <div class="col-sm-10">
+                    <input type="number" min="1" class="form-control" name="rate" placeholder="Enter Rate(/h)" required>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="category" class="col-sm-2 col-form-label">Choose a Category</label>
+                  <div class="col-sm-10">
+                    <select name="catName" class="form-control" required>
+                      <option value="" selected disabled>Select 1 Category...</option>
+                      <% for(var i=0; i<data.length; i++) { %>
+                      <option value="<%= data[i].catname%>"><%= data[i].catname%></option>
+                      <% } %>
+                      <option disabled value="">...</option>
+                    </select>
+                  </div>
+                </div>
+                
+              </form>
+              <div class="text-center">
+                <button class="btn btn-primary" type="submit" form="form">Submit</button>
+                <a href="/taskers/taskerSettings" class="btn btn-outline-secondary">Back</a>
 
-<head>
-  <title>My Personal Skills</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
-  <!-- JavaScript for Interactivity -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
-    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
-    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-    crossorigin="anonymous"></script>
-
-</head>
-
-<body>
-  <%- include("include/navbar"); %>
-  <h1>ADD A NEW SKILL!</h1>
-  
-  <form method="POST" , action="/taskers/addSkill", id="form" >
-    <div class="form-group row">
-      <label for="skillName" class="col-sm-2 col-form-label">Name of Personal Skill</label>
-      <div class="col-sm-10">
-        <textarea class="form-control" name="skillName" rows="5" placeholder="Enter Name of Personal Skill" required></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="form-group row">
-      <label for="description" class="col-sm-2 col-form-label">Description</label>
-      <div class="col-sm-10">
-        <textarea class="form-control" name="description" rows="5" placeholder="Enter Description" required></textarea>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label for="rate" class="col-sm-2 col-form-label">Rate(/hour) $:</label>
-      <div class="col-sm-10">
-        <input type="number" min="1" class="form-control" name="rate" placeholder="Enter Rate(/h)" required>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label for="category" class="col-sm-2 col-form-label">Choose a Category</label>
-      <div class="col-sm-10">
-        <select name="catName" class="form-control" required>
-          <option value="" selected disabled>Select 1 Category...</option>
-          <% for(var i=0; i<data.length; i++) { %>
-          <option value="<%= data[i].catname%>"><%= data[i].catname%></option>
-          <% } %>
-          <option disabled value="">...</option>
-        </select>
-      </div>
-    </div>
-    
-  </form>
-  <div class="text-center">
-      <button class="btn btn-primary" type="submit" form="form">Submit</button>
-      <a href="/taskers/taskerSettings" class="btn btn-outline-secondary">Back</a>
-
-    </div>
- 
-
-  <!-- <form style="display-in-line" >
-      <button type="submit" class="btn btn-outline-secondary btn-small" formaction="/taskers/taskerSettings">Back</button>
-    </form> -->
-  <!-- <div class="text-center">
-    
-  </div> -->
+		<%- include("include/footer"); %>
 </body>
 
 </html>
