@@ -6,7 +6,7 @@ const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 //View All Available Listings
 router.get('/viewAllAvailable',ensureAuthenticated,function (req, res) {
-    const sql = "SELECT taskname, description, taskstartdatetime, taskenddatetime, datecreated, username, deadline FROM CreatedTasks C INNER JOIN Customers C1 on C.cusId = C1.cusId WHERE C.deadline > (SELECT NOW()) AND C.cusId <> $1 AND C.taskstartdatetime > (SELECT NOW()) AND C.taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND bids.taskid = C.taskId)";
+    const sql = "SELECT taskid,taskname, description, taskstartdatetime, taskenddatetime, datecreated, username, deadline FROM CreatedTasks C INNER JOIN Customers C1 on C.cusId = C1.cusId WHERE C.deadline > (SELECT NOW()) AND C.cusId <> $1 AND C.taskstartdatetime > (SELECT NOW()) AND C.taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND bids.taskid = C.taskId)";
                                                                     
     const params =  [parseInt(req.user.cusId)];
     pool.query(sql, params ,(error, result) => {
@@ -26,8 +26,13 @@ router.get('/createNewBid/:taskId',ensureAuthenticated,(req,res) => {
         if(err){
             console.log("UNABLE TO RETRIEVE Listing" + err);
         } else {
-        //console.log(result.rows);
-        res.render('createNewBid',{listing: result.rows});
+            if(result.rows.length == 0){
+                console.log("Task is not registered as a listing!");
+                req.flash('danger','Unable to Perform Operation!');
+                res.redirect('/taskers/');
+            } else {
+            res.render('createNewBid',{listing: result.rows});
+            }
         }
     });  
 });
