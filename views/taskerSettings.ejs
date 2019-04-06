@@ -13,11 +13,12 @@
 <body>
     <%- include("include/navbar"); %>
     <%- messages('include/message', locals) %>
-    <h1 style="text-align: center">Account Settings - TASKER</h1>
+    <h1 style="text-align: center">Account Settings </h1>
    
-    <div>
+    <div style="text-align: center">
         <h5>Name: <%= cusInfo[0].name %></h5>
         <h5>Username: <%= cusInfo[0].username %></h5>
+        <h5>Email Address: <%= cusInfo[0].email %></h5>
     </div></br></br>
 
     <h2>Skills</h2>

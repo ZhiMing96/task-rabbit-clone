@@ -16,17 +16,8 @@
   <body>
 		<%- include("include/navbar"); %>
 		<%- messages('include/message', locals) %>
-		<div class="alert alert-danger alert-dismissible fade show" role="alert" style="text-align: center">
-			<% if(errorMsg != null) { %>
-				<%= errorMsg %>
-			<% } %>
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-		</div>
 		
 		
-
 		<h1 style="text-align: center">MY <%= taskType%> TASKS</h1>
 		<table class="table">
 			<thead>
@@ -34,7 +25,7 @@
 					<th scope="col">Task Name</th>
 					<th scope="col">Description</th>
 					<th scope="col">Task Start Date/Time</th>
-					<th scope="col">Task End Time</th>
+					<th scope="col">Task End Date/Time</th>
 					<th scope="col">Task Requester's Email</th>
 					
 				</tr>
@@ -45,7 +36,7 @@
 					<td><%= task[i].taskname%></td>
 					<td><%= task[i].description%></td>
 					<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
-					<td><%= task[i].taskendtime%></td>
+					<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
 					<td><%= task[i].email%></td>
 				
 					

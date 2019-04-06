@@ -136,7 +136,6 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
     //console.log(error.message);
     if(error.message == 'CLASHING TIMESLOTS!')
     {
-      //console.log("ENTEREDDDDDDDDDDDD");
       const sqlRespond = "UPDATE requests SET hasResponded = true, accepted = false WHERE taskid = $1 AND cusid = $2";
       const paramRespond = [taskId, user];
   
@@ -360,7 +359,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View All My completed Tasks
   router.get('/viewMyCompletedTasks', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT taskname, description, taskstartdatetime, taskendtime FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)'
+    const sql = 'SELECT taskname, description, taskstartdatetime, taskenddatetime FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {
@@ -371,8 +370,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
       res.render('view_my_completed_tasks', {
         task: result.rows,
-        taskType: 'COMPLETED',
-        errorMsg: null
+        taskType: 'COMPLETED'
       });
 
     });
@@ -380,21 +378,19 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View all My pending Tasks
   router.get('/viewMyPendingTasks', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT c1.email, taskname, description, taskstartdatetime, taskendtime FROM customers C1 join (createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = false)) on (C1.cusid = C.cusid)'
+    const sql = 'SELECT c1.email, taskname, description, taskstartdatetime, taskenddatetime FROM customers C1 join (createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = false)) on (C1.cusid = C.cusid)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {
 
       if (error) {
         console.log('err: ', error);
+      } else {
+        res.render('view_my_pending_tasks', {
+          task: result.rows,
+          taskType: 'PENDING'
+        });
       }
-
-      res.render('view_my_pending_tasks', {
-        task: result.rows,
-        taskType: 'PENDING',
-        errorMsg:null
-      });
-
     });
   });
 

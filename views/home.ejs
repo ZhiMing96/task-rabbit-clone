@@ -49,6 +49,34 @@
         </div>
       </div>
     </div>
+    <div class="container-fluid" style="background-color: white;background-image:url('/images/boxes.jpg');background-repeat: no-repeat;background-position:center;background-size:cover;">
+      <div class="row">
+        <div class="container mt-5 py-5" style="min-height:100vh;">
+          <%- messages('include/message', locals) %>
+          <div class="row">
+            <div class="col-6">
+              <h3><i>Top 3 Taskers of the Month!</i></h3>
+              <table class="table">
+                <thead>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Number of Completed Tasks</th>
+                </thead>
+                <tbody>
+                    <% for(var i=0; i<tasker.length; i++) { %>
+                    <tr>
+                      <td><%=tasker[i].taskername%></td>
+                      <td><%=tasker[i].email%></td>
+                      <td><%=tasker[i].numtask%></td>
+                    </tr>
+                  <% }; %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="container-fluid" style="background-color: white;background-image:url('/images/notebook_phone.jpg');background-repeat: no-repeat;background-position:center;background-size:cover;">
       <div class="row">
         <div class="container mt-5 py-5" style="min-height:100vh;">
@@ -62,12 +90,12 @@
                   <th>Description</th>
                 </thead>
                 <tbody>
-                  <% result.rows.forEach((item)=>{%>
+                    <% for(var i=0; i<task.length; i++) { %>
                     <tr>
-                      <td><%=item.taskname%></td>
-                      <td><%=item.description%></td>
+                      <td><%=task[i].taskname%></td>
+                      <td><%=task[i].description%></td>
                     </tr>
-                  <% }); %>
+                  <% }; %>
                 </tbody>
               </table>
             </div>

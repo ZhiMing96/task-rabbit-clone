@@ -6,7 +6,7 @@ const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 //View All Available Listings
 router.get('/viewAllAvailable',ensureAuthenticated,function (req, res) {
-    const sql = "SELECT taskname, description, taskstartdatetime, taskendtime, datecreated, username, deadline FROM CreatedTasks C INNER JOIN Customers C1 on C.cusId = C1.cusId WHERE C.deadline > (SELECT NOW()) AND C.cusId <> $1 AND C.taskstartdatetime > (SELECT NOW()) AND C.taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND bids.taskid = C.taskId)";
+    const sql = "SELECT taskname, description, taskstartdatetime, taskenddatetime, datecreated, username, deadline FROM CreatedTasks C INNER JOIN Customers C1 on C.cusId = C1.cusId WHERE C.deadline > (SELECT NOW()) AND C.cusId <> $1 AND C.taskstartdatetime > (SELECT NOW()) AND C.taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND bids.taskid = C.taskId)";
                                                                     
     const params =  [parseInt(req.user.cusId)];
     pool.query(sql, params ,(error, result) => {

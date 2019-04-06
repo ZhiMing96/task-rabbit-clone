@@ -23,7 +23,7 @@
 				<th scope="col">Task Name</th>
 				<th scope="col">Description</th>
 				<th scope="col">Task Start Date / Time</th>
-				<th scope="col">Task End Time</th>
+				<th scope="col">Task End Date/Time</th>
 				<th scope="col">Created By</th>
 				<th scope="col">Date Created</th>
 				<th scope="col">Bidding Deadline</th>
@@ -35,7 +35,7 @@
 				<td><%= availableListing[i].taskname%></td>
 				<td><%= availableListing[i].description%></td>
 				<td><%= (availableListing[i].taskstartdatetime).toString().substring(0,24)%></td>
-				<td><%= availableListing[i].taskendtime%></td>
+				<td><%= (availableListing[i].taskenddatetime).toString().substring(0,24)%></td>
 				<td><%= availableListing[i].username%></td>
 				<td><%= (availableListing[i].datecreated).toString().substring(0,16)%></td>
 				<td><%= (availableListing[i].deadline).toString().substring(0,24)%></td>
