@@ -21,6 +21,7 @@
 <body>
 
   <%- include("include/navbar"); %>
+  <%- messages('include/message', locals) %>
   <h1>Update Request Details</h1>
   <form method="POST" , action="/taskRequesters/updateRequests/<%= task[0].taskid %>">
     <div id="form-group">
@@ -32,10 +33,13 @@
         <input type="datetime-local" name="newTaskStartDateTime">
     </div>
     <div id="form-group">
-        <label>Task End Time:</label>
-        <input type="time" name="newTaskEndTime">
+        <label>Task End Date / Time:</label>
+        <input type="datetime-local" name="newTaskEndDateTime">
     </div>
-    
+    <div id="form-group">
+        <label>Deadline:</label>
+        <input type="datetime-local" name="newDeadline">
+    </div>
     <input class="btn btn-primary" type="submit" value="Submit" />
   </form>
 </body>

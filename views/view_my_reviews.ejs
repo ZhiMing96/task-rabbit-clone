@@ -3,6 +3,7 @@
   <head>
       <%- include("include/head", {title: "My Reviews: Tasker"}); %>
   </head>
+<<<<<<< HEAD
 	<body style="background-color: #282c34">
 		<%- include("include/navbar"); %>
 		<div class="container-fluid" style="background-color: white">
@@ -56,6 +57,20 @@
                     </div>
                 </div>
             </div>
+=======
+  <body>
+    <%- include("include/navbar"); %>
+    <%- messages('include/message', locals) %>
+	<% if(reviews.length == 0 ){%>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>No Records Found!</Ri:a></strong> There are no reviews.
+            <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div> 
+        <div class="text-center">	
+            <a href="/taskers" class="btn btn-outline-secondary">Back</a>		
+>>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
         </div>
 		<%- include("include/footer"); %>
     </body>

@@ -1,12 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const bodyParser = require("body-parser");
+const expressValidator = require('express-validator');
+const flash = require('connect-flash');
+const session = require('express-session');
+const passport = require('passport');
+
 
 const pool = require('../config/database');
 const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
+
+
+
 
 router.get("/", ensureAuthenticated, (req, res) => {
   //Retrieve all tasks and send along with render
@@ -43,7 +51,7 @@ router.get("/taskerSettings", ensureAuthenticated, (req, res) => {
 
       var paramSkill = [parseInt(req.user.cusId)]
       var sqlSkill =
-        "SELECT s.ssid, s.description, c.catname, s.name FROM addedpersonalskills s INNER JOIN belongs b ON s.ssid = b.ssid INNER JOIN skillcategories c ON b.catid = c.catid WHERE cusid=$1";
+        "SELECT s.ssid, s.description, c.catname, s.name, s.rateperhour FROM addedpersonalskills s INNER JOIN belongs b ON s.ssid = b.ssid INNER JOIN skillcategories c ON b.catid = c.catid WHERE cusid=$1";
 
       pool.query(sqlSkill, paramSkill, (err, data) => {
         if (err) {
@@ -62,7 +70,6 @@ router.get("/taskerSettings", ensureAuthenticated, (req, res) => {
 router.get("/viewRequests", ensureAuthenticated, (req, res) => {
   const user = req.user.cusId;
 
-
   const sql = "SELECT * FROM requests r INNER JOIN createdtasks t ON r.taskid = t.taskid WHERE hasResponded=false AND r.cusid = $1";
   const param = [user];
 
@@ -78,14 +85,31 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
   });
 });
 
-// else if (result.rows.length != 0) {
-//   res.render('pendingRequests', {requests: result.rows});
-// }
-// console.log("THERE ARE NO PENDING REQUESTS!");
+router.post("/viewRequests", ensureAuthenticated, (req, res) => {
+  const user = req.user.cusId;
+  const errorMsg = req.body.errorMsg
+  console.log(errorMsg);
+
+  const sql = "SELECT * FROM requests r INNER JOIN createdtasks t ON r.taskid = t.taskid WHERE hasResponded=false AND r.cusid = $1";
+  const param = [user];
+
+  pool.query(sql, param, (err, result) => {
+    if (err) {
+      throw err;
+    } else {
+      // console.log(result.rows);
+      res.render('pendingRequests', {requests: result.rows, error: errorMsg});
+
+    }
+    //res.redirect('/taskers');
+  });
+});
+
 
 router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
   const user = req.user.cusId;
   const taskId = req.params.taskid;
+
   const sql = "UPDATE requests SET accepted = true WHERE taskid = $1 AND cusid = $2";
   const param = [taskId, user];
 
@@ -102,23 +126,44 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
     return pool.query(sqlAssign, paramAssign);
   })
   .then((result) => {
-    console.log(result)
+    //console.log(result)
     pool.query("COMMIT")
-    res.redirect('/taskers');
-
+    req.flash('success','REQUEST ACCEPTED!');
+    res.redirect('/taskers/viewRequests');
+    
   })
   .catch((error) => {
-    console.log("Error Accepting Task", error);
-    pool.query("ROLLBACK")
-    res.render('view_my_tasks', {
-      task: {},
-      taskType: 'PENDING',
-      errorMsg: 'Unable to Accept, You have a task during that time!'
+    //console.log(error.message);
+    if(error.message == 'CLASHING TIMESLOTS!')
+    {
+      //console.log("ENTEREDDDDDDDDDDDD");
+      const sqlRespond = "UPDATE requests SET hasResponded = true, accepted = false WHERE taskid = $1 AND cusid = $2";
+      const paramRespond = [taskId, user];
+  
+      pool.query(sqlRespond, paramRespond, (err, result1) => {
+        if (err) {
+          console.log("Error Changing hasResponed to True");
+        } else {
+          req.flash('danger', 'Unable to Accept, You have a task during that time!');
+          res.redirect('/taskers/viewRequests');
+
+          // var errorMsg = "Unable to Accept, You have a task during that time!";
+          // var redirect = "/taskers/viewRequests";
+          // var pageName = "View Pending Tasks";
+          // res.render('errorHandling',{error : errorMsg, redirectUrl : redirect, pageName : pageName});
+        }
+      });
+    } else {
+      pool.query("ROLLBACK");
+      req.flash('danger', 'Unable to Perform Operation!');
+      res.redirect('/taskers/viewRequests');
+    }
+
+    
+      
     });
-    //req.failureflash("warning", "An error was encountered. Please try again.")
-    //res.redirect('/taskers/viewMyPendingTasks');
-  })
-})
+    
+  });
 
 
 
@@ -144,12 +189,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
     .catch((error) => {
       console.log("Error Rejecting Task", error);
       pool.query("ROLLBACK")
-      //req.flash("warning", "Unable to Accept, You have a task during that time!")
-      // res.render('view_my_tasks', {
-      //   task: {},
-      //   taskType: 'PENDING',
-      //   errorMsg: 'Unable to Accept, You have a task during that time!'
-      // });
+      
       res.redirect('/taskers/viewMyPendingTasks');
     })
   })
@@ -252,18 +292,9 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
     req.checkBody("newDescription", "Description is required").notEmpty();
     req.checkBody("newRate", "Rate is required").notEmpty();
     req.checkBody("catName", "Category is required").notEmpty();
-    var ssId = req.params.ssid;
-    console.log("SSID OF UPDATED SKILL IS:" + ssId);
-    console.log("New name:" + req.body.skillName);
-    console.log("New Rate: " + req.body.newRate);
-    console.log("New Description: " + req.body.newDescription);
-    console.log("New Cat: " + req.body.catName);
 
-    let error = req.validationErrors();
-    if (error) {
-      res.redirect("/taskers/taskerSettings");
-      console.log('Error with inputs')
-    } else {
+    var ssId = req.params.ssid;
+    
       const params = [req.body.newDescription, req.body.newRate, ssId, req.body.newSkillName];
       var sql = "UPDATE addedpersonalskills SET description = $1, rateperhour = $2, name = $4 WHERE ssid = $3";
       
@@ -296,7 +327,6 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
           });
         }
       });
-    }
 
   });
 
@@ -350,7 +380,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View all My pending Tasks
   router.get('/viewMyPendingTasks', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT c1.email, taskname, description, taskstartdatetime, taskendtime FROM customers C1 join (createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)) on (C1.cusid = C.cusid)'
+    const sql = 'SELECT c1.email, taskname, description, taskstartdatetime, taskendtime FROM customers C1 join (createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = false)) on (C1.cusid = C.cusid)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {

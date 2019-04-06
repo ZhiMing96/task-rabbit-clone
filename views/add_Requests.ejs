@@ -21,10 +21,11 @@
 <body>
 
   <%- include("include/navbar"); %>
+  <%- messages('include/message', locals) %>
   <div class='container'>
   
   <h1>Task Details</h1>
-
+  
   Category: <%=cat[0].catname%><br/>
   Tasker: <%=tasker[0].name%>
   <form method="POST" , action="/taskRequesters/addRequests">
@@ -42,7 +43,7 @@
     </div>
     <div id="form-group">
         <label>Task End Time:</label>
-        <input type="time" name="taskendtime">
+        <input type="datetime-local" name="taskenddatetime">
     </div>
     <div id="form-group">
         <label>Deadline to accept:</label>

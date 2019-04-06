@@ -5,6 +5,7 @@
   </head>
 	<body style="background-color: #282c34">
 		<%- include("include/navbar"); %>
+<<<<<<< HEAD
 		<div class="container-fluid" style="background-color: white">
 			<div class="row">
 				<div class="container pt-5 mb-5" style="min-height:70vh">
@@ -54,6 +55,16 @@
 				</div>
 				</div>
 			</div>
+=======
+		<%- messages('include/message', locals) %>
+		<div class="alert alert-danger alert-dismissible fade show" role="alert" style="text-align: center">
+			<% if(errorMsg != null) { %>
+				<%= errorMsg %>
+			<% } %>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+>>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
 		</div>
 	<%- include("include/footer"); %>
   </body>

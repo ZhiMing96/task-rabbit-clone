@@ -37,6 +37,7 @@
                                         <p class="mb-1">Category: <%= allSkills[i].catname%></p>
                                         <p class="mb-1">Description: <%= allSkills[i].description%></p>
 
+<<<<<<< HEAD
                                         <div class="text-right">
                                             <form action="/taskers/updateSkill/<%= allSkills[i].ssid %>" method="GET">
                                                 <button type="submit" class="btn btn-outline-info btn-small" formaction="/taskers/updateSkill/<%= allSkills[i].ssid %>">Update</button>
@@ -47,6 +48,18 @@
                                 </div> 
                             <% } %>
                             </br></br>
+=======
+</head>
+<body>
+    <%- include("include/navbar"); %>
+    <%- messages('include/message', locals) %>
+    <h1 style="text-align: center">Account Settings - TASKER</h1>
+   
+    <div>
+        <h5>Name: <%= cusInfo[0].name %></h5>
+        <h5>Username: <%= cusInfo[0].username %></h5>
+    </div></br></br>
+>>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
 
                             <div class="text-center">
                                 <form action="/taskers/addSkill" method="get">
@@ -58,8 +71,33 @@
                         </div>
                     </div>
                 </div>
+<<<<<<< HEAD
             </div>
         </div>
 		<%- include("include/footer"); %>
     </body>
+=======
+                <p class="mb-1">Category: <%= allSkills[i].catname%></p>
+                <p class="mb-1">Description: <%= allSkills[i].description%></p>
+                <p class="mb-1">Rate/hour: $<%= allSkills[i].rateperhour%></p>
+
+                <div class="text-right">
+                    <form action="/taskers/updateSkill/<%= allSkills[i].ssid %>" method="GET">
+                        <button type="submit" class="btn btn-outline-info btn-small" formaction="/taskers/updateSkill/<%= allSkills[i].ssid %>">Update</button>
+                    </form>
+                    <button type="submit" class="btn btn-outline-danger" formaction="/taskers/deleteSkill/<%= allSkills[i].ssid %>">DELETE</button>
+            </form>   
+        </div> 
+    <% } %>
+    </br></br>
+
+    <div class="text-center">
+        <form action="/taskers/addSkill" method="get">
+            <button type="submit" class="btn btn-outline-primary btn-small">Add a New Skill</button> 
+            <a href="/taskers" class="btn btn-outline-secondary">Back</a>
+        </form>
+        
+    </div>
+</body>
+>>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
 </html>

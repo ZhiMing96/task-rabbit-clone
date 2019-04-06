@@ -16,6 +16,7 @@
   </head>
   <body>
 	<%- include("include/navbar"); %>
+	<%- messages('include/message', locals) %>
 	<% if(task.length == 0 ){%>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>NO TASK REQUESTS FOUND!</Ri:a></strong>
@@ -41,6 +42,7 @@
 					<th scope="col">Deadline to accept</th>
 					<th scope="col"></th>
 					<th scope="col"></th>
+					<th scope="col"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -61,8 +63,10 @@
 							<td> - </td>
 							<td> - </td>
 							<td> - </td>
+							<td> - </td>
 						<% } else if (task[i].hasresponded == true && (task[i].accepted == false)){%>
 								<td> Rejected </td>
+								<td> - </td>
 								<td> - </td>
 								<td> - </td>
 								<td> - </td>
@@ -70,9 +74,15 @@
 								<% if (task[i].hasresponded == true){%>
 										<td> Pending for completion </td>
 										<td> - </td>
+										<td>
+												<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
+													<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
+												</form>
+										</td>	
 								<% } else {%>
 									<td> Pending for acceptance </td>
 									<td> <%= (task[i].deadline).toString().substring(0,24)%> </td>
+									<td> - </td>
 								<% }%>
 							<td>
 								<form action="/taskRequesters/updateRequests/<%= task[i].taskid%>", method="GET">

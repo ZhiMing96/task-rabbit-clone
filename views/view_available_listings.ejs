@@ -3,6 +3,7 @@
   <head>
       <%- include("include/head", {title: "All Available Listings"}); %>
   </head>
+<<<<<<< HEAD
 	<body style="background-color: #282c34">
 		<%- include("include/navbar"); %>
 		<div class="container-fluid" style="background-color: white">
@@ -59,5 +60,48 @@
 			</div>
 		</div>
 		<%- include("include/footer"); %>
+=======
+  <body>
+	<%- include("include/navbar"); %>
+	<%- messages('include/message', locals) %>
+	<h1 style="text-align: center"> ALL AVAILABLE LISTINGS</h1></br>
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Task Name</th>
+				<th scope="col">Description</th>
+				<th scope="col">Task Start Date / Time</th>
+				<th scope="col">Task End Time</th>
+				<th scope="col">Created By</th>
+				<th scope="col">Date Created</th>
+				<th scope="col">Bidding Deadline</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% for(var i=0; i<availableListing.length; i++) { %>
+			<tr>
+				<td><%= availableListing[i].taskname%></td>
+				<td><%= availableListing[i].description%></td>
+				<td><%= (availableListing[i].taskstartdatetime).toString().substring(0,24)%></td>
+				<td><%= availableListing[i].taskendtime%></td>
+				<td><%= availableListing[i].username%></td>
+				<td><%= (availableListing[i].datecreated).toString().substring(0,16)%></td>
+				<td><%= (availableListing[i].deadline).toString().substring(0,24)%></td>
+				<td>
+					<form action="/listings/createNewBid/<%= availableListing[i].taskid%>", method="GET">
+						<button type="submit" class="btn btn-outline-secondary" formaction="/listings/createNewBid/<%= availableListing[i].taskid %>">Bid For This!</button>
+					</form>
+				</td>
+					
+			</tr>
+			<% } %>
+		</tbody>
+	</table>
+	<div class="text-center">
+			<a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
+	</div>
+		
+
+>>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
   </body>
 </html>

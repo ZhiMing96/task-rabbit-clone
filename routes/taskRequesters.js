@@ -166,7 +166,7 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
   req.checkBody("taskName", "Task Name is required").notEmpty();
   req.checkBody("description", "Description is required").notEmpty();
   req.checkBody("taskstartdatetime", "taskstartdatetime is required").notEmpty();
-  req.checkBody("taskendtime", "taskendtime is required").notEmpty();
+  req.checkBody("taskenddatetime", "taskenddatetime is required").notEmpty();
   req.checkBody("deadline", "Deadline is required").notEmpty();
   req.checkBody("startingBid", "Starting bid is required").notEmpty();
   let errors = req.validationErrors();
@@ -179,8 +179,8 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
     const userID = parseInt(req.user.cusId)
     var TDT = req.body.taskDateTime
 
-    const sqlinserttask = "INSERT INTO createdTasks (taskname, description, taskstartdatetime, taskendtime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4,now(), $5, $6) RETURNING taskid;"
-    const params1 = [req.body.taskName, req.body.description, req.body.taskstartdatetime, req.body.taskendtime, userID, req.body.deadline]
+    const sqlinserttask = "INSERT INTO createdTasks (taskname, description, taskstartdatetime, taskenddatetime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4,now(), $5, $6) RETURNING taskid;"
+    const params1 = [req.body.taskName, req.body.description, req.body.taskstartdatetime, req.body.taskenddatetime, userID, req.body.deadline]
     await pool.query("BEGIN")
     await pool.query(sqlinserttask, params1)
       .then((results) => {
@@ -196,7 +196,7 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
       })
       .then((results) => {
         var taskid = [results.rows[0].taskid];
-        var sqlNewTask = "SELECT T.taskname, T.description, T.taskstartdatetime, T.taskendtime FROM createdtasks T join Listings L on T.taskid = L.taskid WHERE L.taskid=$1;"
+        var sqlNewTask = "SELECT T.taskname, T.description, T.taskstartdatetime, T.taskenddatetime FROM createdtasks T join Listings L on T.taskid = L.taskid WHERE L.taskid=$1;"
         return pool.query(sqlNewTask, taskid);
       })
 
@@ -208,7 +208,7 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
             taskname: results.rows[0].taskname,
             description: results.rows[0].description,
             taskstartdatetime: results.rows[0].taskstartdatetime,
-            taskendtime: results.rows[0].taskendtime,
+            taskenddatetime: results.rows[0].taskenddatetime,
           });
       })
       .catch((error) => {
@@ -263,7 +263,7 @@ router.post("/addRequests", async function (req, res) {
   req.checkBody("taskName", "Task Name is required").notEmpty();
   req.checkBody("description", "Description is required").notEmpty();
   req.checkBody("taskstartdatetime", "taskstartdatetime is required").notEmpty();
-  req.checkBody("taskendtime", "taskendtime is required").notEmpty();
+  req.checkBody("taskenddatetime", "taskenddatetime is required").notEmpty();
   req.checkBody("deadline", "deadline is required").notEmpty();
 
   let errors = req.validationErrors();
@@ -276,8 +276,8 @@ router.post("/addRequests", async function (req, res) {
     const userID = parseInt(req.user.cusId)
     const TDT = req.body.taskDateTime
 
-    const sqlinserttask = "INSERT INTO createdTasks (taskname, description, taskstartdatetime, taskendtime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4,now(), $5, $6) RETURNING taskid;"
-    const params1 = [req.body.taskName, req.body.description, req.body.taskstartdatetime, req.body.taskendtime, userID, req.body.deadline]
+    const sqlinserttask = "INSERT INTO createdTasks (taskname, description, taskstartdatetime, taskenddatetime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4,now(), $5, $6) RETURNING taskid;"
+    const params1 = [req.body.taskName, req.body.description, req.body.taskstartdatetime, req.body.taskenddatetime, userID, req.body.deadline]
     await pool.query("BEGIN")
     await pool.query(sqlinserttask, params1)
       .then((results) => {
@@ -294,7 +294,7 @@ router.post("/addRequests", async function (req, res) {
 
       .then((results) => {
         var taskid = [results.rows[0].taskid];
-        var sqlNewTask = "SELECT T.taskname, T.description, T.taskstartdatetime, T.taskendtime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
+        var sqlNewTask = "SELECT T.taskname, T.description, T.taskstartdatetime, T.taskenddatetime, C.name FROM createdtasks T join Requests R on T.taskid= R.taskid join customers C on R.cusid=C.cusid WHERE R.taskid=$1;"
         return pool.query(sqlNewTask, taskid);
       })
       .then((results) => {
@@ -305,7 +305,7 @@ router.post("/addRequests", async function (req, res) {
             taskname: results.rows[0].taskname,
             description: results.rows[0].description,
             taskstartdatetime: results.rows[0].taskstartdatetime,
-            taskendtime: results.rows[0].taskendtime,
+            taskenddatetime: results.rows[0].taskenddatetime,
             tasker: results.rows[0].name
           });
       })
@@ -382,7 +382,7 @@ router.get("/newTask/:catId/:taskerId", ensureAuthenticated, (req, res) => {
 
 router.get("/viewListings", (req, res) => {
   console.log("here")
-  const sql = "SELECT C.taskid as taskid, taskname, description, taskStartDateTime, taskEndTime, datecreated, deadline, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
+  const sql = "SELECT C.taskid as taskid, taskname, description, taskStartDateTime, taskEndDateTime, datecreated, deadline, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
   console.log(req.user.cusId)
 
@@ -418,13 +418,13 @@ router.get("/updateListings/:taskid", (req, res) => {
 router.post("/updateListings/:taskid", ensureAuthenticated, (req, res) => {
   req.checkBody("newDescription", "description is required").notEmpty();
   req.checkBody("newTaskStartDateTime", "Taskstartdatetime is required").notEmpty();
-  req.checkBody("newTaskEndTime", "taskEndTime is required").notEmpty();
+  req.checkBody("newTaskEndDateTime", "taskEndDateTime is required").notEmpty();
   req.checkBody("newDeadline", "deadline is required").notEmpty();
   var taskid = req.params.taskid;
 
   //Update listing dont need to delete assigned cause once assigned, there will be no more updates allowed 
-  const params1 = [req.body.newDescription, req.body.newTaskStartDateTime, req.body.newTaskEndTime, req.body.newDeadline, taskid];
-  var sqlUpCreatedTask = "UPDATE createdTasks SET description = $1, taskstartdatetime = $2, taskendtime = $3, deadline = $4 WHERE taskid = $5";
+  const params1 = [req.body.newDescription, req.body.newTaskStartDateTime, req.body.newTaskEndDateTime, req.body.newDeadline, taskid];
+  var sqlUpCreatedTask = "UPDATE createdTasks SET description = $1, taskstartdatetime = $2, taskenddatetime = $3, deadline = $4 WHERE taskid = $5";
 
   pool.query(sqlUpCreatedTask, params1, (err, result) => {
     if (err) {
@@ -475,7 +475,7 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
     }
   });
 
-  const sql = "SELECT C.taskid, taskname, description, taskstartdatetime, taskendtime, datecreated, deadline, accepted, R.hasResponded as hasresponded, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
+  const sql = "SELECT C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated, deadline, accepted, R.hasResponded as hasresponded, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
 
   pool.query(sql, params, (error, result) => {
@@ -511,11 +511,12 @@ router.get("/updateRequests/:taskid", ensureAuthenticated, (req, res) => {
 router.post("/updateRequests/:taskid", ensureAuthenticated, async function (req, res) {
   req.checkBody("newDescription", "description is required").notEmpty();
   req.checkBody("newTaskStartDateTime", "task start date/time is required").notEmpty();
-  req.checkBody("newTaskEndTime", "task end time is required").notEmpty();
+  req.checkBody("newTaskEndDateTime", "task end date/time is required").notEmpty();
+  req.checkBody("newDeadline", "deadline is required").notEmpty();
   var taskid = req.params.taskid;
   let error = req.validationErrors();
-  const params = [req.body.newDescription, req.body.newTaskStartDateTime, req.body.newTaskEndTime, taskid];
-  var sql = "UPDATE createdTasks SET description = $1, taskstartdatetime = $2, taskendtime = $3 WHERE taskid = $4 RETURNING taskid";
+  const params = [req.body.newDescription, req.body.newTaskStartDateTime, req.body.newTaskEndDateTime, req.body.newDeadline, taskid];
+  var sql = "UPDATE createdTasks SET description = $1, taskstartdatetime = $2, taskenddatetime = $3, deadline = $4 WHERE taskid = $5 RETURNING taskid";
 
   await pool.query("BEGIN")
   pool.query(sql, params)
@@ -555,6 +556,28 @@ router.get("/deleteRequests/:taskid", ensureAuthenticated, (req, res) => {
 
 });
 
+//select Task to complete 
+router.get("/completeTasks/:taskid", (req, res) => {
+  var paramComplete = [req.params.taskid];
+  var sqlComplete = "UPDATE assigned SET completed = true where taskid = $1 RETURNING taskid";
+
+  pool.query(sqlComplete, paramComplete)
+    .then((results) => {
+      var paramRequires = [results.rows[0].taskid];
+      var sqlRequires = "select C.taskid, taskname, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid where C.taskid = $1";
+      return pool.query(sqlRequires, paramRequires);
+    })
+    .then((results) => {
+      res.render('tr_write_review', {
+        result: results.rows,
+      });
+    })
+    .catch((error) => {
+      console.log("Error completing a task", error);
+      res.redirect('/viewRequests');
+    })
+  
+});
 
 //End: CRUD Requests 
 
@@ -566,7 +589,11 @@ router.get("/viewAllTasks", function (req, res) {
 router.get('/viewCompletedTasks', function (req, res) {
 
   const params = [parseInt(req.user.cusId)]
+<<<<<<< HEAD
   const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskendtime, C.datecreated, A.cusid from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
+=======
+  const sql = 'select taskname, description, taskstartdatetime, taskenddatetime, datecreated from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
+>>>>>>> 29386f3de109c61df3763c084304326d0bea5dae
 
   pool.query(sql, params, (error, result) => {
 
@@ -584,7 +611,7 @@ router.get('/viewCompletedTasks', function (req, res) {
 
 //View all my pending Tasks
 router.get('/viewPendingTasks', function (req, res) {
-  const sql = '	select C1.email, taskname, description, taskstartdatetime, taskendtime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = C.cusid) where C.cusId = $1 and A.completed = false';
+  const sql = '	select C1.email, C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated from (Customers C1 join (CreatedTasks C join assigned A on C.taskid = A.taskid) on C1.cusid = A.cusid) where C.cusId = $1 and A.completed = false';
   const params = [parseInt(req.user.cusId)]
 
   pool.query(sql, params, (error, result) => {
