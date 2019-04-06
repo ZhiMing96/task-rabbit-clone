@@ -16,7 +16,7 @@
   </head>
   <body>
 	<%- include("include/navbar"); %>
-
+	<%- messages('include/message', locals) %>
 	<% if(bid.length == 0 ){%>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>No Records Found!</Ri:a></strong> There are no bids records.

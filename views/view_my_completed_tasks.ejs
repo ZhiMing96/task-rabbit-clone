@@ -15,7 +15,7 @@
   </head>
   <body>
 		<%- include("include/navbar"); %>
-
+		<%- messages('include/message', locals) %>
 		<div class="alert alert-danger alert-dismissible fade show" role="alert" style="text-align: center">
 			<% if(errorMsg != null) { %>
 				<%= errorMsg %>

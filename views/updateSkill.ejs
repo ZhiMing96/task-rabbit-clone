@@ -17,8 +17,9 @@
 </head>
 <body>
     <%- include("include/navbar"); %>
+    <%- messages('include/message', locals) %>
     <h1>UPDATE SKILLS FOR <%= skills[0].ssid %></h1>
-
+    
     <form action="/taskers/updateSkill/<%= skills[0].ssid %>", method="POST">
         <div class="form-group">
             <label for="skillName">Name of Personal Skill</label>

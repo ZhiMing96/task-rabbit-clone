@@ -20,6 +20,8 @@
 
 <body>
   <%- include("include/navbar"); %>
+
+  <%- messages('include/message', locals) %>
   <h1>ADD A NEW SKILL!</h1>
   
   <form method="POST" , action="/taskers/addSkill", id="form" >

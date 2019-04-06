@@ -15,6 +15,7 @@
   </head>
   <body>
 		<%- include("include/navbar"); %>
+		<%- messages('include/message', locals) %>
 		<% if(task.length == 0 ){%>
 			<div class="alert alert-danger alert-dismissible fade show" role="alert">
 					<strong>No Completed Task Found!</Ri:a></strong> There are no completed task records.

@@ -21,6 +21,7 @@
 <body>
 
   <%- include("include/navbar"); %>
+  <%- messages('include/message', locals) %>
   <h1>Update Request Details</h1>
   <form method="POST" , action="/taskRequesters/updateListings/<%= task[0].taskid %>">
     <div id="form-group">

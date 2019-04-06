@@ -4,7 +4,7 @@
 <head>
     <!-- Page Title -->
     <%- include("include/head", {title: "View Categories"}); %>
-
+    
     <link rel='stylesheet' href='/stylesheets/style.css' />
 
     <!-- CSS for Styling -->
@@ -25,7 +25,7 @@
 
 <body>
     <%- include("include/navbar"); %>
-
+    <%- messages('include/message', locals) %>
     <% if(categories.length == 0 ){%>
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>No Records Found!</Ri:a></strong> There are no categories.
