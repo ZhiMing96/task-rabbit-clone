@@ -360,7 +360,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View All My completed Tasks
   router.get('/viewMyCompletedTasks', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT taskname, description, taskstartdatetime, taskendtime FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)'
+    const sql = 'SELECT taskname, description, taskstartdatetime, taskenddatetime FROM createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = true)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {
@@ -380,7 +380,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View all My pending Tasks
   router.get('/viewMyPendingTasks', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT c1.email, taskname, description, taskstartdatetime, taskendtime FROM customers C1 join (createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = false)) on (C1.cusid = C.cusid)'
+    const sql = 'SELECT c1.email, taskname, description, taskstartdatetime, taskenddatetime FROM customers C1 join (createdTasks C join assigned A on (C.taskid = A.taskid AND A.cusid = $1 AND A.completed = false)) on (C1.cusid = C.cusid)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <%- include("include/head", {title: "New Task Created"}); %>
+    <%- include("include/head", {title: "Task Listing Posted"}); %>
   </head>
     <body style="background-color: #282c34">
       <%- include("include/navbar"); %>
@@ -11,7 +11,8 @@
             <%- messages('include/message', locals) %>
             <div class="row">
               <div class="col text-center">
-                <h1>New Task <%=taskname%> Created!</h1>
+                <h1><i class="fas fa-check-circle" style="color: green"></i></h1>
+                <h1>New Task Listing <%=taskname%> Submitted!</h1><br/>
               </div>
             </div>
             <div class="row justify-content-center">
@@ -32,14 +33,24 @@
             </div>
             <div class="row justify-content-center">
               <div class="col-3 text-right">
-                Task End Date / Time
+                  Task End Date/Time
               </div>
               <div class="col-3 text-left">
                 <%=(taskenddatetime).toString().substring(0,24)%>
               </div>
             </div>
+            <div class="row justify-content-center">
+              <div class="col-3 text-right">
+                Bidding Deadline
+              </div>
+              <div class="col-3 text-left">
+                <%=(deadline).toString().substring(0,24)%>
+              </div>
+            </div>
             <div class="row">
               <div class="col text-center">
+                <br/>
+                <br/>
                 <a href="/taskRequesters/" class="btn btn-danger">Home</a>
               </div>
             </div>
