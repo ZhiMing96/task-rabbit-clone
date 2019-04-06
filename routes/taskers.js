@@ -136,7 +136,6 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
     //console.log(error.message);
     if(error.message == 'CLASHING TIMESLOTS!')
     {
-      //console.log("ENTEREDDDDDDDDDDDD");
       const sqlRespond = "UPDATE requests SET hasResponded = true, accepted = false WHERE taskid = $1 AND cusid = $2";
       const paramRespond = [taskId, user];
   
@@ -371,8 +370,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
       res.render('view_my_completed_tasks', {
         task: result.rows,
-        taskType: 'Completed',
-        errorMsg: null
+        taskType: 'COMPLETED'
       });
 
     });
@@ -387,14 +385,12 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
       if (error) {
         console.log('err: ', error);
+      } else {
+        res.render('view_my_pending_tasks', {
+          task: result.rows,
+          taskType: 'PENDING'
+        });
       }
-
-      res.render('view_my_pending_tasks', {
-        task: result.rows,
-        taskType: 'Pending',
-        errorMsg:null
-      });
-
     });
   });
 

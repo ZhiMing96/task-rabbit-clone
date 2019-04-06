@@ -56,13 +56,13 @@
 												
 												<% if(bid[i].winningbid){ %>
 													<td>Chosen Bid. YAY!</td>
-												<% } else if (bid[i].hasChosenBid) { %>
+												<% } else if (bid[i].haschosenbid) { %>
 													<td>Not Chosen</td>
 												<% } else { %>
 													<td>Pending</td>
 												<% } %>
 												<td>
-													<% if(currentDateTime < (bid[i].deadline)){ %>
+													<% if(currentDateTime < (bid[i].deadline) && !bid[i].haschosenbid){ %>
 														<form action="/listings/updateBid/<%= bid[i].taskid%>", method="GET">
 															<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">UPDATE</button>
 														</form>

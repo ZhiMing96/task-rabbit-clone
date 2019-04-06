@@ -24,7 +24,7 @@
 										<th scope="col">Task Name</th>
 										<th scope="col">Description</th>
 										<th scope="col">Task Start Date/Time</th>
-										<th scope="col">Task End Time</th>
+										<th scope="col">Task End Date/Time</th>
 										<th scope="col">Task Requester's Email</th>
 										
 									</tr>
@@ -35,7 +35,7 @@
 										<td><%= task[i].taskname%></td>
 										<td><%= task[i].description%></td>
 										<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
-										<td><%= task[i].taskendtime%></td>
+										<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
 										<td><%= task[i].email%></td>
 									
 										
