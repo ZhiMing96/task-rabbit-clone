@@ -465,10 +465,14 @@ router.get("/deleteListings/:taskid", ensureAuthenticated, async function (req, 
       res.redirect('/taskRequesters/viewListings');
     })
     .catch((error) => {
-      console.log(error)
+      if (error.message == 'CANNOT DELETE 1 DAY BEFORE'){
+      pool.query("ROLLBACK")
+      req.flash('danger', 'CANNOT DELETE TASK 24 HOURS BEFORE START DATE / TIME. MUST CANCEL INSTEAD!');
+      res.redirect('/taskRequesters/viewListings');
+      }
       req.flash("warning", "An error was encountered. Please try again.")
       pool.query("ROLLBACK")
-      res.redirect('/addRequests');
+      res.redirect('/taskRequesters/viewListingss');
     })
 });
 
@@ -559,10 +563,11 @@ router.get("/deleteRequests/:taskid", ensureAuthenticated, (req, res) => {
   sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
 
   pool.query(sqlDeleteCreatedTask, (err, result) => {
-    if (err) {
-      console.log("Unable to delete requests record" + err);
-    } else {
-
+    if (err.message == 'CANNOT DELETE 1 DAY BEFORE'){
+      req.flash('danger', 'CANNOT DELETE TASK 24 HOURS BEFORE START DATE / TIME. MUST CANCEL INSTEAD!');
+      res.redirect('/taskRequesters/viewRequests');
+    }
+    else {
       res.redirect('/taskRequesters/viewRequests');
     }
   });
