@@ -52,12 +52,12 @@
 						<% } else {%>
 								<% if(task[i].haschosenbid == true){%>
 									<td> Pending for completion </td>
+									<td>-</td>
 									<td>
 											<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
 												<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
 											</form>
 									</td>	
-									<td>-</td>
 									<td>-</td>
 								<% } else {%>
 									<td> Pending for bids </td>
