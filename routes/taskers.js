@@ -17,21 +17,25 @@ router.use(bodyParser.json());
 
 
 router.get("/", ensureAuthenticated, (req, res) => {
-  //Retrieve all tasks and send along with render
-  var cusId = parseInt(req.user.cusId)
-  const param1 = [cusId];
-  //console.log(cusId);
-  const sql1 = "SELECT * FROM customers WHERE cusid = $1"
-  pool.query(sql1, param1, (err, result1) => {
-    if (err) {
-      console.log("ERROR RETRIEVING Customer");
-    } else {
-      res.render('taskerProfile', { cusInfo: result1.rows });
-    }
+    
+  return Promise.all([
+    pool.query("SELECT * FROM customers WHERE cusid = $1", [req.user.cusId]),
+    pool.query("SELECT avg(rating) as avg FROM Reviews WHERE cusId=$1;", [req.user.cusId]),
+    pool.query("select count(*) as num from assigned a join customers c on a.cusid=c.cusid where a.completed=true and a.cusid=$1", [req.user.cusId])
 
-  });
-
+  ]).then(([profileresults, rating, countTasks]) => {
+      res.render('taskerProfile', { 
+        cusInfo: profileresults.rows,
+        rating: rating.rows[0].avg, 
+        num: countTasks.rows[0].num
+      });
+    })
+    .catch((error) => {
+      req.flash("warning", 'Encountered an error viewing taskreq profile: ' + error);
+      res.redirect("/home");
+    });
 });
+
 
 router.get("/taskerSettings", ensureAuthenticated, (req, res) => {
   //var cusNum = parseInt(req.user.cusId);
@@ -370,7 +374,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
       res.render('view_my_completed_tasks', {
         task: result.rows,
-        taskType: 'COMPLETED'
+        taskType: 'Completed'
       });
 
     });
@@ -388,7 +392,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
       } else {
         res.render('view_my_pending_tasks', {
           task: result.rows,
-          taskType: 'PENDING'
+          taskType: 'Pending'
         });
       }
     });

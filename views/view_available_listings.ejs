@@ -17,7 +17,15 @@
 					<div class="row">
 						<%- include("include/tasker_sidebar"); %>
 						<div class="col-9">
-							<h1 style="text-align: center"> All Available Listings</h1></br>
+							<h1 style="text-align: center"> All Available Listings</h1>
+							<% if(availableListing.length == 0 ){%>
+								<div class="alert alert-danger alert-dismissible fade show" role="alert">
+									<strong>No Completed Task Found!</Ri:a></strong> There are no Listing records.
+									<button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
+											<span aria-hidden="true">&times;</span>
+									</button>
+								</div> 
+							<%} else {%>
 							<table class="table">
 								<thead class="table-primary">
 									<tr>
@@ -51,6 +59,7 @@
 									<% } %>
 								</tbody>
 							</table>
+							<% } %>
 							<div class="text-center">
 									<a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
 							</div>

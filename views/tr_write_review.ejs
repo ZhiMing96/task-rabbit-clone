@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-      <%- include("include/head", {title: "Title"}); %>
+      <%- include("include/head", {title: "Submit Review"}); %>
       <link rel="stylesheet" href="/css/rating-picker.css">
 
 
@@ -16,7 +16,7 @@
           <%- messages('include/message', locals) %>
           <div class="row">
             <div class="col text-center">
-              <h3>Review <%=result.name%> for Task: <%=result.taskname%></h3>
+              <h1>Review <mark><%=result.name%> </mark>for Task: <mark><%=result.taskname%></mark></h1>
             </div>
           </div>
           <form action="" method="POST">

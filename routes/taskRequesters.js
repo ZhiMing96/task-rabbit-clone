@@ -48,6 +48,10 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensure
     await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK");
+    if (e.message == 'ONLY ONE WINNING BID ALLOWED!'){
+      req.flash('danger', 'You have already chosen a winning bid!');
+      res.redirect('/taskRequesters/my_bids');
+    }
     throw e;
   } finally {
     res.render("tr_accepted_bid", { result: result.rows[0] });
@@ -85,23 +89,25 @@ router.post("/write_review/:taskid/tasker/:tasker_id", ensureAuthenticated, (req
     });
 });
 
+//PROFILE
+router.get("/", ensureAuthenticated, (req, res) => {  
+    
+  return Promise.all([
+    pool.query("SELECT * FROM customers WHERE cusid = $1", [req.user.cusId]),
+    pool.query("select count(*) as num from createdtasks t join customers c on t.cusid=c.cusid where t.cusid=$1", [req.user.cusId])
 
-router.get("/", ensureAuthenticated, (req, res) => {
-  //Retrieve all tasks and send along with render
-  var cusId = parseInt(req.user.cusId)
-  const param1 = [cusId];
-  //console.log(cusId);
-  const sql1 = "SELECT * FROM customers WHERE cusid = $1"
-  pool.query(sql1, param1, (err, result1) => {
-    if (err) {
-      console.log("ERROR RETRIEVING Customer");
-    } else {
-      res.render('taskReqProfile', { cusInfo: result1.rows });
-    }
-
-  });
-
+  ]).then(([profileresults, countTasks]) => {
+      res.render('taskReqProfile', { 
+        cusInfo: profileresults.rows,
+        num: countTasks.rows[0].num
+      });
+    })
+    .catch((error) => {
+      req.flash("warning", 'Encountered an error viewing taskreq profile: ' + error);
+      res.redirect("/home");
+    });
 });
+
 
 // link to the add task page 
 router.get("/addTasks", ensureAuthenticated, (req, res) => {
@@ -213,8 +219,13 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
           });
       })
       .catch((error) => {
-        console.log("Error creating new task", error);
-        req.flash("warning", "An error was encountered. Please try again.")
+        
+        if (error.message == 'SPAMMING'){
+          req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
+        } else {
+        
+          req.flash("warning", "An error was encountered. Please try again.");
+        }
         pool.query("ROLLBACK")
         res.redirect('/addListings');
       })
@@ -311,8 +322,13 @@ router.post("/addRequests", async function (req, res) {
           });
       })
       .catch((error) => {
-        console.log("Error creating new task", error);
-        req.flash("warning", "An error was encountered. Please try again.")
+        if (error.message == 'SPAMMING'){
+          req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
+        } else {
+        
+          req.flash("warning", "An error was encountered. Please try again.");
+        }
+
         pool.query("ROLLBACK")
         res.redirect('/addRequests');
       })
@@ -623,7 +639,7 @@ router.get('/viewPendingTasks', function (req, res) {
 
 //View all biddings for a task
 router.get('/viewBids/:taskid', ensureAuthenticated, function (req, res) {
-  pool.query("SELECT t3.name,t3.avg,t3.completedTasks,t1.cusid,t1.bidprice,t1.winningbid,t2.taskname,t1.taskid FROM bids as t1 INNER JOIN createdtasks as t2 on t1.taskid=t2.taskid INNER JOIN (SELECT t11.cusid, t11.name, COUNT(t22.*) as completedTasks, AVG(t33.rating) FROM Customers as t11 LEFT JOIN assigned as t22 ON t11.cusid=t22.cusid AND t22.completed=true LEFT JOIN reviews as t33 ON t11.cusid=t33.cusid GROUP BY t11.cusid) as t3 ON t1.cusid = t3.cusid WHERE t2.cusid=$1 and t2.taskid=$2;", [req.user.cusId, parseInt(req.params.taskid)])
+  pool.query("SELECT t3.name,t3.avg,t3.completedTasks,t1.cusid,t1.bidprice,t1.winningbid,t2.taskname,t1.taskid, t2.deadline FROM bids as t1 INNER JOIN createdtasks as t2 on t1.taskid=t2.taskid INNER JOIN (SELECT t11.cusid, t11.name, COUNT(t22.*) as completedTasks, AVG(t33.rating) FROM Customers as t11 LEFT JOIN assigned as t22 ON t11.cusid=t22.cusid AND t22.completed=true LEFT JOIN reviews as t33 ON t11.cusid=t33.cusid GROUP BY t11.cusid) as t3 ON t1.cusid = t3.cusid WHERE t2.cusid=$1 and t2.taskid=$2;", [req.user.cusId, parseInt(req.params.taskid)])
     .then((result) => {
       res.render("view_tr_bids", { bids: result.rows })
     })
