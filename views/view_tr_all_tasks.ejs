@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <title>Add Task</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
-  <!-- JavaScript for Interactivity -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
-    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
-    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-    crossorigin="anonymous"></script>
-
-</head>
-
-<body>
-
-  <%- include("include/navbar"); %>
-  <%- messages('include/message', locals) %>
-  <h1>View Tasks</h1>
-  <form action="/taskRequesters/viewListings", method="GET">
-    <button  type="submit" class="btn btn-outline-info">VIEW ALL LISTINGS</button>
-  </form></br>
-
-  <form action="/taskRequesters/viewRequests", method="GET">
-    <button type="submit" class="btn btn-outline-info">VIEW ALL REQUESTS</button>
-  </form></br>
-</body>
-
+  <head>
+      <%- include("include/head", {title: "Add A Task"}); %>
+    
+  </head>
+  <body style="background-color: #282c34">
+      <%- include("include/navbar"); %>
+      <div class="container-fluid" style="background-color: white">
+        <div class="row">
+          <div class="container mt-5" style="min-height:70vh">
+              <div class="row">
+                  <div class="col">
+                    <h4><i class="fas fa-handshake"></i>&nbsp;&nbsp; <i>Task Requester</i></h4>
+                  </div>
+              </div>
+            <div class="row">
+                <%- include("include/tr_sidebar"); %>
+              <div class="col-9">
+                <div class="row">
+                  <div class="col text-center">
+                    <h1>I would like to...</h1><br/>
+                    <a href="/taskRequesters/viewListings" class="btn btn-primary">Listings</a> &nbsp; or  &nbsp;
+                    <a href="/taskRequesters/ViewRequests" class="btn btn-primary">Requests</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
 </html>
