@@ -21,6 +21,14 @@
                             <%- include("include/userProfile"); %><br/>
 
                             <br/><i><h4>my personal skills</h4></i>
+                            <hr>
+                            <% if (allSkills.length==0){%>
+                                <div class="text-center">
+                                    You have no skills at the moment. <br/>
+                                <h6 style="color:grey"><i>(What? Says who? Add some skills to hustle as a tasker now!)</i></h6>
+                            </div>
+                                
+                            <%}%>
                             <% for(var i=0; i<allSkills.length; i++) { %>
 
                                     <div class="card bg-light border-dark mb-3">
