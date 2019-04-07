@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <%- include("include/head", {title: "Top 3 Inactive Users"}); %>
+  </head>
+	<body style="background-color: #282c34">
+		<%- include("include/navbar"); %>
+		<div class="container-fluid" style="background-color: white">
+			<div class="row">
+				<div class="container pt-5 mb-5" style="min-height:70vh">
+					<%- messages('include/message', locals) %>
+					<div class="row">
+							<div class="col">
+								<h4><i class="fas fa-fist-raised"></i>&nbsp;&nbsp; <i>Tasker</i></h4>
+							</div>
+					</div>
+					<div class="row">
+						<%- include("include/tasker_sidebar"); %>
+						<div class="col-9">
+							<h1 style="text-align: center">Top 3 Inactive Users</h1>
+							<% if(result.length == 0 ){ %>
+								<div class="alert alert-danger alert-dismissible fade show" role="alert">
+										<strong>No User Found!</Ri:a></strong> 
+										<button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
+												<span aria-hidden="true">&times;</span>
+										</button>
+								</div> 
+								<div class="text-center">	
+									<form action="/home" method="GET">
+										<a href="/home" class="btn btn-outline-secondary">Back</a>
+									</form>
+								</div>
+							<% } else { %>
+								
+								<table class="table">
+									<thead class="table-primary">
+										<tr>
+											<th scope="col">User id</th>
+											<th scope="col">Number of Tasks Completed The Past Week</th>
+											<th scope="col">Number of Tasks Completed Since Registration</th>
+											<th scope="col">Average Rating</th>
+									
+											
+											<th scope="col"></th>
+											<th scope="col"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<% for(var i=0; i<result.length; i++) { %>
+											<tr>
+												<td><%= result[i].cusid%></td>
+												<td><%= result[i].weeklynumtask%></td>
+												<td><%= result[i].totalnumtask%></td>
+                                                <% if((result[i].avgrating).length > 3){ %>
+                                                    <td><%= (result[i].avgrating).substring(0,3)%></td>
+                                                <% }else {%>
+                                                    <td><%= result[i].avgrating%></td>
+                                                <%}%>
+							
+											</tr>
+										
+									<% } %>
+									</tbody>
+								</table>
+								<div class="text-center">	
+									<form action="/email" method="POST">
+										<button type="submit" class="btn  btn-outline-primary" formaction="/email">Send Email</button>
+										<a href="/home" class="btn btn-outline-secondary">Back</a>
+									</form>
+								</div>
+							<% } %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<%- include("include/footer"); %>
+	</body>
+</html>

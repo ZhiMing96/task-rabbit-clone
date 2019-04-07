@@ -4,63 +4,31 @@ const router = express.Router();
 const pool = require('../config/database');
 const ensureAuthenticated = require('../config/ensureAuthenticated');
 
-//Add route
-router.get("/add", function(req, res) {
-  res.render("add_category");
-});
-
-router.post("/add", (req, res) => {
-  req.checkBody("catName", "Category Name is required").notEmpty();
-  let errors = req.validationErrors();
-  if (errors) {
-    res.render('add_category');
-    console.log(errors);
-
-  } else {
-    const sql = "INSERT INTO skillCategories (catName) VALUES ($1)";
-    const params = [req.body.catName];
-    pool.query(sql, params, (error, result) => {
+router.get('/', function (req, res) {
+    const tempTable = "with assigned_ct as (select A.cusid, A.taskid as weeklyNumTask from assigned A join createdtasks C on A.taskid = C.taskid where A.completed = true and (DATE_PART('day', now()::timestamp - taskstartdatetime::timestamp) >= 0 and  DATE_PART('day', now()::timestamp - taskstartdatetime::timestamp) <= 7))"
+    const sql = "select T.cusid, count(weeklyNumTask) as weeklyNumTask, count(A.taskid) as totalnumTask, coalesce(avg(rating),0) as avgRating from ((taskers T left outer join assigned_ct AC on T.cusid = AC.cusid) left join assigned A on T.cusid = A.cusid) left outer join Reviews R on T.cusid = R.cusid group by T.cusid order by weeklyNumTask asc, totalnumTask desc, avgRating desc limit 3"
+  
+    pool.query(tempTable + sql, (error, result) => {
+    
       if (error) {
-        console.log("err: ", error);
+        console.log('err: ', error);
       }
-      //req.flash('success', 'Article Added');
-      console.log("result?", result);
-      res.redirect("/");
+  
+      res.render('admin_view_top3', {
+        result: result.rows,
+        
+      });
+  
     });
-  }
-});
-
-router.get('/', ensureAuthenticated, function (req, res) {
-  const sql = 'SELECT * FROM SkillCategories';
-  pool.query(sql, (error, result) => {
-
-    if (error) {
-      console.log('err: ', error);
-    } else {
-    res.render('view_categories', {
-      categories: result.rows,
-      
-      })
-    }
-        
   });
-});
 
-router.post('/delete/:id', ensureAuthenticated, function (req, res) {
-  const sql =  "DELETE FROM SkillCategories WHERE catId = " + parseInt(req.params.id);
-  pool.query(sql, (error, result) => {
 
-    if (error) {
-      console.log('err: ', error);
-      res.redirect("/categories");
-    } else {
-      res.redirect('/categories');
-      
-      
-    }
-        
+  router.post('/', function (req, res) {
+    
+      res.render('email_sent');
+  
+    
   });
-});
 
 
 
