@@ -48,6 +48,10 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensure
     await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK");
+    if (e.message == 'ONLY ONE WINNING BID ALLOWED!'){
+      req.flash('danger', 'You have already chosen a winning bid!');
+      res.redirect('/taskRequesters/my_bids');
+    }
     throw e;
   } finally {
     res.render("tr_accepted_bid", { result: result.rows[0] });
@@ -213,8 +217,13 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
           });
       })
       .catch((error) => {
-        console.log("Error creating new task", error);
-        req.flash("warning", "An error was encountered. Please try again.")
+        
+        if (error.message == 'SPAMMING'){
+          req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
+        } else {
+        
+          req.flash("warning", "An error was encountered. Please try again.");
+        }
         pool.query("ROLLBACK")
         res.redirect('/addListings');
       })
@@ -311,8 +320,13 @@ router.post("/addRequests", async function (req, res) {
           });
       })
       .catch((error) => {
-        console.log("Error creating new task", error);
-        req.flash("warning", "An error was encountered. Please try again.")
+        if (error.message == 'SPAMMING'){
+          req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
+        } else {
+        
+          req.flash("warning", "An error was encountered. Please try again.");
+        }
+
         pool.query("ROLLBACK")
         res.redirect('/addRequests');
       })
