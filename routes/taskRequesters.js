@@ -639,7 +639,7 @@ router.get('/viewPendingTasks', function (req, res) {
 
 //View all biddings for a task
 router.get('/viewBids/:taskid', ensureAuthenticated, function (req, res) {
-  pool.query("SELECT t3.name,t3.avg,t3.completedTasks,t1.cusid,t1.bidprice,t1.winningbid,t2.taskname,t1.taskid FROM bids as t1 INNER JOIN createdtasks as t2 on t1.taskid=t2.taskid INNER JOIN (SELECT t11.cusid, t11.name, COUNT(t22.*) as completedTasks, AVG(t33.rating) FROM Customers as t11 LEFT JOIN assigned as t22 ON t11.cusid=t22.cusid AND t22.completed=true LEFT JOIN reviews as t33 ON t11.cusid=t33.cusid GROUP BY t11.cusid) as t3 ON t1.cusid = t3.cusid WHERE t2.cusid=$1 and t2.taskid=$2;", [req.user.cusId, parseInt(req.params.taskid)])
+  pool.query("SELECT t3.name,t3.avg,t3.completedTasks,t1.cusid,t1.bidprice,t1.winningbid,t2.taskname,t1.taskid, t2.deadline FROM bids as t1 INNER JOIN createdtasks as t2 on t1.taskid=t2.taskid INNER JOIN (SELECT t11.cusid, t11.name, COUNT(t22.*) as completedTasks, AVG(t33.rating) FROM Customers as t11 LEFT JOIN assigned as t22 ON t11.cusid=t22.cusid AND t22.completed=true LEFT JOIN reviews as t33 ON t11.cusid=t33.cusid GROUP BY t11.cusid) as t3 ON t1.cusid = t3.cusid WHERE t2.cusid=$1 and t2.taskid=$2;", [req.user.cusId, parseInt(req.params.taskid)])
     .then((result) => {
       res.render("view_tr_bids", { bids: result.rows })
     })
