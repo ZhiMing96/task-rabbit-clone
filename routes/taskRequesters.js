@@ -89,23 +89,25 @@ router.post("/write_review/:taskid/tasker/:tasker_id", ensureAuthenticated, (req
     });
 });
 
+//PROFILE
+router.get("/", ensureAuthenticated, (req, res) => {  
+    
+  return Promise.all([
+    pool.query("SELECT * FROM customers WHERE cusid = $1", [req.user.cusId]),
+    pool.query("select count(*) as num from createdtasks t join customers c on t.cusid=c.cusid where t.cusid=$1", [req.user.cusId])
 
-router.get("/", ensureAuthenticated, (req, res) => {
-  //Retrieve all tasks and send along with render
-  var cusId = parseInt(req.user.cusId)
-  const param1 = [cusId];
-  //console.log(cusId);
-  const sql1 = "SELECT * FROM customers WHERE cusid = $1"
-  pool.query(sql1, param1, (err, result1) => {
-    if (err) {
-      console.log("ERROR RETRIEVING Customer");
-    } else {
-      res.render('taskReqProfile', { cusInfo: result1.rows });
-    }
-
-  });
-
+  ]).then(([profileresults, countTasks]) => {
+      res.render('taskReqProfile', { 
+        cusInfo: profileresults.rows,
+        num: countTasks.rows[0].num
+      });
+    })
+    .catch((error) => {
+      req.flash("warning", 'Encountered an error viewing taskreq profile: ' + error);
+      res.redirect("/home");
+    });
 });
+
 
 // link to the add task page 
 router.get("/addTasks", ensureAuthenticated, (req, res) => {

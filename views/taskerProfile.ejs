@@ -22,11 +22,18 @@
           <div class="row mt-3">
               <%- include("include/tasker_sidebar"); %>
             <div class="col-9 pl-5">
-              <%- include("include/userProfile"); %>
-              <i class="far fa-check-circle"></i>&nbsp;Total Tasks Posted:  <br/><br/>
-              <i class="far fa-calendar-minus"></i>&nbsp; Date Joined:<br/>
+              <%- include("include/userProfile"); %><br/>
+              <i class="far fa-laugh-squint"></i>&nbsp;Tasker Rating&nbsp;:&nbsp; 
+              <span style="font-size:1em">
+                  <% for(var y=0;y<5;y++){%>
+                      <i class="fa<%=(y<rating) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
+                  <%}%> 
+              </span><br/><br/>
+              <i class="far fa-check-circle"></i>&nbsp;Total Tasks Done&nbsp;:&nbsp;<b><%=num%> </b><br/><br/>
+              <i class="far fa-calendar-minus"></i>&nbsp; Date Joined&nbsp;:&nbsp;<br/>
 
               <br/>
+              
             </div>
           </div>
         </div>
