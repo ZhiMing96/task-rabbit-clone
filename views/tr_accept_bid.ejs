@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-      <%- include("include/head", {title: "Title"}); %>
+      <%- include("include/head", {title: "Accept Bid"}); %>
   </head>
 <!-- {tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows}); -->
   <body style="background-color: #282c34">
@@ -13,7 +13,7 @@
           <%- messages('include/message', locals) %>
           <div class="row">
             <div class="col text-center">
-              <h1>Accept Bid from <%=tasker_info.name%> for Task: <%=tasker_info.taskname%>
+              <h1>Accept Bid from <mark><%=tasker_info.name%></mark> for Task: <mark><%=tasker_info.taskname%></mark>
             </div>
           </div>
           <div class="row justify-content-center pt-5">

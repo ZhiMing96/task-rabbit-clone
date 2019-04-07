@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-      <%- include("include/head", {title: "Title"}); %>
+      <%- include("include/head", {title: "Bid Accepted"}); %>
   </head>
 <!-- {tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows}); -->
   <body style="background-color: #282c34">
@@ -12,7 +12,8 @@
           <%- messages('include/message', locals) %>
           <div class="row">
             <div class="col text-center">
-              <h1><%=result.name%>'s Bid for <%=result.taskname%> Accepted!</h1>
+              <h1><i class="fas fa-check-circle" style="color: green"></i></h1><br/>
+              <h1><mark><%=result.name%></mark>'s Bid for Task: <mark><%=result.taskname%></mark> Accepted!</h1>
             </div>
           </div>
           <div class="row justify-content-center">
