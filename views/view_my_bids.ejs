@@ -66,14 +66,15 @@
 														<form action="/listings/updateBid/<%= bid[i].taskid%>", method="GET">
 															<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">UPDATE</button>
 														</form>
-														</td>
-														<td>
-																<form action="/listings/deleteBid/<%= bid[i].taskid%>", method="GET">
-																	<button type="submit" class="btn btn-outline-danger" formaction="/listings/deleteBid/<%= bid[i].taskid %>">DELETE</button>
-																</form>
-														</td>		
+													<% } %>
+												</td>
+												<td>
+														<form action="/listings/deleteBid/<%= bid[i].taskid%>", method="GET">
+																<button type="submit" class="btn btn-outline-danger" formaction="/listings/deleteBid/<%= bid[i].taskid %>">DELETE</button>
+														</form>
+												</td>		
 											</tr>
-										<% } %>
+										
 									<% } %>
 									</tbody>
 								</table>
