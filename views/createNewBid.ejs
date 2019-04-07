@@ -1,33 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <%- include("include/head", {title: "Create New Bid"}); %>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <head>
+      <%- include("include/head", {title: "Make New Bid"}); %>
+  </head>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-</head>
-<body>
+  <body style="background-color: #282c34">
     <%- include("include/navbar"); %>
-    <%- messages('include/message', locals) %>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container pt-5 mb-5" style="min-height:70vh">
+          <%- messages('include/message', locals) %>
+            <div class="card text-center">
+                <h3 class="card-header">New Bid for <mark><%= listing[0].taskname %></mark></h3>
+                <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text"><%= listing[0].description %></p>
+                    <p class="card-text"><%= listing[0].duration %> Hours</p>
+                    <p class="card-text">Task Date & Time: <%= listing[0].taskdatetime %></p>
+                    <p class="card-text">Starting Bid: <%= listing[0].startingbid %></p>
 
-    <div class="card text-center">
-        <h3 class="card-header">Create New Bid</h3>
-        <div class="card-body">
-            <h5 class="card-title"><%= listing[0].taskname %></h5>
-            <p class="card-text"><%= listing[0].description %></p>
-            <p class="card-text"><%= listing[0].duration %> Hours</p>
-            <p class="card-text">Task Date & Time: <%= listing[0].taskdatetime %></p>
-            <p class="card-text">Starting Bid: <%= listing[0].startingbid %></p>
+                    <form action="/listings/createNewBid/<%=listing[0].taskid %>" method="POST">
+                        <label for="bidAmt">Enter Amount</label>
+                        <input type="text" name="bidAmt" id="bidAmt" required> 
 
-            <form action="/listings/createNewBid/<%=listing[0].taskid %>" method="POST">
-                <label for="bidAmt">Enter Amount</label>
-                <input type="text" name="bidAmt" id="bidAmt" required> 
-
-                <button type="submit" class="btn btn-outline-primary">Add This New Bidding!</button>
-            </form>
+                        <button type="submit" class="btn btn-outline-primary">Add This New Bidding!</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 </body>
 </html>

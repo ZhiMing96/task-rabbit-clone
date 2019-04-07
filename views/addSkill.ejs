@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-      <%- include("include/head", {title: "Title"}); %>
+      <%- include("include/head", {title: "Add A Skill"}); %>
   </head>
 	<body style="background-color: #282c34">
 		<%- include("include/navbar"); %>
@@ -11,7 +11,7 @@
 					<%- messages('include/message', locals) %>
 					<div class="row">
             <div class="col">
-              <h1>Add A Personal Skill</h1>
+              <h1>Add A <mark>Personal Skill</mark></h1>
               
               <form method="POST" , action="/taskers/addSkill", id="form" >
                 <div class="form-group row">
