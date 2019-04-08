@@ -33,9 +33,8 @@
 				<tr>
 					<th scope="col">Task Name</th>
 					<th scope="col">Description</th>
-					<th scope="col">Num Hours</th>
-					<th scope="col">Num People Needed</th>
-					<th scope="col">Date and Time</th>
+					<th scope="col">Start Date/Time</th>
+					<th scope="col">End Date/Time</th>
 					<th scope="col">Date Created</th>
 					<th scope="col">Tasker Requested</th>
 					<th scope="col">Status</th>
@@ -50,9 +49,8 @@
 				<tr>
 						<td><%= task[i].taskname%></td>
 						<td><%= task[i].description%></td>
-						<td><%= task[i].duration%></td>
 						<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
-						<td><%= (task[i].taskendtime)%></td>
+						<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
 						<td><%= task[i].datecreated.toString().substring(0,24)%></td>
 						<td><%= task[i].taskername%></td>
 						<!-- Check if taskrequesters have completed attribute, If completed. dont show the button. Else show the buttons -->

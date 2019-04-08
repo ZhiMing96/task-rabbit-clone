@@ -175,11 +175,44 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
   req.checkBody("taskenddatetime", "taskenddatetime is required").notEmpty();
   req.checkBody("deadline", "Deadline is required").notEmpty();
   req.checkBody("startingBid", "Starting bid is required").notEmpty();
-  let errors = req.validationErrors();
   
+  let errors = req.validationErrors();
   if (errors) {
-    res.redirect('/addListings');
-    console.log(errors);
+    for (var i = 0; i < errors.length; i++) {
+      if(errors[i].msg == 'Task Name is required') {
+        req.flash('danger', 'Task Name is required' );
+        res.redirect('/addListings');
+        return;
+    
+      }
+      else if (errors[i].msg == 'Description is required'){
+        req.flash('danger', 'Description is required' );
+        res.redirect('/addListings');
+        return;
+      }
+      else if (errors[i].msg == 'taskstartdatetime is required'){
+        req.flash('danger', 'Task Start Date / Time is required');
+        res.redirect('/addListings');
+        return;
+      }
+      else if (errors[i].msg == 'taskenddatetime is required'){
+        req.flash('danger', 'Task End Date / time is required');
+        res.redirect('/addListings');
+        return;
+      }
+      else if (errors[i].msg == 'Deadline is required'){
+        req.flash('danger', 'Deadline is required');
+        res.redirect('/addListings');
+        return;
+      }
+      else if (errors[i].msg == 'Starting bid is required'){
+        req.flash('danger', 'Starting bid is required');
+        res.redirect('/addListings');
+        return;
+      } else{
+      console.log(errors[i].msg);
+      }
+    }
   } else {
 
     const userID = parseInt(req.user.cusId)
@@ -219,14 +252,29 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
           });
       })
       .catch((error) => {
-        
-        if (error.message == 'SPAMMING'){
+        pool.query("ROLLBACK")
+        if(error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check4"') {
+          req.flash('danger', 'Task End Date / Time must be at least 1 hour after Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check3"'){
+          req.flash('danger', 'Task End Date / Time must be on the same day as Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check2"'){
+          req.flash('danger', 'Deadline must be before Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check1"'){
+          req.flash('danger', 'Deadline must be later than the current Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
+          req.flash('danger', 'Task Start Date / Time must be later than the current date' );
+        }
+        else if (error.message == 'SPAMMING'){
           req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
-        } else {
-        
+        } 
+        else {
+          console.log(error.message)
           req.flash("warning", "An error was encountered. Please try again.");
         }
-        pool.query("ROLLBACK")
         res.redirect('/addListings');
       })
   }
@@ -280,9 +328,37 @@ router.post("/addRequests", async function (req, res) {
 
   let errors = req.validationErrors();
   if (errors) {
-    res.redirect('/addRequests');
-    console.log(errors);
-
+    for (var i = 0; i < errors.length; i++) {
+      if(errors[i].msg == 'Task Name is required') {
+        req.flash('danger', 'Task Name is required' );
+        res.redirect('/addListings');
+        return;
+    
+      }
+      else if (errors[i].msg == 'Description is required'){
+        req.flash('danger', 'Description is required' );
+        res.redirect('/addListings');
+        return;
+      }
+      else if (errors[i].msg == 'taskstartdatetime is required'){
+        req.flash('danger', 'Task Start Date / Time is required');
+        res.redirect('/addListings');
+        return;
+      }
+      else if (errors[i].msg == 'taskenddatetime is required'){
+        req.flash('danger', 'Task End Date / time is required');
+        res.redirect('/addListings');
+        return;
+      }
+      else if (errors[i].msg == 'Deadline is required'){
+        req.flash('danger', 'Deadline is required');
+        res.redirect('/addListings');
+        return;
+      }
+       else{
+      console.log(errors[i].msg);
+      }
+    }
   } else {
 
     const userID = parseInt(req.user.cusId)
@@ -322,14 +398,27 @@ router.post("/addRequests", async function (req, res) {
           });
       })
       .catch((error) => {
-        if (error.message == 'SPAMMING'){
+        pool.query("ROLLBACK")
+        if(error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check4"') {
+          req.flash('danger', 'Task End Date / Time must be at least 1 hour after Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check3"'){
+          req.flash('danger', 'Task End Date / Time must be on the same day as Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check2"'){
+          req.flash('danger', 'Deadline must be before Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check1"'){
+          req.flash('danger', 'Deadline must be later than the current Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
+          req.flash('danger', 'Task Start Date / Time must be later than the current date' );
+        }
+        else if (error.message == 'SPAMMING'){
           req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
         } else {
-        
           req.flash("warning", "An error was encountered. Please try again.");
         }
-
-        pool.query("ROLLBACK")
         res.redirect('/addRequests');
       })
 
@@ -429,24 +518,67 @@ router.get("/updateListings/:taskid", (req, res) => {
 });
 
 router.post("/updateListings/:taskid", ensureAuthenticated, (req, res) => {
-  req.checkBody("newDescription", "description is required").notEmpty();
-  req.checkBody("newTaskStartDateTime", "Taskstartdatetime is required").notEmpty();
-  req.checkBody("newTaskEndDateTime", "taskEndDateTime is required").notEmpty();
-  req.checkBody("newDeadline", "deadline is required").notEmpty();
+  req.checkBody("newDescription", "Description is required").notEmpty();
+  req.checkBody("newTaskStartDateTime", "taskstartdatetime is required").notEmpty();
+  req.checkBody("newTaskEndDateTime", "taskenddateTime is required").notEmpty();
+  req.checkBody("newDeadline", "Deadline is required").notEmpty();
   var taskid = req.params.taskid;
-
-  //Update listing dont need to delete assigned cause once assigned, there will be no more updates allowed 
-  const params1 = [req.body.newDescription, req.body.newTaskStartDateTime, req.body.newTaskEndDateTime, req.body.newDeadline, taskid];
-  var sqlUpCreatedTask = "UPDATE createdTasks SET description = $1, taskstartdatetime = $2, taskenddatetime = $3, deadline = $4 WHERE taskid = $5";
-
-  pool.query(sqlUpCreatedTask, params1, (err, result) => {
-    if (err) {
-      console.log(err + " ERROR UPDATING CREATED TASKS");
-    } else {
-      res.redirect('/taskRequesters/viewListings');
+  let errors = req.validationErrors();
+  if (errors) {
+    for (var i = 0; i < errors.length; i++) {
+     if (errors[i].msg == 'Description is required'){
+        req.flash('danger', 'Description is required' );
+        res.redirect('/updateListings');
+        return;
+      }
+      else if (errors[i].msg == 'taskstartdatetime is required'){
+        req.flash('danger', 'Task Start Date / Time is required');
+        res.redirect('/updateListings');
+        return;
+      }
+      else if (errors[i].msg == 'taskenddatetime is required'){
+        req.flash('danger', 'Task End Date / time is required');
+        res.redirect('/updateListings');
+        return;
+      }
+      else if (errors[i].msg == 'Deadline is required'){
+        req.flash('danger', 'Deadline is required');
+        res.redirect('/updateListings');
+        return;
+      }
+       else{
+      console.log(errors[i].msg);
+      }
     }
-  });
 
+  } else {
+    //Update listing dont need to delete assigned cause once assigned, there will be no more updates allowed 
+    const params1 = [req.body.newDescription, req.body.newTaskStartDateTime, req.body.newTaskEndDateTime, req.body.newDeadline, taskid];
+    var sqlUpCreatedTask = "UPDATE createdTasks SET description = $1, taskstartdatetime = $2, taskenddatetime = $3, deadline = $4 WHERE taskid = $5";
+
+    pool.query(sqlUpCreatedTask, params1, (error, result) => {
+        if(error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check4"') {
+          req.flash('danger', 'Task End Date / Time must be at least 1 hour after Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check3"'){
+          req.flash('danger', 'Task End Date / Time must be on the same day as Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check2"'){
+          req.flash('danger', 'Deadline must be before Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check1"'){
+          req.flash('danger', 'Deadline must be later than the current Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
+          req.flash('danger', 'Task Start Date / Time must be later than the current date' );
+        }
+        else {
+          console.log("Error creating new task", error);
+          req.flash("warning", "An error was encountered. Please try again.")
+        }
+        res.redirect('/updateListings');
+    });
+  }
 });
 
 router.get("/deleteListings/:taskid", ensureAuthenticated, async function (req, res) {
@@ -527,34 +659,82 @@ router.get("/updateRequests/:taskid", ensureAuthenticated, (req, res) => {
 
 router.post("/updateRequests/:taskid", ensureAuthenticated, async function (req, res) {
   req.checkBody("newDescription", "description is required").notEmpty();
-  req.checkBody("newTaskStartDateTime", "task start date/time is required").notEmpty();
-  req.checkBody("newTaskEndDateTime", "task end date/time is required").notEmpty();
+  req.checkBody("newTaskStartDateTime", "taskstartdatetime is required").notEmpty();
+  req.checkBody("newTaskEndDateTime", "taskenddatetime is required").notEmpty();
   req.checkBody("newDeadline", "deadline is required").notEmpty();
   var taskid = req.params.taskid;
-  let error = req.validationErrors();
-  const params = [req.body.newDescription, req.body.newTaskStartDateTime, req.body.newTaskEndDateTime, req.body.newDeadline, taskid];
-  var sql = "UPDATE createdTasks SET description = $1, taskstartdatetime = $2, taskenddatetime = $3, deadline = $4 WHERE taskid = $5 RETURNING taskid";
+  let errors = req.validationErrors();
+  if (errors) {
+    for (var i = 0; i < errors.length; i++) {
+     if (errors[i].msg == 'description is required'){
+        req.flash('danger', 'Description is required' );
+        res.redirect('/updateRequests');
+        return;
+      }
+      else if (errors[i].msg == 'taskstartdatetime is required'){
+        req.flash('danger', 'Task Start Date / Time is required');
+        res.redirect('/updateRequests');
+        return;
+      }
+      else if (errors[i].msg == 'taskenddatetime is required'){
+        req.flash('danger', 'Task End Date / time is required');
+        res.redirect('/updateRequests');
+        return;
+      }
+      else if (errors[i].msg == 'deadline is required'){
+        req.flash('danger', 'Deadline is required');
+        res.redirect('/updateRequests');
+        return;
+      }
+       else{
+      console.log(errors[i].msg);
+      }
+    }
+  }
+  else {
+    const params = [req.body.newDescription, req.body.newTaskStartDateTime, req.body.newTaskEndDateTime, req.body.newDeadline, taskid];
+    var sql = "UPDATE createdTasks SET description = $1, taskstartdatetime = $2, taskenddatetime = $3, deadline = $4 WHERE taskid = $5 RETURNING taskid";
 
-  await pool.query("BEGIN")
-  pool.query(sql, params)
-    .then(() => {
-      sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
-      return pool.query(sqlDeleteAssigned);
-    })
-    .then(() => {
-      var sqlupdateRequests = "UPDATE requests SET accepted = false, hasResponded = false WHERE taskid = " + taskid
-      return pool.query(sqlupdateRequests);
-    })
-    .then(() => {
-      console.log("COMMITTED")
-      pool.query("COMMIT");
-      res.redirect('/taskRequesters/viewRequests');
-    })
-    .catch((error) => {
-      console.log("Error creating new task", error);
-      req.flash("warning", "An error was encountered. Please try again.")
-      pool.query("ROLLBACK")
-    })
+    await pool.query("BEGIN")
+    pool.query(sql, params)
+      .then(() => {
+        sqlDeleteAssigned = "DELETE FROM assigned WHERE taskid = " + taskid
+        return pool.query(sqlDeleteAssigned);
+      })
+      .then(() => {
+        var sqlupdateRequests = "UPDATE requests SET accepted = false, hasResponded = false WHERE taskid = " + taskid
+        return pool.query(sqlupdateRequests);
+      })
+      .then(() => {
+        console.log("COMMITTED")
+        pool.query("COMMIT");
+        res.redirect('/taskRequesters/viewRequests');
+      })
+      .catch((error) => {
+        pool.query("ROLLBACK")
+        if(error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check4"') {
+          req.flash('danger', 'Task End Date / Time must be at least 1 hour after Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check3"'){
+          req.flash('danger', 'Task End Date / Time must be on the same day as Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check2"'){
+          req.flash('danger', 'Deadline must be before Task Start Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check1"'){
+          req.flash('danger', 'Deadline must be later than the current Date / Time' );
+        }
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
+          req.flash('danger', 'Task Start Date / Time must be later than the current date' );
+        }
+      
+        else {
+          console.log("Error creating new task", error);
+          req.flash("warning", "An error was encountered. Please try again.")
+        }
+        res.redirect('/updateRequests');
+      })
+    }
 });
 
 router.get("/deleteRequests/:taskid", ensureAuthenticated, (req, res) => {

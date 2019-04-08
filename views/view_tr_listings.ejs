@@ -20,8 +20,8 @@
 				<tr>
 					<th scope="col">Task Name</th>
 					<th scope="col">Description</th>
-					<th scope="col">Start Date Time </th>
-					<th scope="col">End Time</th>
+					<th scope="col">Start Date/Time </th>
+					<th scope="col">End Date/Time</th>
 					<th scope="col">Date Created</th>
 					<th scope="col">Status</th>
 					<th scope="col">Deadline</th>
@@ -37,7 +37,7 @@
 						<td><%= task[i].taskname%></td>
 						<td><%= task[i].description%></td>
 						<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
-						<td><%= task[i].taskendtime%></td>
+						<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
 						<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
 						<!-- Check if task have completed attribute, If completed. dont show the button. Else show the buttons -->
 					<!-- if have check for status for winning. If not got winning bid then show pendings bids-->
