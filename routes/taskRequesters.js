@@ -172,6 +172,7 @@ router.get("/addListings", ensureAuthenticated, async function (req, res) {
 });
 
 router.post("/addListings", ensureAuthenticated, async function (req, res) {
+  req.checkBody("catid", "Category is required").notEmpty();
   req.checkBody("taskName", "Task Name is required").notEmpty();
   req.checkBody("description", "Description is required").notEmpty();
   req.checkBody("taskstartdatetime", "taskstartdatetime is required").notEmpty();
@@ -182,7 +183,18 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
   let errors = req.validationErrors();
   if (errors) {
     for (var i = 0; i < errors.length; i++) {
-      if(errors[i].msg == 'Task Name is required') {
+      if(errors[i].msg == 'Category is required') {
+        req.flash('danger', 'Category is required' );
+        res.redirect('/addListings');
+        return;
+    
+      }
+      else if (errors[i].msg == 'Starting bid is required'){
+        req.flash('danger', 'Starting bid is required');
+        res.redirect('/addListings');
+        return;
+      }
+      else if(errors[i].msg == 'Task Name is required') {
         req.flash('danger', 'Task Name is required' );
         res.redirect('/addListings');
         return;
@@ -208,11 +220,7 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
         res.redirect('/addListings');
         return;
       }
-      else if (errors[i].msg == 'Starting bid is required'){
-        req.flash('danger', 'Starting bid is required');
-        res.redirect('/addListings');
-        return;
-      } else{
+      else{
       console.log(errors[i].msg);
       }
     }
