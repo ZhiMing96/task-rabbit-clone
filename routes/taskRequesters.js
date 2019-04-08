@@ -157,11 +157,14 @@ router.get("/addListings", ensureAuthenticated, async function(req, res){
 });
 */
 
-router.get("/addListings", ensureAuthenticated, function (req, res) {
+router.get("/addListings", ensureAuthenticated, async function (req, res) {
 
   try {
-    var categories = pool.query("SELECT * FROM skillcategories");
+    var categories = await pool.query("SELECT * FROM skillcategories");
+    
+    console.log(categories)
     res.render("add_Listings", { categories: categories.rows });
+    
   } catch (error) {
     console.log(error)
   }
@@ -216,16 +219,15 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
   } else {
 
     const userID = parseInt(req.user.cusId)
-    var TDT = req.body.taskDateTime
 
     const sqlinserttask = "INSERT INTO createdTasks (taskname, description, taskstartdatetime, taskenddatetime, dateCreated, cusId, deadline) VALUES ($1, $2, $3, $4,now(), $5, $6) RETURNING taskid;"
     const params1 = [req.body.taskName, req.body.description, req.body.taskstartdatetime, req.body.taskenddatetime, userID, req.body.deadline]
     await pool.query("BEGIN")
     await pool.query(sqlinserttask, params1)
       .then((results) => {
-        var paramRequires = [results.rows[0].taskid];
+        var paramRequires = [results.rows[0].taskid, req.body.catid];
         // for now i just hard insert the catid until the category is implemented
-        var sqlRequires = "INSERT INTO Requires(catid,taskid) VALUES (1,$1) RETURNING taskid";
+        var sqlRequires = "INSERT INTO Requires(catid,taskid) VALUES ($2,$1) RETURNING taskid";
         return pool.query(sqlRequires, paramRequires);
       })
       .then((results) => {

@@ -1,106 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-		<!-- Page Title -->
-		<%- include("include/head", {title: "View My Bids"}); %>
-    
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-	
-		<!-- CSS for Styling -->
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-		
-		<!-- JavaScript for Interactivity -->
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+      <%- include("include/head", {title: "My Requests: TaskRequester"}); %>
   </head>
-  <body>
-	<%- include("include/navbar"); %>
-	<%- messages('include/message', locals) %>
-	<% if(task.length == 0 ){%>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>NO TASK REQUESTS FOUND!</Ri:a></strong>
-            <button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div> 
-        <div class="text-center">	
-						<a href="/taskRequesters" class="btn btn-outline-secondary">Back</a>
-        </div>
-    <% } else {%>
-		<table class="table">
-			<thead>
-				<tr>
-					<th scope="col">Task Name</th>
-					<th scope="col">Description</th>
-					<th scope="col">Start Date/Time</th>
-					<th scope="col">End Date/Time</th>
-					<th scope="col">Date Created</th>
-					<th scope="col">Tasker Requested</th>
-					<th scope="col">Status</th>
-					<th scope="col">Deadline to accept</th>
-					<th scope="col"></th>
-					<th scope="col"></th>
-					<th scope="col"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<% for(var i=0; i<task.length; i++) { %>
-				<tr>
-						<td><%= task[i].taskname%></td>
-						<td><%= task[i].description%></td>
-						<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
-						<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
-						<td><%= task[i].datecreated.toString().substring(0,24)%></td>
-						<td><%= task[i].taskername%></td>
-						<!-- Check if taskrequesters have completed attribute, If completed. dont show the button. Else show the buttons -->
-					<!-- If dont hav,e check for hasResponded. If not accepted then show pending acceptance-->
-					<!-- if status is accepted, then view pending completion. -->	
-						<% if(task[i].completed == true){%>
-							<td> Completed </td>
-							<td> - </td>
-							<td> - </td>
-							<td> - </td>
-							<td> - </td>
-						<% } else if (task[i].hasresponded == true && (task[i].accepted == false)){%>
-								<td> Rejected </td>
-								<td> - </td>
-								<td> - </td>
-								<td> - </td>
-								<td> - </td>
-						<% } else {%>
-								<% if (task[i].hasresponded == true){%>
-										<td> Pending for completion </td>
-										<td> - </td>
-										<td>
-												<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
-													<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
-												</form>
-										</td>	
-								<% } else {%>
-									<td> Pending for acceptance </td>
-									<td> <%= (task[i].deadline).toString().substring(0,24)%> </td>
-									<td> - </td>
-								<% }%>
-							<td>
-								<form action="/taskRequesters/updateRequests/<%= task[i].taskid%>", method="GET">
-									<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/updateRequests/<%= task[i].taskid %>">UPDATE</button>
-								</form>
-							</td>
 
-							<td>
-								<form action="/taskRequesters/deleteRequests/<%= task[i].taskid%>", method="GET">
-									<button type="submit" class="btn btn-danger" formaction="/taskRequesters/deleteRequests/<%= task[i].taskid %>">DELETE</button>
-								</form>
-							</td>
-							</tr>
-						<% } %>
-				<% } %>
-			</tbody>
-		</table>
-	<% } %>
-	<div class="text-center">
-			<a href="/taskRequesters" class="btn btn-outline-secondary btn-lg">Back</a>
+  <body style="background-color: #282c34">
+    <%- include("include/navbar"); %>
+    <div class="container-fluid" style="background-color: white">
+      <div class="row">
+        <div class="container pt-5 mb-5" style="min-height:70vh">
+					<%- messages('include/message', locals) %>
+					<div class="row">
+							<div class="col">
+									<h4><i class="fas fa-handshake"></i>&nbsp;&nbsp; <i>Task Requester</i></h4>
+								</div>
+					</div>
+					<div class="row">
+					<%- include("include/tasker_sidebar"); %>
+					<div class="col-9">
+						<h1 style="text-align: center">My Requests</h1>
+						<% if(task.length == 0 ){%>
+							<div class="alert alert-danger alert-dismissible fade show" role="alert">
+									<strong>No Listings Found!</Ri:a></strong> There are no listing records.
+									<button type="submit" class="close" data-dismiss="alert" aria-label="Close" formaction="/taskers">
+											<span aria-hidden="true">&times;</span>
+									</button>
+								</div> 
+							<% } else {%>
+								<table class="table">
+									<thead>
+										<tr>
+											<th scope="col">Task Name</th>
+											<th scope="col">Description</th>
+											<th scope="col">Num Hours</th>
+											<th scope="col">Num People Needed</th>
+											<th scope="col">Date and Time</th>
+											<th scope="col">Date Created</th>
+											<th scope="col">Tasker Requested</th>
+											<th scope="col">Status</th>
+											<th scope="col">Deadline to accept</th>
+											<th scope="col"></th>
+											<th scope="col"></th>
+											<th scope="col"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<% for(var i=0; i<task.length; i++) { %>
+										<tr>
+												<td><%= task[i].taskname%></td>
+												<td><%= task[i].description%></td>
+												<td><%= task[i].duration%></td>
+												<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
+												<td><%= (task[i].taskendtime)%></td>
+												<td><%= task[i].datecreated.toString().substring(0,24)%></td>
+												<td><%= task[i].taskername%></td>
+												<!-- Check if taskrequesters have completed attribute, If completed. dont show the button. Else show the buttons -->
+											<!-- If dont hav,e check for hasResponded. If not accepted then show pending acceptance-->
+											<!-- if status is accepted, then view pending completion. -->	
+												<% if(task[i].completed == true){%>
+													<td> Completed </td>
+													<td> - </td>
+													<td> - </td>
+													<td> - </td>
+													<td> - </td>
+												<% } else if (task[i].hasresponded == true && (task[i].accepted == false)){%>
+														<td> Rejected </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
+												<% } else {%>
+														<% if (task[i].hasresponded == true){%>
+																<td> Pending for completion </td>
+																<td> - </td>
+																<td>
+																		<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
+																			<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
+																		</form>
+																</td>	
+														<% } else {%>
+															<td> Pending for acceptance </td>
+															<td> <%= (task[i].deadline).toString().substring(0,24)%> </td>
+															<td> - </td>
+														<% }%>
+													<td>
+														<form action="/taskRequesters/updateRequests/<%= task[i].taskid%>", method="GET">
+															<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/updateRequests/<%= task[i].taskid %>">UPDATE</button>
+														</form>
+													</td>
+
+													<td>
+														<form action="/taskRequesters/deleteRequests/<%= task[i].taskid%>", method="GET">
+															<button type="submit" class="btn btn-danger" formaction="/taskRequesters/deleteRequests/<%= task[i].taskid %>">DELETE</button>
+														</form>
+													</td>
+													</tr>
+												<% } %>
+										<% } %>
+									</tbody>
+								</table>
+								<% } %>
+							<div class="text-center">
+									<a href="/taskRequesters" class="btn btn-outline-secondary btn-lg">Back</a>
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-  </body>
+<%- include("include/footer"); %>
+</body>
 </html>
+		
