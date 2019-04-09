@@ -103,6 +103,7 @@ let requests = require('./routes/requests');
 let listings  = require('./routes/listings');
 let categories  = require('./routes/categories');
 let calendar  = require('./routes/calendar');
+let email  = require('./routes/email');
 app.use('/home', home);
 app.use('/articles', articles);
 app.use('/users', users);
@@ -113,6 +114,7 @@ app.use('/requests', requests);
 app.use('/listings', listings);
 app.use('/categories', categories);
 app.use('/calendar', calendar);
+app.use('/email', email);
 
 app.use(function(req, res, next){
   res.status(404);

@@ -2,6 +2,9 @@
 <html lang="en">
   <head>
     <%- include("include/head", {title: "Put a Task up for Bidding"}); %>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+
   </head>
 
   <body style="background-color: #282c34">
@@ -12,60 +15,86 @@
           <%- messages('include/message', locals) %>
           <div class="row">
             <div class="col text-center">
-              <h3>Put a Task up for <mark>Bidding</mark></h3>
+              <h2>Put a Task up for <mark>Bidding</mark></h2>
             </div>
           </div>
-            
-              <form method="POST" , action="/taskRequesters/addListings">
-                <div id="form-group row">
-                  <label class="col-sm-2 col-form-label py-3">Task Name:</label>
-                  <div class="col-sm-10 py-3">
-                    <textarea class="form-control" name="taskName" placeholder="Headline of your task e.g. Help Moving to 5-room apartment"></textarea>
-                  </div>
-                  
+          <br/>
+          <br/>
+          <form method="POST" , action="/taskRequesters/addListings">
+            <div class="row">
+              <div class="col-md-4">
+                  <h5>Step 1: Choose a Category</h5>
+              </div>
+              <div class="col-md-8">
+                  <% for(var i=0; i<categories.length; i++) { %>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" name="catid" value="<%=categories[i].catid%>">
+                          <label class="form-check-label" for="inlineCheckbox1"><button class="btn btn-outline-primary" data-toggle="button" aria-pressed="false" autocomplete="off"><%=categories[i].catname%></button></label>
+                        </div>
+                      
+                  <%}%>
+              </div>
+            </div>
+            <hr/>
+          
+            <div class="row">
+              <div class="col-md-4">
+                  <h5>Step 2: Enter Starting Bid</h5>
+              </div>
+              <div class="col-md-8">
+                  $ <input type="number" name="startingBid">
+              </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Step 3: Fill in Task Details</h5>
                 </div>
-                <div id="form-group row">
-                    <label class="col-sm-2 col-form-label py-3">Description:</label>
+                <div class="col-md-8">  
+                  <div id="form-group row">
+                    <label class="col-sm-2 col-form-label py-3">Task Name:</label>
                     <div class="col-sm-10 py-3">
-                      <textarea class="form-control" name="description" placeholder="Describe the scale of your task, expected duration, equipment/vehicle needed from tasker, location etc. The more details the better!" rows="5"></textarea>
+                      <textarea class="form-control" name="taskName" placeholder="Headline of your task e.g. Help Moving to 5-room apartment"></textarea>
                     </div>
                     
-                </div>
-                
-                <div id="form-group row">
-                    <label class="col-sm-2 col-form-label py-3">Task Start Date / Time:</label>
-                    <div class="col-sm-10 py-3">
-                      <input type="datetime-local" name="taskstartdatetime">
-                    </div>
-                </div>
-                <div id="form-group row">
-                    <label class="col-sm-2 col-form-label py-3">Task End Date / Time:</label>
-                    <div class="col-sm-10 py-3">
-                      <input type="datetime-local" name="taskendtime">
-                    </div>
-                </div>
+                  </div>
+                  <div id="form-group row">
+                      <label class="col-sm-2 col-form-label py-3">Description:</label>
+                      <div class="col-sm-10 py-3">
+                        <textarea class="form-control" name="description" placeholder="Describe the scale of your task, expected duration, equipment/vehicle needed from tasker, location etc. The more details the better!" rows="5"></textarea>
+                      </div>
+                      
+                  </div>
+                  
+                  <div id="form-group row">
+                      <label class="col-sm-2 col-form-label py-3">Task Start Date / Time:</label>
+                      <div class="col-sm-10 py-3">
+                        <input type="datetime-local" name="taskstartdatetime">
+                      </div>
+                  </div>
+                  <div id="form-group row">
+                      <label class="col-sm-2 col-form-label py-3">Task End Date / Time:</label>
+                      <div class="col-sm-10 py-3">
+                        <input type="datetime-local" name="taskenddatetime">
+                      </div>
+                  </div>
 
-                <div id="form-group row">
-                    <label class="col-sm-2 col-form-label py-3">Deadline:</label>
-                    <div class="col-sm-10 py-3">
-                      <input type="datetime-local" name="deadline">
-                    </div>
-                </div>
-                <div id="form-group row">
-                    <label class="col-sm-2 col-form-label py-3">Starting Bid:</label>
-                    <div class="col-sm-10 py-3">
-                       $ <input type="number" name="startingBid">
-                    </div>
-                </div>
-                <br/>
-                <div class="form-group row">
+                  <div id="form-group row">
+                      <label class="col-sm-2 col-form-label py-3">Deadline:</label>
+                      <div class="col-sm-10 py-3">
+                        <input type="datetime-local" name="deadline">
+                      </div>
+                  </div>
+                  
+                  <br/>
+                  <div class="form-group row">
                     <div class="col text-center">
                       <input class="btn btn-primary" type="submit" value="Submit" />
                     </div>
                   </div>
-
-              </form>
-            
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>

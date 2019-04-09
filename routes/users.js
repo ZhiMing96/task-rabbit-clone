@@ -12,7 +12,7 @@ const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 //Register Form 
 router.get('/register', function (req, res) {
-    req.flash('warning', 'Passwords do not match');
+    
     if (req.isAuthenticated()) {
         res.redirect("/home");
     }

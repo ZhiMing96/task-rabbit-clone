@@ -13,26 +13,46 @@
           <div class="container mt-5" style="min-height:70vh">
             <%- messages('include/message', locals) %>
             <div class="row">
-              <div class="col text-center">
-              <h1>Update Listing Details</h1>
+              <div class="col">
+              <h1 class="text-center">Update Listing Details</h1>
+              <br/>
               <form method="POST" , action="/taskRequesters/updateListings/<%= task[0].taskid %>">
-                <div id="form-group">
-                    <label>Description:</label>
-                    <textarea class="form-control" name="newDescription"></textarea>
+                <div class="form-group row">
+                    <label for="rating" class="col-sm-2 col-form-label py-3">Description:</label>
+                    <div class="col-sm-10 py-3">
+                      <textarea class="form-control" name="newDescription"></textarea>
+                    </div>
+                    <br/>
+
                 </div>
-                <div id="form-group">
-                    <label>Task Start Date / Time:</label>
-                    <input type="datetime-local" name="newTaskStartDateTime"> 
+                <div class="form-group row">
+                    <label for="rating" class="col-sm-2 col-form-label py-3">Task Start Date / Time:</label>
+                    <div class="col-sm-10 py-3">
+                      <input type="datetime-local" name="newTaskStartDateTime"> 
+                    </div>
                 </div>
-                <div id="form-group">
-                    <label>Task End Date / Time:</label>
-                    <input type="datetime-local" name="newTaskEndDateTime"> 
+                <br/>
+
+                <div class="form-group row">
+                    <label for="rating" class="col-sm-2 col-form-label py-3">Task End Date / Time:</label>
+                    <div class="col-sm-10 py-3">
+                      <input type="datetime-local" name="newTaskEndDateTime"> 
+                    </div>
                 </div>
-                <div id="form-group">
-                    <label>Deadline:</label>
-                    <input type="datetime-local" name="newDeadline">
+                <br/>
+
+                <div class="form-group row">
+                    <label for="rating" class="col-sm-2 col-form-label py-3">Bidding Deadline:</label>
+                    <div class="col-sm-10 py-3">
+                      <input type="datetime-local" name="newDeadline">
+                    </div>
                 </div>
-                <input class="btn btn-primary" type="submit" value="Submit" />
+                <br/>
+
+                <div class="text-center">
+                    <input class="btn btn-primary" type="submit" value="Submit" />
+                </div>
+                <br/><br/>
               </form>
             </div>
           </div>

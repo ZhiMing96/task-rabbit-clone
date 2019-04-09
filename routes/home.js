@@ -11,6 +11,7 @@ router.get('/', ensureAuthenticated, function (req, res){
     ])
     .then(([result1, result2]) => {
         res.render("home",{task: result1.rows, tasker: result2.rows});
+    
     })
     .catch((error)=>{
         req.flash("warning", "An error occured.");

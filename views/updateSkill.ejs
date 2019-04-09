@@ -11,8 +11,8 @@
 					<%- messages('include/message', locals) %>
 					<div class="row">
                         <div class="col">
-                            <h1>Update Skill Details : <%= skills[0].ssid %></h1>
-
+                            <h2>Update Skill Details for <mark><%= skills[0].name %></mark></h2>
+                            <br/>
                             <form action="/taskers/updateSkill/<%= skills[0].ssid %>", method="POST">
                                 <div class="form-group">
                                     <label for="skillName">Name of Personal Skill</label>
