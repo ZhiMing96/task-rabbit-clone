@@ -50,6 +50,10 @@ router.post('/createNewBid/:taskId',ensureAuthenticated,(req,res)=>{
 
     pool.query(sql,params, (err, result)=>{
         if(err){
+            if (err.message == 'INVALID BID AMOUNT'){
+                req.flash('danger', 'Unable to submit bid as price is above startingBid')
+                res.redirect('/listings/createNewBid/' + req.params.taskId)
+            }
             console.log("UNABLE TO INSERT NEW BID RECORD " + err);
         } else {
             res.redirect('/taskers/viewMyBids');
