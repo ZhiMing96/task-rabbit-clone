@@ -6,7 +6,7 @@
 
   <body style="background-color: #282c34">
     <%- include("include/navbar"); %>
-    <div class="container-fluid" style="background-color: white">
+    <div class="wrapper container-fluid" style="background-color: white">
       <div class="row">
         <div class="container pt-5 mb-5" style="min-height:70vh">
 					<%- messages('include/message', locals) %>
@@ -16,7 +16,7 @@
 								</div>
 					</div>
 					<div class="row">
-					<%- include("include/tasker_sidebar"); %>
+					<%- include("include/tr_sidebar"); %>
 					<div class="col-9">
 						<h1 style="text-align: center">My Requests</h1>
 						<% if(task.length == 0 ){%>
@@ -27,14 +27,14 @@
 									</button>
 								</div> 
 							<% } else {%>
-								<table class="table">
-									<thead>
+								<table class="table-responsive" cellpadding="10">
+										<thead class="table-primary">
 										<tr>
 											<th scope="col">Task Name</th>
 											<th scope="col">Description</th>
-											<th scope="col">Num Hours</th>
-											<th scope="col">Num People Needed</th>
-											<th scope="col">Date and Time</th>
+											<th scope="col">Date</th>
+											<th scope="col">Start Time</th>
+											<th scope="col">End Time</th>
 											<th scope="col">Date Created</th>
 											<th scope="col">Tasker Requested</th>
 											<th scope="col">Status</th>
@@ -50,10 +50,10 @@
 										<tr>
 												<td><%= task[i].taskname%></td>
 												<td><%= task[i].description%></td>
-												<td><%= task[i].duration%></td>
-												<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
-												<td><%= (task[i].taskendtime)%></td>
-												<td><%= task[i].datecreated.toString().substring(0,24)%></td>
+												<td><%= (task[i].taskstartdatetime).toString().substring(0,15)%></td>
+												<td><%= (task[i].taskstartdatetime).toString().substring(15,21)%></td>
+												<td><%= (task[i].taskenddatetime).toString().substring(15,21)%></td>
+												<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
 												<td><%= task[i].taskername%></td>
 												<!-- Check if taskrequesters have completed attribute, If completed. dont show the button. Else show the buttons -->
 											<!-- If dont hav,e check for hasResponded. If not accepted then show pending acceptance-->
@@ -84,9 +84,7 @@
 																<td> Pending for completion </td>
 																<td> - </td>
 																<td>
-																		<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
-																			<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
-																		</form>
+																		<a href="/taskRequesters/write_review/<%= task[i].taskid%>/tasker/<%= task[i].taskerid%>" class="btn btn-sm btn-outline-info">Completed</a>
 																</td>	
 																<td>
 																		<form action="/taskRequesters/cancelRequests/<%= task[i].taskid%>", method="GET">
@@ -101,13 +99,13 @@
 														<% }%>
 													<td>
 														<form action="/taskRequesters/updateRequests/<%= task[i].taskid%>", method="GET">
-															<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/updateRequests/<%= task[i].taskid %>">UPDATE</button>
+															<button type="submit" class="btn btn-sm btn-outline-info" formaction="/taskRequesters/updateRequests/<%= task[i].taskid %>">Update</button>
 														</form>
 													</td>
 
 													<td>
 														<form action="/taskRequesters/deleteRequests/<%= task[i].taskid%>", method="GET">
-															<button type="submit" class="btn btn-danger" formaction="/taskRequesters/deleteRequests/<%= task[i].taskid %>">DELETE</button>
+															<button type="submit" class="btn btn-sm btn-danger" formaction="/taskRequesters/deleteRequests/<%= task[i].taskid %>">Delete</button>
 														</form>
 													</td>
 													</tr>

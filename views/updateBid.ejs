@@ -17,7 +17,7 @@
                     <div class="card-body">
                         <h5 class="card-title"><%= bidInfo[0].taskname %></h5>
                         <p class="card-text">Deadline: <%= bidInfo[0].deadline %> Hours</p>
-
+                        <p class="card-text">Starting Bid: SGD<%= bidInfo[0].startingbid %></p>
                         <p class="card-text">Current Bid Price: SGD<%= bidInfo[0].bidprice %></p>
 
                         <form action="/listings/updateBid/<%=bidInfo[0].taskid %>" method="POST" id="form"> 

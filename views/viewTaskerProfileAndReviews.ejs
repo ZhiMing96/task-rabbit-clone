@@ -45,6 +45,7 @@
                   <i class="far fa-check-circle" style="color:green"></i>   <%=((profile[0].num == null) ? 0 : profile[0].num) + " " + catName + " Tasks " %>
                   <br/>
                   <br/>
+                  <i><b><%=profile[0].ssname%> :<br/></b></i>
                   "<%=profile[0].description%>"<br>
               </div>
               <div class="row">
@@ -74,6 +75,30 @@
                   <br/>
                 <%}%>
               <%}%> 
+              <hr/>
+              <h4><%=profile[0].name%>'s Unavailable Timings</h4>
+              <div class="table-wrapper-scroll-y my-custom-scrollbar">
+
+                  <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                      <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% for(var x=0; x < unavailabledates.length; x++){%> <!--unavailable timings-->
+                        <tr>
+                          <th scope="row"><%=(unavailabledates[x].taskstartdatetime).toString().substring(0,15)%></th>
+                          <td><%=(unavailabledates[x].taskstartdatetime).toString().substring(15,24)%></td>
+                          <td><%=(unavailabledates[x].taskenddatetime).toString().substring(15,24)%></td>
+                        </tr>
+                      <%}%>
+                    </tbody>
+                  </table>
+                
+                </div>
             </div>
           </div>
           <hr/>
