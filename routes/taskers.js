@@ -133,7 +133,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
     //console.log(result)
     pool.query("COMMIT")
     req.flash('success','REQUEST ACCEPTED!');
-    res.redirect('/taskers/viewRequests');
+    res.redirect('/taskers/viewMyPendingTasks');
     
   })
   .catch((error) => {
