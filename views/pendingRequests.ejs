@@ -37,7 +37,7 @@
                                             <th scope="col">Task Name</th>
                                             <th scope="col">Task Description</th>
                                             <th scope="col">Task Start Date/Time</th>
-                                            <th scope="col">Task End Time</th>
+                                            <th scope="col">Task End Date/Time</th>
                                             <th scope="col">Deadline to Accept</th>
                                             <th scope="col"></th>
                                             <th scope="col"></th>
@@ -49,7 +49,7 @@
                                                 <td><%= requests[i].taskname%></td>
                                                 <td><%= requests[i].description%></td>
                                                 <td><%= (requests[i].taskstartdatetime).toString().substring(0,24)%> </td>
-                                                <td><%= requests[i].taskendtime%> </td>
+                                                <td><%= (requests[i].taskenddatetime).toString().substring(0,24)%> </td>
                                                 <td><%= (requests[i].deadline).toString().substring(0,24)%></td>
                                                 <td>
                                                     <form action="/taskers/acceptRequest/<%= requests[i].taskid%>", method="GET">

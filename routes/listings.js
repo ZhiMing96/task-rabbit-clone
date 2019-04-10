@@ -6,9 +6,10 @@ const ensureAuthenticated = require('../config/ensureAuthenticated');
 
 //View All Available Listings
 router.get('/viewAllAvailable',ensureAuthenticated,function (req, res) {
-    const sql = "SELECT taskid,taskname, description, taskstartdatetime, taskenddatetime, datecreated, username, deadline FROM CreatedTasks C INNER JOIN Customers C1 on C.cusId = C1.cusId WHERE C.deadline > (SELECT NOW()) AND C.cusId <> $1 AND C.taskstartdatetime > (SELECT NOW()) AND C.taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND bids.taskid = C.taskId)";
-                                                                    
+    const sql = "SELECT l.taskid,taskname, description, taskstartdatetime, taskenddatetime, datecreated, username, deadline FROM CreatedTasks C INNER JOIN Customers C1 on C.cusId = C1.cusId INNER JOIN listings l ON c.taskid = l.taskid WHERE C.deadline > (SELECT NOW()) AND C.cusId <> $1 AND C.taskstartdatetime >(SELECT NOW()) AND C.taskid not in (SELECT taskid FROM assigned) AND NOT EXISTS (SELECT 1 FROM bids WHERE bids.cusId  = $1 AND bids.taskid = C.taskId)";
+                                                                
     const params =  [parseInt(req.user.cusId)];
+    
     pool.query(sql, params ,(error, result) => {
         if (error) {
             console.log('err: ', error);
@@ -16,7 +17,7 @@ router.get('/viewAllAvailable',ensureAuthenticated,function (req, res) {
             //console.log("taskid =" + result.rows[0].taskid);
             res.render('view_available_listings', {availableListing: result.rows,})
         }
-    });
+    }); 
 });
 
 router.get('/createNewBid/:taskId',ensureAuthenticated,(req,res) => {
@@ -55,6 +56,8 @@ router.post('/createNewBid/:taskId',ensureAuthenticated,(req,res)=>{
                 res.redirect('/listings/createNewBid/' + req.params.taskId)
             }
             console.log("UNABLE TO INSERT NEW BID RECORD " + err);
+            req.flash('danger','An Error has Occured: Unable to insert new bid! Did you bid above the starting price?');
+            res.redirect('listings/createNewBid/'+listingId);
         } else {
             res.redirect('/taskers/viewMyBids');
         }
@@ -65,7 +68,7 @@ router.get('/updateBid/:taskid',ensureAuthenticated,(req,res)=>{
     const taskId = req.params.taskid ;
     const cusId = req.user.cusId; 
     //console.log(cusId);
-    const sql = 'SELECT B.taskId, C.taskName, B.bidPrice, C.deadline FROM CreatedTasks C join Bids B on (C.taskId = B.taskId) WHERE B.taskId = $1 AND B.cusId = $2';
+    const sql = 'SELECT l.startingbid, B.taskId, C.taskName, B.bidPrice, C.deadline FROM CreatedTasks C join Bids B on C.taskId = B.taskId INNER JOIN listings l on B.taskid = l.taskid WHERE B.taskId = $1 AND B.cusId = $2';
 
   const params = [taskId,cusId];
 
@@ -91,6 +94,8 @@ router.post('/updateBid/:taskid',ensureAuthenticated,(req,res)=>{
     pool.query(sql,param,(err,result) => {
         if(err){
             console.log("UNABLE TO UPDATE Bid Record " + err);
+            req.flash('danger','An Error has Occured: Unable to insert new bid! Did you bid above the starting price?');
+            res.redirect('listings/updateBid/'+taskId);
         } else {
             res.redirect('/taskers/viewMyBids');
         }
