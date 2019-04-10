@@ -5,6 +5,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
 
+    
     <script>
       $(document).ready(()=>{
         var categories = [];
@@ -78,9 +79,9 @@
                             </span>
                            
                             <% for (i=0;i<eliteList.length;i++) { if (eliteList[i].cusid==taskersByCategory[z][x].cusid) { %> 
-                                <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b></b>Elite Tasker</b></span>
+                                <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
                             <% }}%>  
-                            <% for (j=0;j<greatValueList[z].length;j++) { if (greatValueList[z][j].cusid==taskersByCategory[z][x].cusid) { %>
+                            <% for (j=0;j<greatValueList[z].length;j++) { if (greatValueList[z][j].cusid==taskersByCategory[z][x].cusid && greatValueList[z][j].ssid==taskersByCategory[z][x].ssid) { %>
                                 <span class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker has a high rating and a great price"><i class="fas fa-money-bill-wave"></i><b> Great Value</b></span>
                             <% }}%> 
                           </div>

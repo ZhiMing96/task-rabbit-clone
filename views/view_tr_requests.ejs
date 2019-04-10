@@ -16,7 +16,7 @@
 								</div>
 					</div>
 					<div class="row">
-					<%- include("include/tasker_sidebar"); %>
+					<%- include("include/tr_sidebar"); %>
 					<div class="col-9">
 						<h1 style="text-align: center">My Requests</h1>
 						<% if(task.length == 0 ){%>
@@ -74,9 +74,7 @@
 																<td> Pending for completion </td>
 																<td> - </td>
 																<td>
-																		<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
-																			<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
-																		</form>
+																		<a href="/taskRequesters/write_review/<%= task[i].taskid%>/tasker/<%= task[i].taskerid%>" class="btn btn-outline-info">Completed</a>
 																</td>	
 														<% } else {%>
 															<td> Pending for acceptance </td>
@@ -85,13 +83,13 @@
 														<% }%>
 													<td>
 														<form action="/taskRequesters/updateRequests/<%= task[i].taskid%>", method="GET">
-															<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/updateRequests/<%= task[i].taskid %>">UPDATE</button>
+															<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/updateRequests/<%= task[i].taskid %>">Update</button>
 														</form>
 													</td>
 
 													<td>
 														<form action="/taskRequesters/deleteRequests/<%= task[i].taskid%>", method="GET">
-															<button type="submit" class="btn btn-danger" formaction="/taskRequesters/deleteRequests/<%= task[i].taskid %>">DELETE</button>
+															<button type="submit" class="btn btn-danger" formaction="/taskRequesters/deleteRequests/<%= task[i].taskid %>">Delete</button>
 														</form>
 													</td>
 													</tr>

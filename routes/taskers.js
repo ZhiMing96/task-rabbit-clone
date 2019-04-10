@@ -423,14 +423,25 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
       "join SkillCategories C on R.catId=C.catId right join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=$1;"
     const params = [parseInt(req.user.cusId)]
 
-    pool.query(sql, params, (error, result) => {
+    pool.query(sql, params, (error, result1) => {
 
       if (error) {
         console.log('err: ', error);
       } 
 
-      //console.log(result);
-      res.render('view_my_reviews', {reviews: result.rows});
+      else {
+        const avgSql = "SELECT avg(rating) as avg FROM Reviews where cusid=$1"
+        pool.query(avgSql, [parseInt(req.user.cusId)], (error2, result2) => {
+          if (error2) {
+            console.log('err: ', error);
+          }
+          else {
+            //console.log(result);
+            res.render('view_my_reviews', {reviews: result1.rows, rating: result2.rows});
+          }
+        }) 
+      }
+      
     });
   });
 

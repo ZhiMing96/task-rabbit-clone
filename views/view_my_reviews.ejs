@@ -18,6 +18,11 @@
                         <%- include("include/tasker_sidebar"); %>
 						<div class="col-9">
                             <h1 style="text-align: center">My Reviews</h1>
+                            <h6 style="text-align:right"><i>Average rating: 
+                                <% for(var y=0;y<5;y++){%>
+                                    <i class="fa<%=(y<rating[0].avg) ? "s" : "r";%> fa-star" style="color:#ffc700"></i>
+                                <%}%> 
+                            </i></h6>
                             <% if(reviews.length == 0 ){%>
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                     <strong>No Records Found!</Ri:a></strong> There are no reviews.
