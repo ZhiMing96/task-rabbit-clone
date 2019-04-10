@@ -447,7 +447,7 @@ router.get("/addRequests/:category/:ssid/:tasker_id", ensureAuthenticated, async
 
   return Promise.all([
     pool.query("with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid) " +
-      "SELECT T.name, T.cusid, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.description " +
+      "SELECT T.name, T.cusid, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.name as ssname, S.ratePerHour, S.description " +
       "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=" + catId + " and S.ssid=" + ssId + " and T.cusid=" + taskerId + ";"),
     pool.query("SELECT C.catName as catName, RV.rating, RV.description, RV.taskId, CU1.name FROM Reviews RV join Requires R on RV.taskId=R.taskId " +
       "join SkillCategories C on R.catId=C.catId join Customers CU on RV.cusId=CU.cusId join CreatedTasks T on RV.taskid=T.taskid join Customers CU1 on CU1.cusid=T.cusid WHERE CU.cusid=" + taskerId + ";"),
@@ -461,7 +461,7 @@ router.get("/addRequests/:category/:ssid/:tasker_id", ensureAuthenticated, async
         profile: profileresults.rows,
         reviews: reviewsresults.rows,
         catName: category.rows[0].catname,
-        catId,
+        catId, 
         unavailabledates: unavailabledates.rows
         
       });
