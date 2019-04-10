@@ -638,11 +638,7 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
     }
   });
 
-<<<<<<< HEAD
-  const sql = "SELECT C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated, deadline, accepted, hascancelled, R.hasResponded as hasresponded, CS.Name as taskername, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
-=======
-  const sql = "SELECT C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated, deadline, accepted, R.hasResponded as hasresponded, CS.Name as taskername, CS.cusid as taskerid, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
->>>>>>> cbd2e7f701c6e7851b30c109f8f3293c34e41991
+  const sql = "SELECT C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated, deadline, accepted, hascancelled, R.hasResponded as hasresponded, CS.Name as taskername, CS.cusid as taskerid, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
 
   pool.query(sql, params, (error, result) => {
