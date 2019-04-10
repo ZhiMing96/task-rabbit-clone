@@ -23,7 +23,6 @@ router.post("/add", (req, res) => {
       if (error) {
         console.log("err: ", error);
       }
-      //req.flash('success', 'Article Added');
       console.log("result?", result);
       res.redirect("/");
     });
