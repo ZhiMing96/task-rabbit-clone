@@ -47,10 +47,14 @@ router.post('/createNewBid/:taskId',ensureAuthenticated,(req,res)=>{
     console.log("bid amt =" + bidAmount);
     const listingId = req.params.taskId;
     const sql = "INSERT INTO bids(cusid,taskid,bidprice,winningbid) VALUES ($1,$2,$3,$4)"; 
-    const params = [cusId,listingId,bidAmount, false];
+    const params = [cusId, listingId,bidAmount, false];
 
     pool.query(sql,params, (err, result)=>{
         if(err){
+            if (err.message == 'INVALID BID AMOUNT'){
+                req.flash('danger', 'Unable to submit bid as price is above startingBid')
+                res.redirect('/listings/createNewBid/' + req.params.taskId)
+            }
             console.log("UNABLE TO INSERT NEW BID RECORD " + err);
             req.flash('danger','An Error has Occured: Unable to insert new bid! Did you bid above the starting price?');
             res.redirect('listings/createNewBid/'+listingId);
