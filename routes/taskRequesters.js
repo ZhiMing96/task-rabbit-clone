@@ -48,7 +48,12 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensure
     await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK");
+    console.log(e);
     if (e.message == 'ONLY ONE WINNING BID ALLOWED!'){
+      req.flash('danger', 'You have already chosen a winning bid!');
+      res.redirect('/taskRequesters/my_bids');
+    }
+    if (e.message == 'CLASHING TIMESLOTS!'){
       req.flash('danger', 'You have already chosen a winning bid!');
       res.redirect('/taskRequesters/my_bids');
     }
@@ -425,9 +430,13 @@ router.post("/addRequests", async function (req, res) {
         else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
           req.flash('danger', 'Task Start Date / Time must be later than the current date' );
         }
+        else if (error.message == 'TASKER IS ALREADY TAKEN!'){
+          req.flash('danger', 'Tasker is already taken at that Date / Time' );
+        }
         else if (error.message == 'SPAMMING'){
           req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
         } else {
+          console.log(error.message)
           req.flash("warning", "An error was encountered. Please try again.");
         }
         res.redirect('/addRequests');
