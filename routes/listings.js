@@ -56,10 +56,12 @@ router.post('/createNewBid/:taskId',ensureAuthenticated,(req,res)=>{
                 res.redirect('/listings/createNewBid/' + req.params.taskId);
                 return;
             }
-           /*
-            console.log("UNABLE TO INSERT NEW BID RECORD " + err);
-            req.flash('danger','An Error has Occured: Unable to insert new bid! Did you bid above the starting price?');
-            res.redirect('listings/createNewBid/'+listingId);*/
+            else {
+                console.log("UNABLE TO INSERT NEW BID RECORD " + err);
+                req.flash('danger','An Error has Occured: Unable to insert new bid! Did you bid above the starting price?');
+                res.redirect('listings/createNewBid/'+listingId);
+            }
+            
             
         } else {
             res.redirect('/taskers/viewMyBids');

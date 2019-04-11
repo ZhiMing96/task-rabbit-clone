@@ -102,10 +102,10 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensure
       res.redirect('/taskRequesters/my_bids');
     }
     if (e.message == 'CLASHING TIMESLOTS!'){
+      console.log("HEREEEEEEEEEE" + e)
       req.flash('danger', 'Unable to select this tasker due to clashing timeslots!');
       res.redirect('/taskRequesters/my_bids');
     }
-    throw e;
   } finally {
     res.render("tr_accepted_bid", { result: result.rows[0] });
   }
@@ -352,19 +352,25 @@ router.get("/addRequests", ensureAuthenticated, async function (req, res) {
   var greatValueTaskersList = [];
   var categoryResult = [];
 
+  
   try {
     categoryResult = await pool.query("SELECT * FROM skillcategories");
+    
     for (x = 0; x < categoryResult.rows.length; x++) {
       var taskersQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)" +
         " SELECT DISTINCT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.name as ssname, S.description, S.ssid " +
-        "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid and T.cusid<>" +req.user.cusid + " WHERE B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc;"
+        "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE T.cusid<>" + [parseInt(req.user.cusId)] + " AND B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc;"
       var numTasksQuery = "select count(*) as num from belongs where catid=" + [categoryResult.rows[x].catid] + ";";
       const greatValueTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT S.cusId, S.ssId FROM AddedPersonalSkills S JOIN TaskerRating T ON S.cusId=T.cusId JOIN Belongs B ON S.ssId=B.ssId WHERE tr>=4 and B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc limit $1/3;"
 
+      
       var tmp = await pool.query(taskersQuery);
+      
       taskersByCategory.push(tmp.rows);
       var tmp2 = await pool.query(numTasksQuery);
+      
       var tmp3 = await pool.query(greatValueTaskersQuery, [tmp2.rows[0].num]);
+      
       greatValueTaskersList.push(tmp3.rows);
     }
     const eliteTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT cusId FROM TaskerRating R WHERE 1<=(SELECT count(*) FROM Assigned A WHERE R.cusId=A.cusId AND completed=TRUE) AND tr>=4.0;";
