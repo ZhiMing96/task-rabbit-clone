@@ -77,12 +77,12 @@
 															<td>-</td>
 															<td>
 																	<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
-																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
+																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">Completed</button>
 																	</form>
 															</td>	
 															<td>
 																	<form action="/taskRequesters/cancelListings/<%= task[i].taskid%>", method="GET">
-																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/cancelListings/<%= task[i].taskid %>">CANCEL</button>
+																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/cancelListings/<%= task[i].taskid %>">Cancel</button>
 																	</form>
 															</td>	
 															<td><button type="button" class="btn btn-sm btn-outline-success" disabled>Winning Bid Chosen</button></td>
