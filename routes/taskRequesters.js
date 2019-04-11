@@ -77,7 +77,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
       req.flash('danger', 'You have already chosen a winning bid!');
       res.redirect('/taskRequesters/my_bids');
     }
-    throw e;
+    
   } finally {
     res.render("tr_accepted_bid", { result: result.rows[0] });
   }
@@ -85,7 +85,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
 });
 
 //SELECT WINNING BID
-router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensureAuthenticated, async (req, res) => {
+router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensureAuthenticated, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN;");
