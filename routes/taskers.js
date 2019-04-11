@@ -137,7 +137,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
     
   })
   .catch((error) => {
-    //console.log(error.message);
+    console.log(error.message);
     if(error.message == 'CLASHING TIMESLOTS!')
     {
       const sqlRespond = "UPDATE requests SET hasResponded = true, accepted = false WHERE taskid = $1 AND cusid = $2";
