@@ -33,7 +33,7 @@
 										<th scope="col">Tasker</th>
 										<th scope="col">Description</th>
 										<th scope="col">Task Start Date/Time</th>			
-										<th scope="col">Task End Time</th>
+										<th scope="col">Task End Date/Time</th>
 										<th scope="col">Date Created</th>
 										<th></th>
 									</tr>
@@ -42,10 +42,10 @@
 									<% for(var i=0; i<task.length; i++) { %>
 										<tr>
 										<td><%= task[i].taskname%></td>
-										<td><%= task[i].cusidri%></td>
+										<td><%= task[i].name%></td>
 										<td><%= task[i].description%></td>
 										<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
-										<td><%= task[i].taskendtime%></td>
+										<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
 										<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
 										<td><a href="/taskRequesters/write_review/<%=task[i].taskid%>/tasker/<%=task[i].cusid%>" class="btn btn-primary">Submit Review</a></td>
 										</tr>
