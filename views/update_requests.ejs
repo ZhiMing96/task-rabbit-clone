@@ -17,19 +17,19 @@
             <form method="POST" , action="/taskRequesters/updateRequests/<%= task[0].taskid %>">
               <div id="form-group">
                   <label>Description:</label>
-                  <textarea class="form-control" name="newDescription"></textarea>
+                  <textarea class="form-control" name="newDescription" required></textarea>
               </div>
               <div id="form-group">
                   <label>Task Start Date / Time:</label>
-                  <input type="datetime-local" name="newTaskStartDateTime"> 
+                  <input type="datetime-local" name="newTaskStartDateTime" required> 
               </div>
               <div id="form-group">
                   <label>Task End Date / Time:</label>
-                  <input type="datetime-local" name="newTaskEndDateTime"> 
+                  <input type="datetime-local" name="newTaskEndDateTime" required> 
               </div>
               <div id="form-group">
                   <label>Deadline:</label>
-                  <input type="datetime-local" name="newDeadline">
+                  <input type="datetime-local" name="newDeadline" required>
               </div>
               <input class="btn btn-primary" type="submit" value="Submit" />
             </form>
