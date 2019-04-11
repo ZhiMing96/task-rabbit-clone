@@ -47,7 +47,13 @@
 										<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
 										<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
 										<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
-										<td><a href="/taskRequesters/write_review/<%=task[i].taskid%>/tasker/<%=task[i].taskerid%>" class="btn btn-primary">Submit Review</a></td>
+										<td>
+											<% if (task[i].rating==null){ %>
+												<a href="/taskRequesters/write_review/<%=task[i].taskid%>/tasker/<%=task[i].taskerid%>" class="btn btn-primary">Review</a>
+												<%} else {%>
+													<button class="btn btn-sm btn-success" disabled><i class="far fa-check-circle"></i>&nbsp;Reviewed</button>
+												<% } %>
+										</td>
 										</tr>
 									<% } %>
 								</tbody>

@@ -897,21 +897,24 @@ router.get("/viewAllTasks", ensureAuthenticated, (req, res) => {
 router.get('/viewCompletedTasks', ensureAuthenticated, (req, res) => {
 
   const params = [parseInt(req.user.cusId)]
-  const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskenddatetime, C.datecreated, CS.name, A.cusid as taskerid from (CreatedTasks C join assigned A on C.taskid = A.taskid) join customers CS on CS.cusid = A.cusid where C.cusId = $1 and A.completed = true;'
+  const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskenddatetime, C.datecreated, CS.name, A.cusid as taskerid , R.rating from (CreatedTasks C join assigned A on C.taskid = A.taskid) join customers CS on CS.cusid = A.cusid left outer join reviews R on R.taskid=A.taskid where C.cusId = $1 and A.completed = true;'
 
   pool.query(sql, params, (error, result) => {
 
     if (error) {
       console.log('err: ', error);
     }
-
-    res.render('view_tr_completed_tasks', {
+    else {
+      console.log(result.rows)
+      res.render('view_tr_completed_tasks', {
       task: result.rows,
       taskType: 'COMPLETED'
-    });
+      });
+    }
+  })
 
   });
-});
+
 
 //View all my pending Tasks
 router.get('/viewPendingTasks', ensureAuthenticated, (req, res) => {
