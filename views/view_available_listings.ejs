@@ -29,6 +29,7 @@
 							<table class="table">
 								<thead class="table-primary">
 									<tr>
+										<th scope="col">Skill Category</th>
 										<th scope="col">Task Name</th>
 										<th scope="col">Description</th>
 										<th scope="col">Task Start Date / Time</th>
@@ -42,6 +43,7 @@
 								<tbody>
 									<% for(var i=0; i<availableListing.length; i++) { %>
 									<tr>
+										<td><%= availableListing[i].catname%></td>
 										<td><%= availableListing[i].taskname%></td>
 										<td><%= availableListing[i].description%></td>
 										<td><%= (availableListing[i].taskstartdatetime).toString().substring(0,24)%></td>
