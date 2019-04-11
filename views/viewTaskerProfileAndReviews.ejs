@@ -56,8 +56,8 @@
                 </div>
               <hr/>
               <h4>Reviews</h4>
-              <% if (reviews== null) { %>
-                Tasker has no reviews.
+              <% if (reviews== null || reviews.length==0) { %>
+                <%=profile[0].name%> has no reviews yet. <i class="far fa-sad-tear"></i>
               <% }else {%>
                 <% for(var x=0; x < reviews.length; x++){%> <!--reviews-->
                   <div class="card">
@@ -76,7 +76,7 @@
                 <%}%>
               <%}%> 
               <hr/>
-              <h4><%=profile[0].name%>'s Unavailable Timings</h4>
+              <h4><%=profile[0].name%>'s Unavailable Timings </h4>
               <div class="table-wrapper-scroll-y my-custom-scrollbar">
 
                   <table class="table table-bordered table-striped mb-0">
