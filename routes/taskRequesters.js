@@ -74,7 +74,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
       res.redirect('/taskRequesters/my_bids');
     }
     if (e.message == 'CLASHING TIMESLOTS!'){
-      req.flash('danger', 'You have already chosen a winning bid!');
+      req.flash('danger', 'Unable to select this tasker due to clashing timeslots!');
       res.redirect('/taskRequesters/my_bids');
     }
     throw e;
@@ -83,7 +83,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
   }
 
 });
-
+/*
 //SELECT WINNING BID
 router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensureAuthenticated, async (req, res) => {
   const client = await pool.connect();
@@ -111,6 +111,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
   }
 
 });
+*/
 
 router.get("/write_review/:taskid/tasker/:tasker_id", ensureAuthenticated, (req, res) => {
   pool.query("SELECT * FROM reviews as t1 WHERE t1.taskid=$1 AND t1.cusid=$2;", [req.params.taskid, req.params.tasker_id])
