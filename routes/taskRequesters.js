@@ -36,8 +36,56 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id", ensureAuthent
     });
 });
 
+router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id", ensureAuthenticated, (req, res) => {
+
+  return Promise.all([
+    pool.query("SELECT t1.bidprice, t2.name,AVG(t3.rating) as rating,COUNT(t4.*) as count,t5.taskname FROM bids as t1 INNER JOIN customers as t2 ON t2.cusid=$2 LEFT JOIN reviews as t3 ON t3.cusid=$2 LEFT JOIN assigned as t4 ON t4.cusid=$2 AND t4.completed=true INNER JOIN createdtasks as t5 ON t5.taskid=$1 WHERE t1.taskid=$1 AND t1.cusid=$2 GROUP BY t2.name, t5.taskname, t1.bidprice;", [req.params.taskid, req.params.tasker_id]),
+    pool.query("SELECT t3.description FROM requires as t1 INNER JOIN belongs as t2 ON t1.catid=t2.catid INNER JOIN addedpersonalskills as t3 ON t2.ssid=t3.ssid AND t3.cusid=$2 WHERE taskid=$1;", [req.params.taskid, req.params.tasker_id]),
+    pool.query("SELECT t1.rating,t1.description,t3.name FROM reviews as t1 INNER JOIN createdtasks as t2 ON t2.taskid=$1 INNER JOIN customers as t3 ON t2.cusid=t3.cusid WHERE t1.cusid=$2", [req.params.taskid, req.params.tasker_id])
+  ])
+    .then(([result, result2, result3]) => {
+      if (result.rows.length == 0 || result2.rows.length == 0) {
+        req.flash("warning", 'Encountered an error. Please try again.');
+        res.redirect("/taskRequesters/viewBids/");
+      }
+      res.render("tr_accept_bid", { tasker_info: result.rows[0], tasker_skills: result2.rows, tasker_reviews: result3.rows });
+    })
+    .catch((error) => {
+      req.flash("warning", 'Encountered an error: ' + error);
+      res.redirect("/taskRequesters/viewBids/");
+    });
+});
+
 //SELECT WINNING BID
-router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensureAuthenticated, async (req, res) => {
+router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensureAuthenticated, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN;");
+    await client.query("INSERT INTO Assigned(taskid,cusid,completed) VALUES($1,$2,false);", [req.params.taskid, req.params.tasker_id]);
+    await client.query("UPDATE Bids SET winningbid = true WHERE taskid=$1 AND cusid=$2;", [req.params.taskid, req.params.tasker_id]),
+    await client.query("UPDATE Listings SET hasChosenBid = true WHERE taskid = $1;", [req.params.taskid]),
+    result = await client.query("SELECT t1.*, t2.bidprice,t3.name FROM createdtasks as t1 INNER JOIN bids as t2 on t1.taskid=t2.taskid INNER JOIN customers as t3 on t2.cusid=t3.cusid WHERE t2.taskid=$1 AND t2.cusid=$2;", [req.params.taskid, req.params.tasker_id])
+    await client.query("COMMIT");
+  } catch (e) {
+    await client.query("ROLLBACK");
+    console.log(e);
+    if (e.message == 'ONLY ONE WINNING BID ALLOWED!'){
+      req.flash('danger', 'You have already chosen a winning bid!');
+      res.redirect('/taskRequesters/my_bids');
+    }
+    if (e.message == 'CLASHING TIMESLOTS!'){
+      req.flash('danger', 'You have already chosen a winning bid!');
+      res.redirect('/taskRequesters/my_bids');
+    }
+    throw e;
+  } finally {
+    res.render("tr_accepted_bid", { result: result.rows[0] });
+  }
+
+});
+
+//SELECT WINNING BID
+router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensureAuthenticated, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN;");
