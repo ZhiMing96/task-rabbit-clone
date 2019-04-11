@@ -891,7 +891,7 @@ router.get("/viewAllTasks", ensureAuthenticated, (req, res) => {
 router.get('/viewCompletedTasks', ensureAuthenticated, (req, res) => {
 
   const params = [parseInt(req.user.cusId)]
-  const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskenddatetime, C.datecreated, A.cusid from CreatedTasks C join assigned A on C.taskid = A.taskid where C.cusId = $1 and A.completed = true'
+  const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskenddatetime, C.datecreated, CS.name from (CreatedTasks C join assigned A on C.taskid = A.taskid) join customers CS on CS.cusid = A.cusid where C.cusId = $1 and A.completed = true;'
 
   pool.query(sql, params, (error, result) => {
 
