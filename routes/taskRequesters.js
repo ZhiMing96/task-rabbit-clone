@@ -48,7 +48,12 @@ router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensure
     await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK");
+    console.log(e);
     if (e.message == 'ONLY ONE WINNING BID ALLOWED!'){
+      req.flash('danger', 'You have already chosen a winning bid!');
+      res.redirect('/taskRequesters/my_bids');
+    }
+    if (e.message == 'CLASHING TIMESLOTS!'){
       req.flash('danger', 'You have already chosen a winning bid!');
       res.redirect('/taskRequesters/my_bids');
     }
@@ -425,9 +430,13 @@ router.post("/addRequests", async function (req, res) {
         else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
           req.flash('danger', 'Task Start Date / Time must be later than the current date' );
         }
+        else if (error.message == 'TASKER IS ALREADY TAKEN!'){
+          req.flash('danger', 'Tasker is already taken at that Date / Time' );
+        }
         else if (error.message == 'SPAMMING'){
           req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
         } else {
+          console.log(error.message)
           req.flash("warning", "An error was encountered. Please try again.");
         }
         res.redirect('/addRequests');
@@ -497,7 +506,7 @@ router.get("/newTask/:catId/:taskerId", ensureAuthenticated, (req, res) => {
 
 router.get("/viewListings", (req, res) => {
   console.log("here")
-  const sql = "SELECT C.taskid as taskid, taskname, description, taskStartDateTime, taskEndDateTime, datecreated, deadline, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
+  const sql = "SELECT C.taskid as taskid, taskname, description, taskStartDateTime, taskEndDateTime, datecreated, deadline, hasCancelled, L.hasChosenBid as haschosenbid, A.completed as completed FROM (createdtasks C inner join Listings L on C.taskid = L.taskid) left outer join assigned A on C.taskid = A.taskid WHERE C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
   console.log(req.user.cusId)
 
@@ -610,14 +619,15 @@ router.get("/deleteListings/:taskid", ensureAuthenticated, async function (req, 
       res.redirect('/taskRequesters/viewListings');
     })
     .catch((error) => {
-      if (error.message == 'CANNOT DELETE 1 DAY BEFORE'){
       pool.query("ROLLBACK")
+      if (error.message == 'CANNOT DELETE 1 DAY BEFORE'){
       req.flash('danger', 'CANNOT DELETE TASK 24 HOURS BEFORE START DATE / TIME. MUST CANCEL INSTEAD!');
       res.redirect('/taskRequesters/viewListings');
       }
+      else{
       req.flash("warning", "An error was encountered. Please try again.")
-      pool.query("ROLLBACK")
-      res.redirect('/taskRequesters/viewListingss');
+      res.redirect('/taskRequesters/viewListings');
+      }
     })
 });
 
@@ -637,7 +647,7 @@ router.get("/viewRequests", ensureAuthenticated, (req, res) => {
     }
   });
 
-  const sql = "SELECT C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated, deadline, accepted, R.hasResponded as hasresponded, CS.Name as taskername, CS.cusid as taskerid, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
+  const sql = "SELECT C.taskid, taskname, description, taskstartdatetime, taskenddatetime, datecreated, deadline, accepted, hascancelled, R.hasResponded as hasresponded, CS.Name as taskername, CS.cusid as taskerid, completed FROM (createdtasks C inner join (customers CS natural join Requests R) on C.taskid = R.taskid) left outer join assigned A on C.taskid = A.taskid where C.cusid = $1;"
   const params = [parseInt(req.user.cusId)]
 
   pool.query(sql, params, (error, result) => {
@@ -756,7 +766,8 @@ router.get("/deleteRequests/:taskid", ensureAuthenticated, (req, res) => {
   sqlDeleteCreatedTask = "DELETE FROM createdTasks WHERE taskid = " + taskid
 
   pool.query(sqlDeleteCreatedTask, (err, result) => {
-    if (err.message == 'CANNOT DELETE 1 DAY BEFORE'){
+    console.log(err)
+    if (err == 'error: CANNOT DELETE 1 DAY BEFORE'){
       req.flash('danger', 'CANNOT DELETE TASK 24 HOURS BEFORE START DATE / TIME. MUST CANCEL INSTEAD!');
       res.redirect('/taskRequesters/viewRequests');
     }
@@ -765,6 +776,37 @@ router.get("/deleteRequests/:taskid", ensureAuthenticated, (req, res) => {
     }
   });
 
+});
+
+//select Request to cancel 
+router.get("/cancelRequests/:taskid", (req, res) => {
+  var paramCancel = [req.params.taskid];
+  var sqlCancel = "UPDATE createdTasks SET hasCancelled = true where taskid = $1";
+
+  pool.query(sqlCancel, paramCancel, (err, result) => {
+    if (err){
+      console.log(err);
+      res.redirect('/taskRequesters/viewRequests');
+    }
+    else {
+      res.redirect('/taskRequesters/viewRequests');
+    }
+  });
+});
+
+//select Request to cancel 
+router.get("/cancelListings/:taskid", (req, res) => {
+  var paramCancel = [req.params.taskid];
+  var sqlCancel = "UPDATE createdTasks SET hasCancelled = true where taskid = $1";
+  pool.query(sqlCancel, paramCancel, (err, result) => {
+    if (err){
+      console.log(err);
+      res.redirect('/taskRequesters/viewListings');
+    }
+    else {
+      res.redirect('/taskRequesters/viewListings');
+    }
+  });
 });
 
 //select Task to complete 

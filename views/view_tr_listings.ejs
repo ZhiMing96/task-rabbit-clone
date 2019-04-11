@@ -16,7 +16,7 @@
 								</div>
 					</div>
 					<div class="row">
-					<%- include("include/tasker_sidebar"); %>
+					<%- include("include/tr_sidebar"); %>
 					<div class="col-9">
 						<h1 style="text-align: center">My Listings</h1>
 						<% if(task.length == 0 ){%>
@@ -41,6 +41,7 @@
 											<th scope="col"></th>
 											<th scope="col"></th>
 											<th scope="col"></th>
+											<th scope="col"></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -55,13 +56,22 @@
 											<!-- if have check for status for winning. If not got winning bid then show pendings bids-->
 											<!-- if status is winning bid, then view pending completion. -->	
 												<% if(task[i].completed == true){%>
-													<td> completed </td>
+													<td> Completed </td>
 													<td> - </td>
 													<td> - </td>
 													<td> - </td>
 													<td> - </td>
 													<td> - </td>
-												<% } else {%>
+													<td> - </td>
+												<% } else if (task[i].hascancelled == true){%>
+													<td> Cancelled </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
+												<% }else {%>
 														<% if(task[i].haschosenbid == true){%>
 															<td> Pending for completion </td>
 															<td>-</td>
@@ -70,10 +80,16 @@
 																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
 																	</form>
 															</td>	
+															<td>
+																	<form action="/taskRequesters/cancelListings/<%= task[i].taskid%>", method="GET">
+																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/cancelListings/<%= task[i].taskid %>">CANCEL</button>
+																	</form>
+															</td>	
 															<td>-</td>
 														<% } else {%>
 															<td> Pending for bids </td>
 															<td><%= (task[i].deadline).toString().substring(0,24)%></td>
+															<td> - </td>
 															<td> - </td>
 															<td>
 																	<form action="/taskRequesters/viewBids/<%= task[i].taskid%>", method="GET">
