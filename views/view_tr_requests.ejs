@@ -84,7 +84,9 @@
 																<td> Pending for completion </td>
 																<td> - </td>
 																<td>
-																		<a href="/taskRequesters/write_review/<%= task[i].taskid%>/tasker/<%= task[i].taskerid%>" class="btn btn-sm btn-outline-info">Completed</a>
+																		<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
+																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
+																	</form>
 																</td>	
 																<td>
 																		<form action="/taskRequesters/cancelRequests/<%= task[i].taskid%>", method="GET">

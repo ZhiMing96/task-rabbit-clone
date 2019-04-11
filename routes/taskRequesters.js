@@ -875,14 +875,12 @@ router.get("/completeTasks/:taskid",ensureAuthenticated, (req, res) => {
       var sqlRequires = "select C.taskid, taskname, C1.name, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid join customers C1 on A.cusid=C1.cusid where C.taskid = $1";
       return pool.query(sqlRequires, paramRequires);
     })
-    .then((results) => {
-      res.render('tr_write_review', {
-        result: results.rows,
-      });
+    .then(() => {
+      res.redirect('/taskRequesters/viewCompletedTasks')
     })
     .catch((error) => {
       console.log("Error completing a task", error);
-      res.redirect('/viewRequests');
+      res.redirect('/taskRequesters/viewRequests');
     })
   
 });
