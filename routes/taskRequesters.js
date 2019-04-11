@@ -318,20 +318,17 @@ router.post("/addListings", ensureAuthenticated, async function (req, res) {
       })
       .catch((error) => {
         pool.query("ROLLBACK")
-        if(error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check4"') {
-          req.flash('danger', 'Task End Date / Time must be at least 1 hour after Task Start Date / Time' );
-        }
-        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check3"'){
-          req.flash('danger', 'Task End Date / Time must be on the same day as Task Start Date / Time' );
-        }
-        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check2"'){
-          req.flash('danger', 'Deadline must be before Task Start Date / Time' );
+        if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
+          req.flash('danger', 'Task Start Date / Time must be later than the current date' );
         }
         else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check1"'){
-          req.flash('danger', 'Deadline must be later than the current Date / Time' );
+          req.flash('danger', 'Deadline must be before Task Start Date / Time and after current Date/ Time' );
         }
-        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
-          req.flash('danger', 'Task Start Date / Time must be later than the current date' );
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check2"'){
+          req.flash('danger', 'Task End Date / Time must be on the same day as Task Start Date / Time' );
+        }
+        else if(error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check3"') {
+          req.flash('danger', 'Task End Date / Time must be at least 1 hour after Task Start Date / Time' );
         }
         else if (error.message == 'SPAMMING'){
           req.flash('danger', 'You are not allowed to create more than 10 requests/listings (combined) in 3 days' );
@@ -470,20 +467,17 @@ router.post("/addRequests", async function (req, res) {
       })
       .catch((error) => {
         pool.query("ROLLBACK")
-        if(error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check4"') {
-          req.flash('danger', 'Task End Date / Time must be at least 1 hour after Task Start Date / Time' );
-        }
-        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check3"'){
-          req.flash('danger', 'Task End Date / Time must be on the same day as Task Start Date / Time' );
-        }
-        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check2"'){
-          req.flash('danger', 'Deadline must be before Task Start Date / Time' );
+        if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
+          req.flash('danger', 'Task Start Date / Time must be later than the current date' );
         }
         else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check1"'){
-          req.flash('danger', 'Deadline must be later than the current Date / Time' );
+          req.flash('danger', 'Deadline must be before Task Start Date / Time and after current Date/ Time' );
         }
-        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check"'){
-          req.flash('danger', 'Task Start Date / Time must be later than the current date' );
+        else if (error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check2"'){
+          req.flash('danger', 'Task End Date / Time must be on the same day as Task Start Date / Time' );
+        }
+        else if(error.message == 'new row for relation "createdtasks" violates check constraint "createdtasks_check3"') {
+          req.flash('danger', 'Task End Date / Time must be at least 1 hour after Task Start Date / Time' );
         }
         else if (error.message == 'TASKER IS ALREADY TAKEN!'){
           req.flash('danger', 'Tasker is already taken at that Date / Time' );
