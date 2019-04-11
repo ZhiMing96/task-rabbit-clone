@@ -354,11 +354,11 @@ router.get("/addRequests", ensureAuthenticated, async function (req, res) {
     categoryResult = await pool.query("SELECT * FROM skillcategories");
     
     for (x = 0; x < categoryResult.rows.length; x++) {
-      var taskersQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)" +
+      var taskersQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true and r.catid="+ [categoryResult.rows[x].catid]+" group by a.cusid)" +
         " SELECT DISTINCT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.name as ssname, S.description, S.ssid " +
         "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE T.cusid<>" + [parseInt(req.user.cusId)] + " AND B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc;"
       var numTasksQuery = "select count(*) as num from belongs where catid=" + [categoryResult.rows[x].catid] + ";";
-      const greatValueTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT S.cusId, S.ssId FROM AddedPersonalSkills S JOIN TaskerRating T ON S.cusId=T.cusId JOIN Belongs B ON S.ssId=B.ssId WHERE tr>=4 and B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc limit $1/3;"
+      const greatValueTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT S.cusId, S.ssId FROM AddedPersonalSkills S JOIN TaskerRating T ON S.cusId=T.cusId JOIN Belongs B ON S.ssId=B.ssId WHERE tr>=4 and B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc limit $1/2;"
 
       
       var tmp = await pool.query(taskersQuery);
@@ -869,12 +869,14 @@ router.get("/completeTasks/:taskid",ensureAuthenticated, (req, res) => {
       var sqlRequires = "select C.taskid as taskid, C.taskname as taskname, C1.name as name, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid join customers C1 on A.cusid=C1.cusid where C.taskid = $1";
       return pool.query(sqlRequires, paramRequires);
     })
-    .then(() => {
-      res.redirect('/taskRequesters/viewCompletedTasks')
+    .then((results) => {
+      res.render('tr_write_review', {
+        result: results.rows,
+      });
     })
     .catch((error) => {
       console.log("Error completing a task", error);
-      res.redirect('/taskRequesters/viewRequests');
+      res.redirect('/viewRequests');
     })
   
 });
