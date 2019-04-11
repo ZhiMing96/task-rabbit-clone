@@ -47,7 +47,7 @@
 										<td><%= (task[i].taskstartdatetime).toString().substring(0,24)%></td>
 										<td><%= (task[i].taskenddatetime).toString().substring(0,24)%></td>
 										<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
-										<td><a href="/taskRequesters/write_review/<%=task[i].taskid%>/tasker/<%=task[i].cusid%>" class="btn btn-primary">Submit Review</a></td>
+										<td><a href="/taskRequesters/write_review/<%=task[i].taskid%>/tasker/<%=task[i].taskerid%>" class="btn btn-primary">Submit Review</a></td>
 										</tr>
 									<% } %>
 								</tbody>

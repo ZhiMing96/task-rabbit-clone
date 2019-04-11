@@ -872,7 +872,7 @@ router.get("/completeTasks/:taskid",ensureAuthenticated, (req, res) => {
   pool.query(sqlComplete, paramComplete)
     .then((results) => {
       var paramRequires = [results.rows[0].taskid];
-      var sqlRequires = "select C.taskid, C.taskname as taskname, C1.name as name, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid join customers C1 on A.cusid=C1.cusid where C.taskid = $1";
+      var sqlRequires = "select C.taskid as taskid, C.taskname as taskname, C1.name as name, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid join customers C1 on A.cusid=C1.cusid where C.taskid = $1";
       return pool.query(sqlRequires, paramRequires);
     })
     .then((results) => {
@@ -897,7 +897,7 @@ router.get("/viewAllTasks", ensureAuthenticated, (req, res) => {
 router.get('/viewCompletedTasks', ensureAuthenticated, (req, res) => {
 
   const params = [parseInt(req.user.cusId)]
-  const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskenddatetime, C.datecreated, CS.name from (CreatedTasks C join assigned A on C.taskid = A.taskid) join customers CS on CS.cusid = A.cusid where C.cusId = $1 and A.completed = true;'
+  const sql = 'select C.taskid, C.taskname, C.description, C.taskstartdatetime, C.taskenddatetime, C.datecreated, CS.name, A.cusid as taskerid from (CreatedTasks C join assigned A on C.taskid = A.taskid) join customers CS on CS.cusid = A.cusid where C.cusId = $1 and A.completed = true;'
 
   pool.query(sql, params, (error, result) => {
 
