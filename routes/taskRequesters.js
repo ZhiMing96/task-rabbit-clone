@@ -74,10 +74,10 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
       res.redirect('/taskRequesters/my_bids');
     }
     if (e.message == 'CLASHING TIMESLOTS!'){
-      req.flash('danger', 'You have already chosen a winning bid!');
+      req.flash('danger', 'Unable to select this tasker due to clashing timeslots!');
       res.redirect('/taskRequesters/my_bids');
     }
-    throw e;
+    
   } finally {
     res.render("tr_accepted_bid", { result: result.rows[0] });
   }
@@ -85,7 +85,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
 });
 
 //SELECT WINNING BID
-router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensureAuthenticated, async (req, res) => {
+router.get("/my_bids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensureAuthenticated, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN;");
@@ -102,7 +102,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
       res.redirect('/taskRequesters/my_bids');
     }
     if (e.message == 'CLASHING TIMESLOTS!'){
-      req.flash('danger', 'You have already chosen a winning bid!');
+      req.flash('danger', 'Unable to select this tasker due to clashing timeslots!');
       res.redirect('/taskRequesters/my_bids');
     }
     throw e;
@@ -111,6 +111,7 @@ router.get("/viewBids/accept_bid/taskid/:taskid/tasker/:tasker_id/accept", ensur
   }
 
 });
+
 
 router.get("/write_review/:taskid/tasker/:tasker_id", ensureAuthenticated, (req, res) => {
   pool.query("SELECT * FROM reviews as t1 WHERE t1.taskid=$1 AND t1.cusid=$2;", [req.params.taskid, req.params.tasker_id])
@@ -356,7 +357,7 @@ router.get("/addRequests", ensureAuthenticated, async function (req, res) {
     for (x = 0; x < categoryResult.rows.length; x++) {
       var taskersQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true group by a.cusid, r.catid)" +
         " SELECT DISTINCT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.name as ssname, S.description, S.ssid " +
-        "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc;"
+        "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid and T.cusid<>" +req.user.cusid + " WHERE B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc;"
       var numTasksQuery = "select count(*) as num from belongs where catid=" + [categoryResult.rows[x].catid] + ";";
       const greatValueTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT S.cusId, S.ssId FROM AddedPersonalSkills S JOIN TaskerRating T ON S.cusId=T.cusId JOIN Belongs B ON S.ssId=B.ssId WHERE tr>=4 and B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc limit $1/3;"
 

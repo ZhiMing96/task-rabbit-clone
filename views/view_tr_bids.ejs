@@ -47,7 +47,7 @@
                     <tbody>
                       <% if(typeof bids === "undefined" || bids.length == 0) {%>
                         <tr>
-                          <td colspan='4'>You have no bids at the moment. Check back in a bit!</td>
+                          <td colspan='5'>You have no bids at the moment. Check back in a bit!</td>
                         </tr>
                       <% } else { %>
                         <% bids.forEach((item,i)=>{ %>
@@ -73,7 +73,7 @@
                                   <button class="btn btn-success" disabled><i class="far fa-check-circle"></i>&nbsp;Accepted</a>
                                 <% } %>
                               <% } else if(item.winningbid == false || item.winningbid == null) {%>
-                                <a href="accept_bid/taskid/<%=item.taskid%>/tasker/<%=item.cusid%>/" class="btn btn-primary">Accept</a>
+                                <a href="/taskRequesters/my_bids/accept_bid/taskid/<%=item.taskid%>/tasker/<%=item.cusid%>/" class="btn btn-primary">Accept</a>
                               <% } else { %>
                                 <button class="btn btn-success" disabled><i class="far fa-check-circle"></i>&nbsp;Accepted</a>
                               <% } %>
