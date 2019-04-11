@@ -872,7 +872,7 @@ router.get("/completeTasks/:taskid",ensureAuthenticated, (req, res) => {
   pool.query(sqlComplete, paramComplete)
     .then((results) => {
       var paramRequires = [results.rows[0].taskid];
-      var sqlRequires = "select C.taskid, taskname, C1.name, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid join customers C1 on A.cusid=C1.cusid where C.taskid = $1";
+      var sqlRequires = "select C.taskid, C.taskname as taskname, C1.name as name, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid join customers C1 on A.cusid=C1.cusid where C.taskid = $1";
       return pool.query(sqlRequires, paramRequires);
     })
     .then(() => {
