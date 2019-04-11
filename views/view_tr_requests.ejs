@@ -42,6 +42,7 @@
 											<th scope="col"></th>
 											<th scope="col"></th>
 											<th scope="col"></th>
+											<th scope="col"></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -63,22 +64,37 @@
 													<td> - </td>
 													<td> - </td>
 													<td> - </td>
+													<td> - </td>
+												<% } else if (task[i].hascancelled==true){%>
+													<td> Cancelled </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
+														<td> - </td>
 												<% } else if (task[i].hasresponded == true && (task[i].accepted == false)){%>
-														<td> Rejected </td>
-														<td> - </td>
-														<td> - </td>
-														<td> - </td>
-														<td> - </td>
-												<% } else {%>
+													<td> Rejected </td>
+													<td> - </td>
+													<td> - </td>
+													<td> - </td>
+													<td> - </td>
+													<td> - </td>
+												<% }else {%>
 														<% if (task[i].hasresponded == true){%>
 																<td> Pending for completion </td>
 																<td> - </td>
 																<td>
 																		<a href="/taskRequesters/write_review/<%= task[i].taskid%>/tasker/<%= task[i].taskerid%>" class="btn btn-sm btn-outline-info">Completed</a>
 																</td>	
+																<td>
+																		<form action="/taskRequesters/cancelRequests/<%= task[i].taskid%>", method="GET">
+																			<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/cancelRequests/<%= task[i].taskid %>">CANCEL</button>
+																		</form>
+																</td>	
 														<% } else {%>
 															<td> Pending for acceptance </td>
 															<td> <%= (task[i].deadline).toString().substring(0,24)%> </td>
+															<td> - </td>
 															<td> - </td>
 														<% }%>
 													<td>
