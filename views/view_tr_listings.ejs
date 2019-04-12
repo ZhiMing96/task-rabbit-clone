@@ -27,7 +27,7 @@
 									</button>
 								</div> 
 							<% } else {%>
-								<table class="table-responsive" cellpadding="10">
+								<table class="table-responsive table-striped border" cellpadding="10" >
 									<thead class="table-primary">
 										<tr>
 											<th scope="col">Task Name</th>
@@ -37,11 +37,11 @@
 											<th scope="col">Date Created</th>
 											<th scope="col">Status</th>
 											<th scope="col">Bidding Deadline</th>
-											<th scope="col"></th>
-											<th scope="col"></th>
-											<th scope="col"></th>
-											<th scope="col"></th>
-											<th scope="col"></th>
+											<th scope="col">Mark Completed</th>
+											<th scope="col">Cancel Task</th>
+											<th scope="col">Winning Bid</th>
+											<th scope="col">Update Task</th>
+											<th scope="col">Delete</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -112,6 +112,8 @@
 										<% } %>
 									</tbody>
 								</table>
+								<br/>
+								<br/>
 								<% } %>
 								<div class="text-center">
 										<a href="/taskRequesters" class="btn btn-outline-secondary btn-lg">Back</a>

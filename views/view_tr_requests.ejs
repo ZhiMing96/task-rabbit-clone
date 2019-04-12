@@ -27,7 +27,7 @@
 									</button>
 								</div> 
 							<% } else {%>
-								<table class="table-responsive" cellpadding="10">
+								<table class="table-responsive table-striped border" cellpadding="15" >
 										<thead class="table-primary">
 										<tr>
 											<th scope="col">Task Name</th>
@@ -39,10 +39,10 @@
 											<th scope="col">Tasker Requested</th>
 											<th scope="col">Status</th>
 											<th scope="col">Deadline to accept</th>
-											<th scope="col"></th>
-											<th scope="col"></th>
-											<th scope="col"></th>
-											<th scope="col"></th>
+											<th scope="col">Mark Completed</th>
+											<th scope="col">Cancel Task</th>
+											<th scope="col">Update Task</th>
+											<th scope="col">Delete</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -85,12 +85,12 @@
 																<td> - </td>
 																<td>
 																		<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
-																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">COMPLETE</button>
+																		<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">Completed</button>
 																	</form>
 																</td>	
 																<td>
 																		<form action="/taskRequesters/cancelRequests/<%= task[i].taskid%>", method="GET">
-																			<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/cancelRequests/<%= task[i].taskid %>">CANCEL</button>
+																			<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/cancelRequests/<%= task[i].taskid %>">Cancel</button>
 																		</form>
 																</td>	
 														<% } else {%>
@@ -115,6 +115,8 @@
 										<% } %>
 									</tbody>
 								</table>
+								<br/>
+								<br/>
 								<% } %>
 							<div class="text-center">
 									<a href="/taskRequesters" class="btn btn-outline-secondary btn-lg">Back</a>

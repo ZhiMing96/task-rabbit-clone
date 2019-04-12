@@ -400,7 +400,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
 
   //View all My bids placed
   router.get('/viewMyBids', ensureAuthenticated, function (req, res) {
-    const sql = 'SELECT B.taskId, C.taskName, B.bidPrice, C.deadline, B.winningBid, L.hasChosenBid FROM CreatedTasks C join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
+    const sql = 'SELECT B.taskId, C.taskName, C1.name as taskReq, B.bidPrice, C.deadline, B.winningBid, L.hasChosenBid FROM CreatedTasks C join Customers C1 on C.cusid=C1.cusid join (Listings L join Bids B on (L.taskId = B.taskId)) on (C.taskId = L.taskId AND B.cusId = $1)'
     const params = [parseInt(req.user.cusId)]
 
     pool.query(sql, params, (error, result) => {
@@ -408,6 +408,7 @@ router.get("/acceptRequest/:taskid", ensureAuthenticated, async (req, res) => {
       if (error) {
         console.log('err: ', error);
       } else {
+        console.log(result.rows)
       res.render('view_my_bids', {
         bid: result.rows,
         currentDateTime: new Date()

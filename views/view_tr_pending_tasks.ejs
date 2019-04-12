@@ -26,7 +26,7 @@
 									</button>
 								</div> 
 							<%} %>
-							<table class="table">
+							<table class="table table-responsive table-hover table-striped border">
 									<thead class="table-primary">
 										<tr>
 											<th scope="col">Task Name</th>
@@ -48,9 +48,8 @@
 										<td><%= (task[i].datecreated).toString().substring(0,24)%></td>
 										<td><%= (task[i].email)%></td>
 										<td>
-											<form action="/taskRequesters/completeTasks/<%= task[i].taskid%>", method="GET">
-												<button type="submit" class="btn btn-outline-info" formaction="/taskRequesters/completeTasks/<%= task[i].taskid %>">Completed</button>
-											</form>
+											<a href="/taskRequesters/completeTasks/<%= task[i].taskid%>" class="btn btn-outline-info">Completed</a>
+
 									</td>		
 									</tr>
 									<% } %>

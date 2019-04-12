@@ -864,15 +864,8 @@ router.get("/completeTasks/:taskid",ensureAuthenticated, (req, res) => {
   var sqlComplete = "UPDATE assigned SET completed = true where taskid = $1 RETURNING taskid";
 
   pool.query(sqlComplete, paramComplete)
-    .then((results) => {
-      var paramRequires = [results.rows[0].taskid];
-      var sqlRequires = "select C.taskid as taskid, C.taskname as taskname, C1.name as name, C.cusid as taskRid, A.cusid as taskerid from createdtasks C join assigned A on C.taskid = A.taskid join customers C1 on A.cusid=C1.cusid where C.taskid = $1";
-      return pool.query(sqlRequires, paramRequires);
-    })
-    .then((results) => {
-      res.render('tr_write_review', {
-        result: results.rows,
-      });
+    .then(() => {
+      res.redirect('/viewCompletedTasks');
     })
     .catch((error) => {
       console.log("Error completing a task", error);

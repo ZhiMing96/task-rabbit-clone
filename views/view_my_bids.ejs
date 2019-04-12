@@ -33,26 +33,28 @@
 								</div>
 							<% } else { %>
 								
-								<table class="table">
-									<thead class="table-primary">
+								<table class="table-responsive table-striped table-hover border" cellpadding="15" >
+										<thead class="table-primary">
 										<tr>
 											<th scope="col">Task Name</th>
+											<th scope="col">Task Requester</th>
 											<th scope="col">My Bid Amount</th>
 											<th scope="col">Bidding Deadline</th>
 											<th scope="col">Days left to Deadline</th>
-											<th scope="col">Result</th>
+											<th scope="col">Bid Result</th>
 											
-											<th scope="col"></th>
-											<th scope="col"></th>
+											<th scope="col">Update</th>
+											<th scope="col">Delete</th>
 										</tr>
 									</thead>
 									<tbody>
 										<% for(var i=0; i<bid.length; i++) { %>
 											<tr>
 												<td><%= bid[i].taskname%></td>
+												<td><%= bid[i].taskreq%></td>
 												<td><%= bid[i].bidprice%></td>
 												<td><%= (bid[i].deadline).toString().substring(0,24)%></td>
-												<td><%= (bid[i].deadline).getDate() - currentDateTime.getDate()%></td>
+												<td><%= Math.round(Math.abs((bid[i].deadline.getTime() - currentDateTime.getTime())/(24*60*60*1000))) %></td>
 												
 												<% if(bid[i].winningbid){ %>
 													<td>Chosen Bid. YAY!</td>
@@ -64,13 +66,13 @@
 												<td>
 													<% if(currentDateTime < (bid[i].deadline) && !bid[i].haschosenbid){ %>
 														<form action="/listings/updateBid/<%= bid[i].taskid%>", method="GET">
-															<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">UPDATE</button>
+															<button type="submit" class="btn btn-outline-info" formaction="/listings/updateBid/<%= bid[i].taskid %>">Update</button>
 														</form>
 													<% } %>
 												</td>
 												<td>
 														<form action="/listings/deleteBid/<%= bid[i].taskid%>", method="GET">
-																<button type="submit" class="btn btn-outline-danger" formaction="/listings/deleteBid/<%= bid[i].taskid %>">DELETE</button>
+																<button type="submit" class="btn btn-outline-danger" formaction="/listings/deleteBid/<%= bid[i].taskid %>">Delete</button>
 														</form>
 												</td>		
 											</tr>
@@ -78,6 +80,8 @@
 									<% } %>
 									</tbody>
 								</table>
+								<br/>
+								<br/>
 								<div class="text-center">	
 									<form action="listings/viewAllAvailable" method="GET">
 										<button type="submit" class="btn  btn-outline-primary" formaction="/listings/viewAllAvailable">Place a Bid!</button>

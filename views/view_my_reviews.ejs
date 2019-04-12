@@ -31,7 +31,7 @@
                                     </button>
                                 </div> 
                             <% } else {%>
-                                <table class="table">
+								<table class="table table-hover table-striped border" cellpadding="15" >
                                     <thead class="table-primary">
                                         <tr>
                                             <th scope="col">Category</th>
@@ -41,6 +41,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                       
                                         <% for(var i=0; i<reviews.length; i++) { %>
                                         <tr>
                                             <td><%= reviews[i].catname%></td>
@@ -53,6 +54,8 @@
                                         <% } %>
                                     </tbody>
                                 </table>
+                                <br/>
+                                <br/>
                                 <% } %>
                                 <div class="text-center">
                                         <a href="/taskers" class="btn btn-outline-secondary btn-lg">Back</a>
