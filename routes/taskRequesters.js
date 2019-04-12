@@ -355,10 +355,10 @@ router.get("/addRequests", ensureAuthenticated, async function (req, res) {
     
     for (x = 0; x < categoryResult.rows.length; x++) {
       var taskersQuery = "with countCatTasks as (select a.cusid, count(r.catid) as num from assigned a join requires r on a.taskid=r.taskid where a.completed=true and r.catid="+ [categoryResult.rows[x].catid]+" group by a.cusid)" +
-        " SELECT DISTINCT T.name, T.cusId, (SELECT avg(rating) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.name as ssname, S.description, S.ssid " +
-        "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE T.cusid<>" + [parseInt(req.user.cusId)] + " AND B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc;"
+        " SELECT DISTINCT T.name, T.cusId, (SELECT coalesce(avg(rating),0) FROM Reviews WHERE cusId=T.cusId) AS taskerRating, c.num, S.ratePerHour, S.name as ssname, S.description, S.ssid " +
+        "FROM Customers T join AddedPersonalSkills S on T.cusId=S.cusId join Belongs B on S.ssid=B.ssId left join countCatTasks c on c.cusid=T.cusid WHERE T.cusid<>" + [parseInt(req.user.cusId)] + " AND B.catid=" + [categoryResult.rows[x].catid] + " order by taskerRating desc, ratePerHour asc;"
       var numTasksQuery = "select count(*) as num from belongs where catid=" + [categoryResult.rows[x].catid] + ";";
-      const greatValueTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT S.cusId, S.ssId FROM AddedPersonalSkills S JOIN TaskerRating T ON S.cusId=T.cusId JOIN Belongs B ON S.ssId=B.ssId WHERE tr>=4 and B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc limit $1/2;"
+      const greatValueTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT S.cusId, S.ssId FROM AddedPersonalSkills S JOIN TaskerRating T ON S.cusId=T.cusId JOIN Belongs B ON S.ssId=B.ssId WHERE tr>=4 and B.catid=" + [categoryResult.rows[x].catid] + " order by ratePerHour asc limit $1/3;"
 
       
       var tmp = await pool.query(taskersQuery);
@@ -370,7 +370,7 @@ router.get("/addRequests", ensureAuthenticated, async function (req, res) {
       
       greatValueTaskersList.push(tmp3.rows);
     }
-    const eliteTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT cusId FROM TaskerRating R WHERE 1<=(SELECT count(*) FROM Assigned A WHERE R.cusId=A.cusId AND completed=TRUE) AND tr>=4.0;";
+    const eliteTaskersQuery = "WITH TaskerRating AS (SELECT cusId, avg(rating) AS tr FROM Reviews GROUP BY cusId) SELECT cusId FROM TaskerRating R WHERE 50<=(SELECT count(*) FROM Assigned A WHERE R.cusId=A.cusId AND completed=TRUE) AND tr>=4.5;";
     eliteTaskerResult = await pool.query(eliteTaskersQuery)
     console.log(eliteTaskerResult.rows)
     console.log(greatValueTaskersList)

@@ -31,7 +31,7 @@
                     <span class="align-items-center" style="font-size:0.7em">
                     <%- include('include/stars', {rating: profile[0].taskerrating}) %>
                     </span>
-                    <%if (profile[0].taskerrating>=4 && profile[0].num>=0) { %> <!--numbers should be 4.8 and 50-->
+                    <%if (profile[0].taskerrating>=4.5 && profile[0].num>=50) { %> 
                         <span class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="This tasker is experienced and consistently gets high ratings and reviews"><i class="fas fa-award"></i>&nbsp;<b>Elite Tasker</b></span>
                     <% }%>
                     
