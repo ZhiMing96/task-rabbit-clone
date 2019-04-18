@@ -399,28 +399,28 @@ router.post("/addRequests", async function (req, res) {
     for (var i = 0; i < errors.length; i++) {
       if(errors[i].msg == 'Task Name is required') {
         req.flash('danger', 'Task Name is required' );
-        res.redirect('/addListings');
+        res.redirect('back');
         return;
     
       }
       else if (errors[i].msg == 'Description is required'){
         req.flash('danger', 'Description is required' );
-        res.redirect('/addListings');
+        res.redirect('back');
         return;
       }
       else if (errors[i].msg == 'taskstartdatetime is required'){
         req.flash('danger', 'Task Start Date / Time is required');
-        res.redirect('/addListings');
+        res.redirect('back');
         return;
       }
       else if (errors[i].msg == 'taskenddatetime is required'){
         req.flash('danger', 'Task End Date / time is required');
-        res.redirect('/addListings');
+        res.redirect('back');
         return;
       }
       else if (errors[i].msg == 'Deadline is required'){
         req.flash('danger', 'Deadline is required');
-        res.redirect('/addListings');
+        res.redirect('back');
         return;
       }
        else{
@@ -488,7 +488,7 @@ router.post("/addRequests", async function (req, res) {
           console.log(error.message)
           req.flash("warning", "An error was encountered. Please try again.");
         }
-        res.redirect('/addRequests');
+        res.redirect('/taskRequesters/addRequests');
       })
 
   }
