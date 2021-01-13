@@ -1,6 +1,6 @@
 Framework: Node.js 
 Editor: Visual Studio Code, Notepad ++
-Database: PostgreSQL version 11.2
+Database: PostgreSQL version 11.2 
 
 About the Application:
 A task matching application to facilitate users to hire temporary help to complete certain tasks.
