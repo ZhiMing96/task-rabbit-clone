@@ -18,7 +18,7 @@
     "express-middleware": "^3.4.0",
     "express-session": "^1.15.6",
     "express-validator": "^5.3.1",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "nodemon": "^1.18.10",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
