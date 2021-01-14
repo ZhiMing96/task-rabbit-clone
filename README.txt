@@ -15,7 +15,7 @@ SET-UP:
 			user: 'postgres',
    			host: 'localhost',
     			database: 'cs2102project',
-    			password: 'password',
+    			password: '********',
     			port: 5432
 	- Windows: Download pgAdmin4 for viewing tables in database
 
