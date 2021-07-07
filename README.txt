@@ -37,4 +37,3 @@ SET-UP:
 	- Using the 'register' button, create an administrator account with the username 'admin' 
 	- (The administrator will be able to send emails to users, and create/delete task categories)
 	- Subsequently, create acccount with any other username and you are good to go!
-
